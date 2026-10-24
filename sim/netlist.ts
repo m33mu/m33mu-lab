@@ -1,6 +1,12 @@
 // Versioned electrical netlist accepted by the solver and the worker.
 // Terminals name nets; any net touched by a `ground` device is node 0.
 
+/** Piecewise-linear waveform: volts[i] at timesNs[i], linear in between,
+ * held before the first and after the last point unless `repeat`. */
+export type Pwl = { timesNs: number[]; volts: number[]; repeat?: boolean };
+
+export const PWL_MAX_POINTS = 400_000;
+
 export type DiodeModel = {
   /** Saturation current, A. */
   is: number;
@@ -27,7 +33,7 @@ export type DeviceSpec =
   | { kind: 'resistor'; id: string; a: string; b: string; ohms: number }
   | { kind: 'capacitor'; id: string; a: string; b: string; farads: number }
   | { kind: 'inductor'; id: string; a: string; b: string; henries: number }
-  | { kind: 'vsource'; id: string; p: string; n: string; volts: number }
+  | { kind: 'vsource'; id: string; p: string; n: string; volts: number; pwl?: Pwl }
   | { kind: 'isource'; id: string; p: string; n: string; amps: number }
   | { kind: 'diode'; id: string; a: string; k: string; model: DiodeModel }
   | { kind: 'led'; id: string; a: string; k: string; model: DiodeModel;
@@ -149,7 +155,21 @@ export function validateNetlist(netlist: unknown): string[] {
     case 'resistor': if (!positive(d.ohms)) errors.push(`${d.id}: ohms must be > 0`); break;
     case 'capacitor': if (!positive(d.farads)) errors.push(`${d.id}: farads must be > 0`); break;
     case 'inductor': if (!positive(d.henries)) errors.push(`${d.id}: henries must be > 0`); break;
-    case 'vsource': if (!finite(d.volts)) errors.push(`${d.id}: volts must be finite`); break;
+    case 'vsource':
+      if (!finite(d.volts)) errors.push(`${d.id}: volts must be finite`);
+      if (d.pwl !== undefined) {
+        const { timesNs, volts } = d.pwl;
+        if (!Array.isArray(timesNs) || !Array.isArray(volts) || timesNs.length < 1 ||
+            timesNs.length > PWL_MAX_POINTS || volts.length !== timesNs.length) {
+          errors.push(`${d.id}: pwl needs 1..${PWL_MAX_POINTS} times and as many volts`);
+        } else if (!timesNs.every((t, i) => finite(t) && t >= 0 && (i === 0 || t > timesNs[i - 1])) ||
+                   !volts.every(finite)) {
+          errors.push(`${d.id}: pwl times must increase from >= 0 and volts be finite`);
+        } else if (d.pwl.repeat && timesNs[timesNs.length - 1] <= 0) {
+          errors.push(`${d.id}: a repeating pwl needs a positive period`);
+        }
+      }
+      break;
     case 'isource': if (!finite(d.amps)) errors.push(`${d.id}: amps must be finite`); break;
     case 'diode': case 'led':
       if (!d.model || !positive(d.model.is) || !positive(d.model.n) ||

@@ -1,5 +1,6 @@
 // Browser reader/writer for the CLI's SIGC v1 container. See scripts/sigc.py.
-// Scope import is display-only: this module does not bind traces to MCU pads.
+// Scope import is display-only; the sigc-source part (project/catalog.ts)
+// replays a trace into the circuit.
 
 export const SIGC_MAX_BYTES = 8 * 1024 * 1024;
 export const SIGC_MAX_SAMPLES = 400_000;

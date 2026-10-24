@@ -130,7 +130,8 @@ export function nextPartId(project: Project, kind: PartKind): string {
   const prefix = { breadboard: 'bb', resistor: 'r', capacitor: 'c', led: 'led', diode: 'd', switch: 'sw',
     npn: 'q', nmos: 'm', opamp: 'u', regulator: 'ldo', 'i2c-eeprom': 'eeprom', 'i2c-temp': 'temp', 'spi-flash': 'flash',
     'usb-uart': 'uart', sniffer: 'sniff', supply: 'v', ground: 'gnd',
-    'se-atecc608': 'se', 'se-ta100': 'se', 'se-tropic01': 'se', 'se-se050': 'se', 'se-stsafe': 'se' }[kind];
+    'se-atecc608': 'se', 'se-ta100': 'se', 'se-tropic01': 'se', 'se-se050': 'se', 'se-stsafe': 'se',
+    'sigc-source': 'sig' }[kind];
   const used = new Set(project.parts.map((p) => p.id));
   for (let i = 1; ; i++) if (!used.has(`${prefix}${i}`)) return `${prefix}${i}`;
 }
@@ -206,7 +207,9 @@ export function validateProject(value: unknown): Project {
     if (!isObject(part.params)) fail(`Part ${part.id}: params must be an object`);
     for (const spec of def.params) {
       const v = part.params[spec.key];
-      if (spec.choices) {
+      if (spec.text) {
+        if (typeof v !== 'string' || v.length > spec.text.maxLength) fail(`Part ${part.id}: invalid ${spec.label}`);
+      } else if (spec.choices) {
         if (!spec.choices.some((c) => c.value === String(v))) fail(`Part ${part.id}: invalid ${spec.label}`);
       } else if (!finite(v) || v < spec.min || v > spec.max) {
         fail(`Part ${part.id}: ${spec.label} must be between ${spec.min} and ${spec.max} ${spec.unit}`);

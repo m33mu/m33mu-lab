@@ -139,6 +139,17 @@ export function PartGlyph({ part, brightness, pressed }: { part: Part; brightnes
       </g>
     );
   }
+  case 'sigc-source':
+    return (
+      <g>
+        <rect x={-12} y={-54} width={P + 24} height={46} rx={5} className="supply-body" />
+        <path d="M -4 -24 l 6 0 l 0 -14 l 8 0 l 0 14 l 6 0 l 3 -10 l 3 6 l 4 -12" fill="none" stroke="#5bc4ae" strokeWidth={2} />
+        <text x={P / 2} y={-60} className="part-label">{part.id}</text>
+        <text x={0} y={16} className="part-label">+</text>
+        <text x={P} y={16} className="part-label">−</text>
+        <Leads part={part} />
+      </g>
+    );
   case 'regulator':
     return (
       <g>

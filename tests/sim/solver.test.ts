@@ -242,3 +242,36 @@ test('LDO regulates, drops out and draws quiescent current', () => {
   assert.ok(Math.abs(drop.vout - 2.7) < 0.02, `dropout ${drop.vout}`);
   assert.ok(ldo(0, 1000).vout < 0.02, 'off with no input');
 });
+
+test('PWL vsource: interpolates, lands on corners, holds after the end, repeats', () => {
+  const ramp = new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'ground', id: 'g', node: '0' },
+    { kind: 'vsource', id: 'v', p: 'a', n: '0', volts: 0,
+      pwl: { timesNs: [0, 1000, 3000], volts: [0, 3.3, 1] } },
+    { kind: 'resistor', id: 'r', a: 'a', b: '0', ohms: 1000 }
+  ] });
+  ramp.operatingPoint();
+  assert.equal(ramp.nodeVoltage('a'), 0);
+  ramp.advanceTo(500e-9);
+  assert.ok(Math.abs(ramp.nodeVoltage('a') - 1.65) < 1e-9, String(ramp.nodeVoltage('a')));
+  ramp.advanceTo(1000e-9);
+  assert.ok(Math.abs(ramp.nodeVoltage('a') - 3.3) < 1e-9);
+  ramp.advanceTo(2000e-9);
+  assert.ok(Math.abs(ramp.nodeVoltage('a') - 2.15) < 1e-9, String(ramp.nodeVoltage('a')));
+  ramp.advanceTo(10e-6);
+  assert.ok(Math.abs(ramp.nodeVoltage('a') - 1) < 1e-9);
+
+  // 0/3.3 V square with 2 us period; with a large hMax the steps must still
+  // stop on the edges, so the value just after a rising edge is exact.
+  const sq = new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'ground', id: 'g', node: '0' },
+    { kind: 'vsource', id: 'v', p: 'a', n: '0', volts: 0,
+      pwl: { timesNs: [0, 999, 1000, 1999, 2000], volts: [0, 0, 3.3, 3.3, 0], repeat: true } },
+    { kind: 'resistor', id: 'r', a: 'a', b: '0', ohms: 1000 }
+  ] }, { hMax: 1e-3 });
+  sq.operatingPoint();
+  sq.advanceTo(5500e-9);
+  assert.ok(Math.abs(sq.nodeVoltage('a') - 3.3) < 1e-9, `t=5.5us: ${sq.nodeVoltage('a')}`);
+  sq.advanceTo(6500e-9);
+  assert.ok(Math.abs(sq.nodeVoltage('a')) < 1e-9, `t=6.5us: ${sq.nodeVoltage('a')}`);
+});

@@ -4,6 +4,7 @@
 import type { DeviceSpec } from '../../sim/netlist.ts';
 import { MODELS } from '../../sim/netlist.ts';
 import type { LogicDeviceKind } from '../../sim/buses.ts';
+import { decodeSigc, SIGC_MAX_BYTES, type SigcCapture } from '../instruments/sigc.ts';
 
 export const PITCH = 25.4;
 
@@ -11,7 +12,8 @@ export type PartKind =
   | 'breadboard' | 'resistor' | 'capacitor' | 'led' | 'diode' | 'switch'
   | 'npn' | 'nmos' | 'opamp' | 'regulator' | 'supply' | 'ground'
   | 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
-  | 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe';
+  | 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe'
+  | 'sigc-source';
 
 export type ParamSpec = {
   key: string;
@@ -20,6 +22,8 @@ export type ParamSpec = {
   min: number;
   max: number;
   choices?: { value: string; label: string }[];
+  /** Free text (stored as a string), up to this many characters. */
+  text?: { maxLength: number };
 };
 
 export type Terminal = { id: string; x: number; y: number; label: string };
@@ -57,6 +61,30 @@ function secureElement(kind: PartKind, title: string, pins: string[]): PartDef {
     // About 1 mA active supply current at 3.3 V.
     devices: (id, _p, net) => [{ kind: 'resistor', id: `${id}.iq`, a: net('VCC'), b: net('GND'), ohms: 3300 }]
   };
+}
+
+// Base64 of a SIGC file; decoded captures are cached by their text.
+const SIGC_TEXT_MAX = Math.ceil(SIGC_MAX_BYTES / 3) * 4;
+const sigcCache = new Map<string, SigcCapture | null>();
+
+export function sigcFromParam(text: unknown): SigcCapture | null {
+  if (typeof text !== 'string' || text === '') return null;
+  if (!sigcCache.has(text)) {
+    let capture: SigcCapture | null = null;
+    try {
+      const bin = atob(text);
+      capture = decodeSigc(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+    } catch { capture = null; }
+    if (sigcCache.size > 8) sigcCache.clear();
+    sigcCache.set(text, capture);
+  }
+  return sigcCache.get(text)!;
+}
+
+export function sigcToParam(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
 }
 
 const ADDRESS_CHOICES = [0, 1, 2, 3, 4, 5, 6, 7].map((v) => ({ value: String(v), label: `A2..A0 = ${v}` }));
@@ -228,6 +256,37 @@ export const CATALOG: Record<PartKind, PartDef> = {
   'se-tropic01': secureElement('se-tropic01', 'Secure element TROPIC01 (SPI, Ed25519/X25519)', SPI_HEADER),
   'se-se050': secureElement('se-se050', 'Secure element SE050 (I²C 0x48)', I2C_HEADER),
   'se-stsafe': secureElement('se-stsafe', 'Secure element STSAFE-A120 (I²C 0x20)', I2C_HEADER),
+  // Replays a recorded SIGC trace (for example a scope export or a CLI
+  // capture) as a piecewise-linear voltage between + and −.
+  'sigc-source': {
+    kind: 'sigc-source', title: 'Signal source (SIGC trace replay)',
+    params: [
+      { key: 'sigc', label: 'SIGC capture', unit: '', min: 0, max: 0, text: { maxLength: SIGC_TEXT_MAX } },
+      { key: 'trace', label: 'Trace', unit: '', min: 0, max: 0, text: { maxLength: 31 } },
+      { key: 'repeat', label: 'At the end', unit: '', min: 0, max: 0,
+        choices: [{ value: '0', label: 'hold the last value' }, { value: '1', label: 'repeat' }] }
+    ],
+    defaults: { sigc: '', trace: '', repeat: '0' },
+    terminals: () => [{ id: 'p', x: 0, y: 0, label: '+' }, { id: 'n', x: PITCH, y: 0, label: '−' }],
+    devices: (id, p, net) => {
+      const capture = sigcFromParam(p.sigc);
+      const trace = capture?.traces.find((t) => t.name === p.trace) ?? capture?.traces[0];
+      if (!capture || !trace) return [{ kind: 'vsource', id, p: net('p'), n: net('n'), volts: 0 }];
+      const t0 = capture.timesNs[0];
+      // SIGC allows repeated timestamps; the waveform needs increasing ones.
+      const timesNs: number[] = [];
+      const volts: number[] = [];
+      capture.timesNs.forEach((t, i) => {
+        const rel = t - t0;
+        if (timesNs.length && rel <= timesNs[timesNs.length - 1]) return;
+        timesNs.push(rel);
+        volts.push(trace.samplesMv[i] / 1000);
+      });
+      const repeat = String(p.repeat) === '1' && timesNs.length > 1;
+      return [{ kind: 'vsource', id, p: net('p'), n: net('n'), volts: volts[0],
+        pwl: { timesNs, volts, ...(repeat ? { repeat: true } : {}) } }];
+    }
+  },
   supply: {
     kind: 'supply', title: 'DC supply',
     params: [{ key: 'volts', label: 'Voltage', unit: 'V', min: -50, max: 50,

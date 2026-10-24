@@ -225,6 +225,7 @@ try {
     await shot('05-divider-inspector');
   });
 
+  let exportedSigc = null;
   await check('op-amp example runs and reports its loaded output', async () => {
     await page.getByTestId('examples').selectOption('opamp-gain');
     await page.getByTestId('run').click();
@@ -241,9 +242,28 @@ try {
     const [sigc] = await Promise.all([page.waitForEvent('download'),
       page.getByRole('button', { name: 'Export .sigc' }).click()]);
     const sigcFile = await sigc.path();
+    exportedSigc = sigcFile;
     assert.equal(readFileSync(sigcFile).subarray(0, 4).toString(), 'SIGC');
     await page.getByTestId('sigc-input').setInputFiles(sigcFile);
     await page.waitForFunction(() => /Imported 2 voltage trace/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+  });
+
+  await check('SIGC source part replays an exported scope trace', async () => {
+    assert.ok(exportedSigc, 'needs the op-amp export');
+    await page.getByTestId('place-sigc-source').click();
+    const canvas = await page.getByTestId('bench-canvas').boundingBox();
+    await page.mouse.click(canvas.x + canvas.width * 0.8, canvas.y + 120);
+    await page.waitForSelector('g[data-part="sig1"]');
+    await page.keyboard.press('Escape');
+    await page.locator('g[data-part="sig1"] rect').first().click({ force: true });
+    await page.getByTestId('sigc-source-file').setInputFiles(exportedSigc);
+    await page.getByTestId('sigc-source-info').getByText(/\d+ samples over/).waitFor();
+    await page.locator('.inspector select').first().selectOption('ch2');
+    const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Save' }).click()]);
+    const saved = JSON.parse(readFileSync(await download.path(), 'utf8'));
+    const part = saved.parts.find((x) => x.id === 'sig1');
+    assert.equal(part.params.trace, 'ch2');
+    assert.ok(part.params.sigc.length > 100);
   });
 
   await check('normal scope waits for an RC crossing', async () => {

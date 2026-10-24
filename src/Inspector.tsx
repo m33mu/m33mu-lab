@@ -1,7 +1,8 @@
 // Selection inspector: parameters, solved voltages/currents, pad state, probes.
 
 import { useEffect, useState } from 'react';
-import { CATALOG, formatSi, parseSi } from './project/catalog.ts';
+import { CATALOG, formatSi, parseSi, sigcFromParam, sigcToParam } from './project/catalog.ts';
+import { decodeSigc } from './instruments/sigc.ts';
 import { type Project, type ProbeTarget, type TerminalRef, refKey } from './project/model.ts';
 import { type CompiledCircuit, type PlacedTerminal, partTerminals } from './project/netgraph.ts';
 import type { Selection } from './canvas/BenchCanvas.tsx';
@@ -27,6 +28,7 @@ type Props = {
   mcuPads: Record<string, McuPadInfo>;
   benchActive: boolean;
   onParam(partId: string, key: string, value: number | string): void;
+  onParams(partId: string, values: Record<string, number | string>): void;
   onRotate(): void;
   onDelete(): void;
   onProbe(channel: 0 | 1, target: ProbeTarget | null): void;
@@ -41,6 +43,42 @@ function ParamInput({ value, unit, onCommit }: { value: number; unit: string; on
       onChange={(e) => setText(e.target.value)}
       onBlur={() => { const v = parseSi(text); if (v === null) setBad(true); else onCommit(v); }}
       onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
+  );
+}
+
+/** SIGC source: load a capture file and pick its trace. */
+function SigcSourceParams({ part, onParam, onParams }: { part: Project['parts'][number]; onParam: Props['onParam'];
+  onParams: Props['onParams'] }) {
+  const [error, setError] = useState('');
+  const capture = sigcFromParam(part.params.sigc);
+  const n = capture?.timesNs.length ?? 0;
+  const span = n > 1 ? (capture!.timesNs[n - 1] - capture!.timesNs[0]) * 1e-9 : 0;
+  async function load(file: File) {
+    setError('');
+    try {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const decoded = decodeSigc(bytes);
+      onParams(part.id, { sigc: sigcToParam(bytes), trace: decoded.traces[0].name });
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+  }
+  return (
+    <div className="param">
+      <label>SIGC capture
+        <input type="file" accept=".sigc,application/octet-stream" data-testid="sigc-source-file"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) void load(f); e.target.value = ''; }} />
+      </label>
+      {capture ? (
+        <>
+          <label>Trace
+            <select value={String(part.params.trace)} onChange={(e) => onParam(part.id, 'trace', e.target.value)}>
+              {capture.traces.map((t) => <option key={t.name} value={t.name}>{t.name}</option>)}
+            </select>
+          </label>
+          <p className="muted" data-testid="sigc-source-info">{n} samples over {formatSi(span, 's')}; replayed from bench time 0.</p>
+        </>
+      ) : <p className="muted">No capture loaded: the source outputs 0 V.</p>}
+      {error && <p className="warning">{error}</p>}
+    </div>
   );
 }
 
@@ -118,7 +156,8 @@ export function Inspector(props: Props) {
   return (
     <div className="inspector">
       <h3>{def.title} <span className="muted">{part.id}</span></h3>
-      {def.params.map((spec) => (
+      {part.kind === 'sigc-source' && <SigcSourceParams part={part} onParam={props.onParam} onParams={props.onParams} />}
+      {def.params.filter((spec) => !spec.text).map((spec) => (
         <label key={spec.key} className="param">{spec.label}
           {spec.choices ? (
             <select value={String(part.params[spec.key])} onChange={(e) => props.onParam(part.id, spec.key, e.target.value)}>

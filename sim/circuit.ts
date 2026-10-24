@@ -54,7 +54,41 @@ type Ctx = {
   /** Source scale for DC source stepping. */
   srcScale: number;
   gmin: number;
+  /** Time (s) the solution is for: the end of the step. */
+  t: number;
 };
+
+/** A vsource waveform in seconds, for interpolation and step clamping. */
+type CompiledPwl = { t: Float64Array; v: Float64Array; period: number };
+
+function pwlIndex(w: CompiledPwl, t: number): number {
+  // Last point with time <= t (-1 before the first).
+  let lo = -1;
+  let hi = w.t.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (w.t[mid] <= t) lo = mid; else hi = mid - 1;
+  }
+  return lo;
+}
+
+function pwlValue(w: CompiledPwl, tAbs: number): number {
+  const t = w.period > 0 ? tAbs % w.period : tAbs;
+  const i = pwlIndex(w, t);
+  if (i < 0) return w.v[0];
+  if (i >= w.t.length - 1) return w.v[w.t.length - 1];
+  const f = (t - w.t[i]) / (w.t[i + 1] - w.t[i]);
+  return w.v[i] + (w.v[i + 1] - w.v[i]) * f;
+}
+
+/** Next corner strictly after tAbs, or Infinity. */
+function pwlNextCorner(w: CompiledPwl, tAbs: number, eps: number): number {
+  const base = w.period > 0 ? Math.floor(tAbs / w.period) * w.period : 0;
+  const t = tAbs - base;
+  const i = pwlIndex(w, t + eps) + 1;
+  if (i < w.t.length) return base + w.t[i];
+  return w.period > 0 ? base + w.period + w.t[0] : Infinity;
+}
 
 type Compiled = {
   kind: DeviceSpec['kind'];
@@ -128,6 +162,7 @@ export class Circuit {
   readonly groundNets: Set<string>;
   readonly devices: Compiled[];
   readonly byId: Map<string, Compiled>;
+  private readonly pwl = new Map<Compiled, CompiledPwl>();
   readonly size: number;
   readonly opts: SolverOptions;
   t = 0;
@@ -194,6 +229,14 @@ export class Circuit {
     this.devices = pending.map((p) => ({
       ...p, branch: p.kind === 'vsource' || p.kind === 'inductor' ? nodeCount + branches++ : -1
     }));
+    for (const d of this.devices) {
+      const sp = d.spec;
+      if (sp.kind !== 'vsource' || !sp.pwl) continue;
+      const w: CompiledPwl = { t: Float64Array.from(sp.pwl.timesNs, (x) => x * 1e-9),
+        v: Float64Array.from(sp.pwl.volts), period: 0 };
+      if (sp.pwl.repeat) w.period = w.t[w.t.length - 1];
+      this.pwl.set(d, w);
+    }
     this.size = nodeCount + branches;
     this.byId = new Map(this.devices.map((d) => [d.spec.id, d]));
     this.padByName = new Map();
@@ -547,7 +590,8 @@ export class Circuit {
         const br = d.branch;
         sys.add(n[0], br, 1); sys.add(n[1], br, -1);
         sys.add(br, n[0], 1); sys.add(br, n[1], -1);
-        sys.addRhs(br, s.volts * ctx.srcScale);
+        const w = this.pwl.get(d);
+        sys.addRhs(br, (w ? pwlValue(w, ctx.t) : s.volts) * ctx.srcScale);
         break;
       }
       case 'isource': this.currentFlow(n[1], n[0], s.amps * ctx.srcScale); break;
@@ -693,7 +737,7 @@ export class Circuit {
     const tryDc = (gmin: number, srcScale: number, from: Float64Array | null) => {
       if (from) this.xIter.set(from); else this.xIter.fill(0);
       st.set(this.state);
-      return this.newton({ dc: true, h: 0, method: 'be', srcScale, gmin }, st) >= 0;
+      return this.newton({ dc: true, h: 0, method: 'be', srcScale, gmin, t: this.t }, st) >= 0;
     };
     let ok = tryDc(GMIN, 1, this.x);
     if (!ok) {
@@ -752,7 +796,7 @@ export class Circuit {
   private trial(h: number, method: Method): boolean {
     this.xIter.set(this.x);
     this.stateTrial.set(this.state);
-    const it = this.newton({ dc: false, h, method, srcScale: 1, gmin: GMIN }, this.stateTrial);
+    const it = this.newton({ dc: false, h, method, srcScale: 1, gmin: GMIN, t: this.t + h }, this.stateTrial);
     if (it < 0) return false;
     // Update reactive histories in the trial state.
     const xs = this.xIter;
@@ -855,6 +899,12 @@ export class Circuit {
     while (tEnd - this.t > o.hMin && out.length < maxCrossings && steps < stepBudget) {
       const method: Method = this.stepsSinceBreak < 2 ? 'be' : 'trap';
       let h = Math.min(this.hNext, o.hMax, tEnd - this.t);
+      // Land on waveform corners: a slope change inside a step is an error
+      // the LTE estimate would only see after the fact.
+      for (const w of this.pwl.values()) {
+        const corner = pwlNextCorner(w, this.t, o.hMin);
+        if (corner - this.t < h && corner - this.t > o.hMin) h = corner - this.t;
+      }
       // Avoid leaving a sliver before tEnd.
       if (tEnd - this.t - h < o.hMin * 10) h = tEnd - this.t;
       let ok = this.trial(h, method);

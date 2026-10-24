@@ -5,7 +5,8 @@ import { join } from 'node:path';
 import { emptyProject, parseProject, serializeProject, type Project } from '../../src/project/model.ts';
 import { compileCircuit, hitTerminal, allTerminals, type BoardLayout } from '../../src/project/netgraph.ts';
 import { commit, createHistory, HISTORY_LIMIT, redo, undo } from '../../src/project/history.ts';
-import { PITCH, parseSi, formatSi } from '../../src/project/catalog.ts';
+import { CATALOG, PITCH, parseSi, formatSi, sigcToParam } from '../../src/project/catalog.ts';
+import { encodeSigc } from '../../src/instruments/sigc.ts';
 import { Circuit } from '../../sim/circuit.ts';
 
 const root = process.env.M33MU_WEB_ROOT!;
@@ -191,4 +192,27 @@ test('H563 layout maps every Zio and morpho contact and the user LEDs', () => {
   assert.equal(byId.get('CN11-13')!.electricalEnabled, false); // SWDIO
   assert.equal(byId.get('CN8-15')!.electricalEnabled, false); // VIN
   assert.deepEqual(layout.leds!.map((l) => [l.id, l.pad]), [['LD1', 'PB0'], ['LD2', 'PF4'], ['LD3', 'PG4']]);
+});
+
+test('sigc-source part: SIGC capture param becomes a PWL vsource; project round-trips it', () => {
+  const capture = encodeSigc({ timesNs: [500, 500, 1500, 2500],
+    traces: [{ name: 'a', fullScaleMv: 3300, samplesMv: Int16Array.from([0, 100, 3300, 1650]) },
+      { name: 'b', fullScaleMv: 3300, samplesMv: Int16Array.from([1, 2, 3, 4]) }] });
+  const sigc = sigcToParam(capture);
+  const net = (t: string) => (t === 'p' ? 'x' : 'gnd');
+  const [dev] = CATALOG['sigc-source'].devices('s1', { sigc, trace: 'a', repeat: '1' }, net);
+  assert.equal(dev.kind, 'vsource');
+  if (dev.kind !== 'vsource') return;
+  // Times start at 0; the repeated timestamp keeps its first sample.
+  assert.deepEqual(dev.pwl, { timesNs: [0, 1000, 2000], volts: [0, 3.3, 1.65], repeat: true });
+  const [other] = CATALOG['sigc-source'].devices('s1', { sigc, trace: 'b', repeat: '0' }, net);
+  assert.deepEqual(other.kind === 'vsource' && other.pwl, { timesNs: [0, 1000, 2000], volts: [0.001, 0.003, 0.004] });
+  const [empty] = CATALOG['sigc-source'].devices('s1', { sigc: '', trace: '', repeat: '0' }, net);
+  assert.deepEqual(empty, { kind: 'vsource', id: 's1', p: 'x', n: 'gnd', volts: 0 });
+
+  const p = emptyProject();
+  p.parts.push({ id: 'sig1', kind: 'sigc-source', x: 0, y: 0, rotation: 0, params: { sigc, trace: 'a', repeat: '1' } });
+  const back = parseProject(serializeProject(p));
+  assert.equal(back.parts[0].params.sigc, sigc);
+  assert.throws(() => parseProject(serializeProject({ ...p, parts: [{ ...p.parts[0], params: { sigc: 7, trace: 'a', repeat: '1' } }] })));
 });

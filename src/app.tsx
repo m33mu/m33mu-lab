@@ -32,7 +32,7 @@ type BenchStats = {
 };
 
 const hex = (v: number) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
-const PALETTE: PartKind[] = ['breadboard', 'resistor', 'capacitor', 'led', 'diode', 'switch', 'npn', 'nmos', 'opamp', 'regulator', 'supply', 'ground',
+const PALETTE: PartKind[] = ['breadboard', 'resistor', 'capacitor', 'led', 'diode', 'switch', 'npn', 'nmos', 'opamp', 'regulator', 'supply', 'sigc-source', 'ground',
   'i2c-eeprom', 'i2c-temp', 'spi-flash', 'usb-uart', 'sniffer',
   'se-atecc608', 'se-ta100', 'se-tropic01', 'se-se050', 'se-stsafe'];
 
@@ -291,8 +291,13 @@ export function App() {
   }
 
   function setParam(partId: string, key: string, value: number | string) {
-    edit({ ...project, parts: project.parts.map((p) => p.id === partId ? { ...p, params: { ...p.params, [key]: value } } : p) },
-      `Changed ${partId} ${key}`);
+    setParams(partId, { [key]: value });
+  }
+
+  /** Several parameters of one part in a single edit (one undo step). */
+  function setParams(partId: string, values: Record<string, number | string>) {
+    edit({ ...project, parts: project.parts.map((p) => p.id === partId ? { ...p, params: { ...p.params, ...values } } : p) },
+      `Changed ${partId} ${Object.keys(values).join(', ')}`);
   }
 
   /** Probe into the scope shown in the dock, or the first scope (creating one if needed). */
@@ -696,7 +701,7 @@ export function App() {
         <aside className="side">
           <Inspector project={project} selection={selection} compiled={compiled} terminals={terminalMap}
             observation={observation} mcuPads={mcuPads} benchActive={benchActive}
-            onParam={setParam} onRotate={rotateSelection} onDelete={deleteSelection} onProbe={setProbe} />
+            onParam={setParam} onParams={setParams} onRotate={rotateSelection} onDelete={deleteSelection} onProbe={setProbe} />
           <div className="cpu">
             <h3>CPU {machine && <span className="muted">{formatSi(machine.cpuHz, 'Hz')}</span>}</h3>
             <div className="regs">

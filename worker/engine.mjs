@@ -22,7 +22,8 @@ const MAX_DEVICES = 8;
 const MAX_FIRMWARE_BYTES = 32 * 1024 * 1024;
 const MAX_STEP_BUDGET = 100000;
 const RUN_SLICE = 512;
-const MAX_NETLIST_JSON = 1024 * 1024;
+// A SIGC source carries up to 400,000 waveform points.
+const MAX_NETLIST_JSON = 16 * 1024 * 1024;
 const MAX_PROBES = 32;
 const BENCH_SLICE_MS = 12;
 const BENCH_BATCH_SAMPLES = 4096;
