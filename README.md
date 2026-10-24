@@ -41,6 +41,7 @@ Manual equivalent: `scripts/build-web-app.sh --install && npm run dev`. `M33MU_R
 - `scripts/test-web-bench.sh`, `test-web-worker-wfi.sh`, `test-web-worker-active-exti.sh` — coupled firmware/circuit timing.
 - `scripts/test-web-acceptance-matrix.sh` — CLI vs native session vs Node/WASM vs Chromium worker.
 - `scripts/test-web-browser.sh [screenshot-dir]` — Chromium interaction tests against `dist/`, network blocked.
+- `node scripts/run-project.mjs PROJECT.m33mu.json --ns N --expect-uart REGEX [--expect-stop] [--csv F]` — run a saved project headlessly (CI); exit 0/1/2.
 
 ## License
 
