@@ -1,6 +1,6 @@
 # Web workbench third-party notices
 
-This inventory covers material currently present in `web/`. It is updated when dependencies, solver code, models, or artwork are added.
+This inventory covers material currently present in this repository. It is updated when dependencies, solver code, models, or artwork are added.
 
 | Material | License / provenance | Included here | Notes |
 |---|---|---:|---|

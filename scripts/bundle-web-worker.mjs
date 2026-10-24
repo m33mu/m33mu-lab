@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 
 const repo = fileURLToPath(new URL('..', import.meta.url));
-const require = createRequire(join(repo, 'web', 'package.json'));
+const require = createRequire(join(repo, 'package.json'));
 let esbuild;
 try {
   esbuild = require('esbuild');
@@ -20,7 +20,7 @@ if (!out) {
   process.exit(2);
 }
 await esbuild.build({
-  entryPoints: [join(repo, 'web', 'worker', 'worker.mjs')],
+  entryPoints: [join(repo, 'worker', 'worker.mjs')],
   outfile: join(out, 'worker.mjs'), bundle: true, format: 'esm', target: 'es2022',
   platform: 'neutral', external: ['./m33mu_web_api.js'], logLevel: 'warning',
   legalComments: 'inline'

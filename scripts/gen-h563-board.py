@@ -11,9 +11,9 @@ other feature are illustrative only and carry no electrical identity.
 
 Every Zio (CN7-CN10) and morpho (CN11/CN12) contact carries its UM3115 Rev 3
 Table 21-25 net. Contacts on a non-default solder bridge, debug/clock pins and
-unmodelled nets stay visual-only; web/boards/nucleo-h563zi-pins.json mirrors it.
+unmodelled nets stay visual-only; boards/nucleo-h563zi-pins.json mirrors it.
 
-Usage: scripts/gen-h563-board.py   (writes web/public/boards/{svg,layout}/stm32h563.*)
+Usage: scripts/gen-h563-board.py   (writes public/boards/{svg,layout}/stm32h563.*)
 """
 
 import json
@@ -234,12 +234,12 @@ def layout():
 
 
 def main():
-    base = ROOT / "web" / "public" / "boards"
+    base = ROOT / "public" / "boards"
     (base / "svg" / "stm32h563.svg").write_text(svg(), encoding="utf-8")
     (base / "layout" / "stm32h563.json").write_text(
         json.dumps(layout(), indent=2) + "\n", encoding="utf-8")
     # Reviewed mapping, regenerated from the same tables.
-    pins_path = ROOT / "web" / "boards" / "nucleo-h563zi-pins.json"
+    pins_path = ROOT / "boards" / "nucleo-h563zi-pins.json"
     pins = json.loads(pins_path.read_text(encoding="utf-8"))
     out = []
     for cid, _, rows, x1, y1, measured, _ in CONNECTORS:

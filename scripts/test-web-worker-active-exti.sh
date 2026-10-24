@@ -2,7 +2,9 @@
 set -eu
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-fixture_dir="$repo_root/tests/firmware/test-stm32h563-web-active-exti"
+m33mu_root=${M33MU_ROOT:-"$repo_root/m33mu"}
+m33mu_build=${M33MU_BUILD:-"$m33mu_root/build"}
+fixture_dir="$m33mu_root/tests/firmware/test-stm32h563-web-active-exti"
 arm_cc=${M33MU_ARM_NONE_EABI_GCC:-arm-none-eabi-gcc}
 arm_nm=${M33MU_ARM_NONE_EABI_NM:-arm-none-eabi-nm}
 "${MAKE:-make}" -C "$fixture_dir" CC="$arm_cc" app.elf

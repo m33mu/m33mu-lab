@@ -10,6 +10,8 @@ const ERROR_NAMES = [
   'EVENT_QUEUE_FULL'
 ];
 
+// Must match MM_WEB_ABI_VERSION in m33mu/include/m33mu/web.h.
+const M33MU_WEB_ABI_VERSION = 1;
 const MAX_FIRMWARE_BYTES = 32 * 1024 * 1024;
 const MAX_STEP_BUDGET = 100000;
 const RUN_SLICE = 512;
@@ -65,6 +67,14 @@ export function attachM33muWorker(scope, createModule) {
     moduleInstance = wasm;
     if (!api) {
       const wrap = (name, result, args) => wasm.cwrap(name, result, args);
+      const abiVersion = typeof wasm._mm_web_abi_version === 'function'
+        ? wasm._mm_web_abi_version() : 0;
+      if (abiVersion !== M33MU_WEB_ABI_VERSION) {
+        modulePromise = null;
+        throw Object.assign(new Error(`m33mu WASM ABI version ${abiVersion}, ` +
+          `this workbench needs ${M33MU_WEB_ABI_VERSION}; update the m33mu submodule`),
+          { code: 'ABI_MISMATCH' });
+      }
       api = {
         create: wrap('mm_web_abi_create', 'number', []),
         createCpu: wrap('mm_web_abi_create_cpu', 'number', ['string']),

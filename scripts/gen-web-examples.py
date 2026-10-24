@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Generate the web workbench example projects in web/public/examples/.
+"""Generate the web workbench example projects in public/examples/.
 
 The H563 examples reference firmware ELFs built from
 tests/firmware/test-stm32h563-web-{blink,button} and copied next to them
-(make -C <dir> app.elf; cp app.elf web/public/examples/h563-<name>.elf).
+(make -C <dir> app.elf; cp app.elf public/examples/h563-<name>.elf).
 """
 
 import hashlib
@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "web" / "public" / "examples"
+OUT = ROOT / "public" / "examples"
 LAYOUT = "MB1404 H563ZI-C01"
 
 

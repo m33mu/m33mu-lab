@@ -77,7 +77,7 @@ def main():
         if total != summary.get("contacts"):
             return fail(cpu + " contact count differs from the manifest")
 
-    override_path = os.path.join(os.path.dirname(__file__), "..", "web", "boards", "nucleo-h563zi-pins.json")
+    override_path = os.path.join(os.path.dirname(__file__), "..", "boards", "nucleo-h563zi-pins.json")
     try:
         override = json.load(open(override_path, encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -102,7 +102,7 @@ def main():
         f"{c['connectorId']}-{c['physicalPadNumber']}": c.get("socPad") or c.get("rail")
         for c in override_contacts if c.get("electricalEnabled")
     }
-    public_dir = os.path.join(os.path.dirname(__file__), "..", "web", "public", "boards", "layout")
+    public_dir = os.path.join(os.path.dirname(__file__), "..", "public", "boards", "layout")
     for name in sorted(os.listdir(public_dir)):
         layout = json.load(open(os.path.join(public_dir, name), encoding="utf-8"))
         cpu = layout.get("cpu")

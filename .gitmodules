@@ -1,0 +1,3 @@
+[submodule "m33mu"]
+	path = m33mu
+	url = git@github.com:danielinux/m33mu.git

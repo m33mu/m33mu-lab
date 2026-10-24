@@ -8,7 +8,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_DIR = ROOT / "web" / "project"
+SCHEMA_DIR = ROOT / "project"
 FORMAT_CHECKER = FormatChecker()
 
 
@@ -38,10 +38,10 @@ def main():
     check(project_schema, project_bad, False, "unsupported project CPU")
 
     project_v2_schema = load_schema("project-v2.schema.json")
-    for path in sorted((ROOT / "web" / "public" / "examples").glob("*.m33mu.json")):
+    for path in sorted((ROOT / "public" / "examples").glob("*.m33mu.json")):
         check(project_v2_schema, json.loads(path.read_text(encoding="utf-8")), True,
               f"v2 example {path.name}")
-    v2_bad = json.loads((ROOT / "web" / "public" / "examples" /
+    v2_bad = json.loads((ROOT / "public" / "examples" /
                          "opamp-gain.m33mu.json").read_text(encoding="utf-8"))
     v2_bad["instruments"]["scopes"][0]["trigger"] = {
         "channel": 2, "edge": "up", "level": "1 V"}
@@ -55,7 +55,7 @@ def main():
     check(project_v2_schema, v2_no_trigger, False, "single acquisition without a trigger")
 
     pad_schema = load_schema("board-pad.schema.json")
-    pad = json.loads((ROOT / "web" / "boards" / "nucleo-h563zi-pins.json").read_text(encoding="utf-8"))
+    pad = json.loads((ROOT / "boards" / "nucleo-h563zi-pins.json").read_text(encoding="utf-8"))
     check(pad_schema, pad, True, "H563 pin evidence")
     pad_bad = json.loads(json.dumps(pad))
     pad_bad["contacts"][0]["artworkAnchorVerified"] = False

@@ -298,7 +298,7 @@ try {
   });
 
   await check('UART terminals: pick UARTs, one tab each, echo through USART3', async () => {
-    const echo = join(webRoot, '..', 'tests', 'firmware', 'test-stm32h563-uart-echo', 'app.elf');
+    const echo = join(webRoot, 'm33mu', 'tests', 'firmware', 'test-stm32h563-uart-echo', 'app.elf');
     await page.getByTestId('elf-input').setInputFiles(echo);
     await page.getByTestId('uart-picker').click();
     await page.getByTestId('uart-USART1').check();
@@ -402,7 +402,7 @@ try {
     // The worker switches CPU with the board: an nRF5340 ELF prints its banner on UARTE0.
     page.once('dialog', (d) => d.accept());
     await page.getByTestId('board').selectOption('nrf5340');
-    const nrf = new URL('../../../tests/firmware/test-nrf5340/app.elf', import.meta.url);
+    const nrf = new URL('../../m33mu/tests/firmware/test-nrf5340/app.elf', import.meta.url);
     if (existsSync(nrf)) {
       await page.getByTestId('elf-input').setInputFiles(fileURLToPath(nrf));
       await page.getByTestId('real-time').uncheck();

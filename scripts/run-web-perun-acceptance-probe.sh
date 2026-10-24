@@ -2,6 +2,7 @@
 # Reproduce linear DC and RC acceptance against a pinned external Perun checkout.
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+M33MU_ROOT=${M33MU_ROOT:-"$ROOT/m33mu"}
 PERUN_DIR=${1:?usage: run-web-perun-acceptance-probe.sh /path/to/pinned-Perun-checkout}
 EXPECTED_REV=067d1c9c59e27f72f6498ec224f3735d0da6364a
 ACTUAL_REV=$(git -C "$PERUN_DIR" rev-parse HEAD)

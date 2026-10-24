@@ -49,7 +49,7 @@ const columns = {};
   columns.nodeWasm = { r0: s.registers[0] >>> 0, r1: s.registers[1] >>> 0, r2: s.registers[2] >>> 0,
     r3: s.registers[3] >>> 0, cycles: Number(s.cycleTotal), cpuHz: s.cpuHz };
 }
-// 4. Chromium worker served from web/dist.
+// 4. Chromium worker served from dist.
 const chromiumPath = process.env.M33MU_CHROMIUM ?? '/usr/bin/chromium';
 const require = createRequire(join(dist, '..', 'package.json'));
 let playwright = null;
@@ -93,7 +93,7 @@ if (playwright && existsSync(chromiumPath) && existsSync(join(dist, 'worker', 'w
     server.close();
   }
 } else {
-  columns.chromiumWorker = { skipped: 'playwright-core, Chromium or web/dist worker not available' };
+  columns.chromiumWorker = { skipped: 'playwright-core, Chromium or dist worker not available' };
 }
 
 const reference = columns.cli;

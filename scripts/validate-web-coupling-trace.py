@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-FIXTURE = ROOT / "web/fixtures/solver/perun-firmware-coupling.json"
+FIXTURE = ROOT / "fixtures/solver/perun-firmware-coupling.json"
 
 
 def interpolate(samples, time_ns):
