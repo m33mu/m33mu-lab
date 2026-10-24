@@ -124,6 +124,21 @@ export function PartGlyph({ part, brightness, pressed }: { part: Part; brightnes
       </g>
     );
   }
+  case 'se-atecc608': case 'se-ta100': case 'se-tropic01': case 'se-se050': case 'se-stsafe': {
+    // Module artwork from scripts/gen-part-art.py, 5 pitches tall above the header.
+    const terms = CATALOG[part.kind].terminals(part.params);
+    const w = terms.length * P;
+    return (
+      <g>
+        <image href={`parts/${part.kind}.svg`} x={-P / 2} y={-P * 5.25} width={w} height={P * 5} />
+        <text x={w / 2 - P / 2} y={-P * 5.45} className="part-label">{part.id}</text>
+        {terms.map((t) => (
+          <text key={`l-${t.id}`} x={t.x} y={P * 0.75} className="pin-label">{t.label}</text>
+        ))}
+        <Leads part={part} />
+      </g>
+    );
+  }
   case 'regulator':
     return (
       <g>

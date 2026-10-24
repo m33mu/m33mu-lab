@@ -132,7 +132,12 @@
        "i2c-temp",
        "spi-flash",
        "usb-uart",
-       "sniffer"
+       "sniffer",
+       "se-atecc608",
+       "se-ta100",
+       "se-tropic01",
+       "se-se050",
+       "se-stsafe"
       ]
      },
      "x": {

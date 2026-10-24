@@ -37,9 +37,10 @@ export async function loadWorker(workerPath) {
   /** runUntil target; resolves with all bench payloads of the run. */
   const runBench = async (targetNs) => {
     const start = messages.length;
+    // Done at the target time, or earlier when the firmware stops (BKPT).
     const done = waitEvent((m) => m.event === 'fault' ||
-      (m.event === 'bench' && (m.payload.reachedTarget || m.payload.mcuStopped) && m.payload.solverSteps > 0 &&
-       BigInt(m.payload.timeNs) >= BigInt(targetNs)));
+      (m.event === 'bench' && m.payload.solverSteps > 0 && (m.payload.mcuStopped ||
+       (m.payload.reachedTarget && BigInt(m.payload.timeNs) >= BigInt(targetNs)))));
     const r = await request('runUntil', { targetNs: String(targetNs) });
     if (!r.ok) throw new Error(`runUntil failed: ${JSON.stringify(r.error)}`);
     const last = await done;

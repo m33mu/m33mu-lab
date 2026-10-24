@@ -10,7 +10,8 @@ export const PITCH = 25.4;
 export type PartKind =
   | 'breadboard' | 'resistor' | 'capacitor' | 'led' | 'diode' | 'switch'
   | 'npn' | 'nmos' | 'opamp' | 'regulator' | 'supply' | 'ground'
-  | 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer';
+  | 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
+  | 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe';
 
 export type ParamSpec = {
   key: string;
@@ -44,6 +45,18 @@ function header(names: string[]): Terminal[] {
 /** Supply draw of a powered module (about 33 uA at 3.3 V). */
 function moduleLoad(id: string, net: (t: string) => string): DeviceSpec[] {
   return [{ kind: 'resistor', id: `${id}.iq`, a: net('VCC'), b: net('GND'), ohms: 100e3 }];
+}
+
+const SPI_HEADER = ['VCC', 'GND', 'CS', 'SCK', 'MOSI', 'MISO'];
+const I2C_HEADER = ['VCC', 'GND', 'SCL', 'SDA'];
+
+function secureElement(kind: PartKind, title: string, pins: string[]): PartDef {
+  return {
+    kind, title, logic: kind as LogicDeviceKind, params: [], defaults: {},
+    terminals: () => header(pins),
+    // About 1 mA active supply current at 3.3 V.
+    devices: (id, _p, net) => [{ kind: 'resistor', id: `${id}.iq`, a: net('VCC'), b: net('GND'), ohms: 3300 }]
+  };
 }
 
 const ADDRESS_CHOICES = [0, 1, 2, 3, 4, 5, 6, 7].map((v) => ({ value: String(v), label: `A2..A0 = ${v}` }));
@@ -208,6 +221,13 @@ export const CATALOG: Record<PartKind, PartDef> = {
     terminals: () => header(['CH1', 'CH2', 'CH3', 'CH4', 'GND']),
     devices: () => []
   },
+  // Secure elements: the protocol is m33mu's own device model (see
+  // sim/buses.ts SECURE_ELEMENTS); the bench checks power and wiring.
+  'se-atecc608': secureElement('se-atecc608', 'Secure element ATECC608A (SPI, P-256)', SPI_HEADER),
+  'se-ta100': secureElement('se-ta100', 'Trust anchor TA100 (SPI)', SPI_HEADER),
+  'se-tropic01': secureElement('se-tropic01', 'Secure element TROPIC01 (SPI, Ed25519/X25519)', SPI_HEADER),
+  'se-se050': secureElement('se-se050', 'Secure element SE050 (I²C 0x48)', I2C_HEADER),
+  'se-stsafe': secureElement('se-stsafe', 'Secure element STSAFE-A120 (I²C 0x20)', I2C_HEADER),
   supply: {
     kind: 'supply', title: 'DC supply',
     params: [{ key: 'volts', label: 'Voltage', unit: 'V', min: -50, max: 50,

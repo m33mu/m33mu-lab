@@ -129,7 +129,8 @@ export function newId(prefix: string): string {
 export function nextPartId(project: Project, kind: PartKind): string {
   const prefix = { breadboard: 'bb', resistor: 'r', capacitor: 'c', led: 'led', diode: 'd', switch: 'sw',
     npn: 'q', nmos: 'm', opamp: 'u', regulator: 'ldo', 'i2c-eeprom': 'eeprom', 'i2c-temp': 'temp', 'spi-flash': 'flash',
-    'usb-uart': 'uart', sniffer: 'sniff', supply: 'v', ground: 'gnd' }[kind];
+    'usb-uart': 'uart', sniffer: 'sniff', supply: 'v', ground: 'gnd',
+    'se-atecc608': 'se', 'se-ta100': 'se', 'se-tropic01': 'se', 'se-se050': 'se', 'se-stsafe': 'se' }[kind];
   const used = new Set(project.parts.map((p) => p.id));
   for (let i = 1; ; i++) if (!used.has(`${prefix}${i}`)) return `${prefix}${i}`;
 }

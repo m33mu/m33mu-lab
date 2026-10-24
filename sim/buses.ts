@@ -8,7 +8,65 @@
 // connected. Line levels come from the analog circuit, so a missing pull-up
 // or a line held low shows up as the fault a real bus would give.
 
-export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer';
+export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
+  | SecureElementKind;
+
+/** Secure elements simulated by m33mu itself (src/m33mu/*.c and the Rust
+ * crates in third_party/wolfssl-simulators): this layer checks their wiring
+ * and the emulator's model answers the protocol. */
+export type SecureElementKind = 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe';
+
+export const SECURE_ELEMENTS: Record<SecureElementKind, {
+  /** m33mu device name, as in its --<name>:<bus> option. */
+  m33mu: string; bus: 'spi' | 'i2c'; address?: number;
+  /** worker feature the WASM build must have (see the features operation). */
+  feature: 'ta100' | 'rustSecureElements';
+}> = {
+  'se-atecc608': { m33mu: 'atecc608', bus: 'spi', feature: 'rustSecureElements' },
+  'se-ta100': { m33mu: 'ta100', bus: 'spi', feature: 'ta100' },
+  'se-tropic01': { m33mu: 'tropic01', bus: 'spi', feature: 'rustSecureElements' },
+  'se-se050': { m33mu: 'se050', bus: 'i2c', address: 0x48, feature: 'rustSecureElements' },
+  'se-stsafe': { m33mu: 'stsafe', bus: 'i2c', address: 0x20, feature: 'rustSecureElements' }
+};
+
+export function isSecureElement(kind: string): kind is SecureElementKind {
+  return kind in SECURE_ELEMENTS;
+}
+
+/** The m33mu device spec ("se050:I2C1:addr=48", "atecc608:SPI1:cs=PA4")
+ * for each wired secure element, from the header pads its bus lines reach.
+ * Parts whose lines do not reach one peripheral get an error instead. */
+export function secureElementSpecs(logic: LogicNetlist): { id: string; kind: SecureElementKind; spec?: string; error?: string }[] {
+  const padsOn = (net: string | undefined) =>
+    net ? Object.entries(logic.pins).filter(([, n]) => n === net).map(([pad]) => pad) : [];
+  const busOf = (net: string | undefined, signal: string) => {
+    for (const pad of padsOn(net)) {
+      for (const name of Object.values(H563_AF[pad] ?? {})) {
+        const m = new RegExp(`^(SPI|I2C)(\\d+)_${signal}$`).exec(name);
+        if (m) return `${m[1]}${m[2]}`;
+      }
+    }
+    return null;
+  };
+  const out: { id: string; kind: SecureElementKind; spec?: string; error?: string }[] = [];
+  for (const d of logic.devices) {
+    if (!isSecureElement(d.kind)) continue;
+    const se = SECURE_ELEMENTS[d.kind];
+    if (se.bus === 'i2c') {
+      const scl = busOf(d.nets.SCL, 'SCL');
+      const sda = busOf(d.nets.SDA, 'SDA');
+      if (!scl || scl !== sda) { out.push({ id: d.id, kind: d.kind, error: 'SCL and SDA must reach one I²C peripheral' }); continue; }
+      out.push({ id: d.id, kind: d.kind, spec: `${se.m33mu}:${scl}:addr=${se.address!.toString(16)}` });
+    } else {
+      const sck = busOf(d.nets.SCK, 'SCK');
+      const cs = padsOn(d.nets.CS)[0];
+      if (!sck) { out.push({ id: d.id, kind: d.kind, error: 'SCK must reach an SPI peripheral pin' }); continue; }
+      if (!cs) { out.push({ id: d.id, kind: d.kind, error: 'CS must be wired to a GPIO pin' }); continue; }
+      out.push({ id: d.id, kind: d.kind, spec: `${se.m33mu}:${sck}:cs=${cs}` });
+    }
+  }
+  return out;
+}
 
 /** A device part as compiled from the project: terminal name -> net name. */
 export type LogicDeviceSpec = {
@@ -47,6 +105,7 @@ export type BusRecord = {
 export const H563_AF: Record<string, Record<number, string>> = {
   PA5: { 5: 'SPI1_SCK' },
   PA6: { 5: 'SPI1_MISO' },
+  PA7: { 5: 'SPI1_MOSI' },
   PB5: { 5: 'SPI1_MOSI' },
   PG9: { 5: 'SPI1_MISO' },
   PD7: { 5: 'SPI1_MOSI', 7: 'USART2_CK' },
@@ -54,6 +113,8 @@ export const H563_AF: Record<string, Record<number, string>> = {
   PB7: { 4: 'I2C1_SDA', 7: 'USART1_RX', 8: 'LPUART1_RX' },
   PB8: { 4: 'I2C1_SCL' },
   PB9: { 4: 'I2C1_SDA' },
+  PB10: { 4: 'I2C2_SCL' },
+  PB11: { 4: 'I2C2_SDA' },
   PD5: { 7: 'USART2_TX' },
   PD6: { 7: 'USART2_RX' },
   PF0: { 4: 'I2C2_SDA' },
@@ -214,7 +275,12 @@ type Device = {
   i2c?: I2cTarget;
   spi?: SpiTarget;
   selected?: boolean;
+  /** Answered by the emulator's secure-element model, if attached there. */
+  external?: { attached: boolean; note: string };
 };
+
+/** Placeholder target for a secure element: bytes reach the emulator. */
+const EXTERNAL_TARGET: SpiTarget = { select() {}, exchange() { return 0xff; }, deselect() {} };
 
 export class BusLayer {
   readonly netlist: LogicNetlist;
@@ -228,7 +294,9 @@ export class BusLayer {
   private padNet = new Map<string, string>();
   private busyState = new Map<number, boolean>();
 
-  constructor(netlist: LogicNetlist, lines: LineView) {
+  /** `attached` maps secure-element part ids to the emulator's verdict:
+   * null when it was attached, else why not. */
+  constructor(netlist: LogicNetlist, lines: LineView, attached: Record<string, string | null> = {}) {
     this.netlist = netlist;
     this.lines = lines;
     for (const [pad, net] of Object.entries(netlist.pins)) this.padNet.set(pad, net);
@@ -239,6 +307,13 @@ export class BusLayer {
       if (spec.kind === 'i2c-temp') d.i2c = new Tmp102(0x48 | (addrPins & 3), Number(spec.params.celsius ?? 25));
       if (spec.kind === 'spi-flash') d.spi = new SpiFlash();
       if (spec.kind === 'usb-uart') this.adapterRx.set(spec.id, []);
+      if (isSecureElement(spec.kind)) {
+        const se = SECURE_ELEMENTS[spec.kind];
+        const why = spec.id in attached ? attached[spec.id] : 'not attached to the emulator';
+        d.external = { attached: why === null, note: why ?? `${se.m33mu} model` };
+        if (se.bus === 'i2c') d.i2c = { address: se.address!, write() {}, read: (n) => new Uint8Array(n).fill(0xff) };
+        else d.spi = EXTERNAL_TARGET;
+      }
       return d;
     });
   }
@@ -327,6 +402,17 @@ export class BusLayer {
       this.record({ bus: name, nets, ok: false, summary: `${what}: NACK${note}` });
       return 1;
     }
+    const external = responders.find((d) => d.external);
+    if (external) {
+      if (!external.external!.attached) {
+        this.record({ bus: name, nets, ok: false, summary: `${what}: NACK (${external.spec.id}: ${external.external!.note})` });
+        return 1;
+      }
+      // The emulator's model answers; reads are filled in after this returns.
+      this.record({ bus: name, nets, ok: true,
+        summary: `${what} ${read ? `${data.length} B` : `[${bytes(data)}]`} → ${external.spec.id} (${external.external!.note})${note}` });
+      return -1;
+    }
     if (read) {
       // Open-drain: several targets reading back AND their bits together.
       data.fill(0xff);
@@ -377,6 +463,12 @@ export class BusLayer {
         nets: [sck.net, mosi?.net, miso?.net, ...selected.map((d) => d.spec.nets.CS)].filter((n): n is string => !!n) };
       this.spiBytes.set(bus, t);
     }
+    const ext = selected.length === 1 ? selected[0].external : undefined;
+    if (ext && ext.attached && mosi?.net === selected[0].spec.nets.MOSI && miso?.net === selected[0].spec.nets.MISO) {
+      // Fully wired secure element: the emulator's model clocks this byte.
+      t.out.push(out);
+      return -1;
+    }
     let result = 0xff;
     const answers: number[] = [];
     for (const d of selected) {
@@ -398,6 +490,14 @@ export class BusLayer {
     const t = this.spiBytes.get(bus);
     this.spiBytes.delete(bus);
     if (!t) return;
+    const one = t.selected.length === 1 ? this.devices.find((d) => d.spec.id === t.selected[0]) : undefined;
+    if (one?.external) {
+      const handed = t.in.length < t.out.length;
+      this.record({ bus: `SPI${bus}`, nets: t.nets, ok: handed,
+        summary: `SPI${bus} → ${one.spec.id}: MOSI [${bytes(t.out)}]` +
+          (handed ? ` (${one.external.note})` : ` MISO [${bytes(t.in)}] — ${one.external.attached ? 'MOSI or MISO not wired' : one.external.note}`) });
+      return;
+    }
     const who = t.selected.length === 0 ? 'no device selected' : t.selected.length > 1 ?
       `${t.selected.join(' + ')} selected together (bus contention)` : t.selected[0];
     this.record({ bus: `SPI${bus}`, nets: t.nets, ok: t.selected.length === 1,

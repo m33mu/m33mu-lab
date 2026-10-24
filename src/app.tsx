@@ -2,6 +2,7 @@ import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } f
 import { BenchCanvas, type Selection, type Tool } from './canvas/BenchCanvas.tsx';
 import { Inspector, type McuPadInfo, type Observation } from './Inspector.tsx';
 import { DiagnosticsPanel } from './DiagnosticsPanel.tsx';
+import { isSecureElement, SECURE_ELEMENTS } from '../sim/buses.ts';
 import { appendDiagnostic, type DiagnosticEntry, type DiagnosticSeverity, type DiagnosticSource } from './diagnostics.ts';
 import { ScopeInstrument, type ScopeSink } from './instruments/ScopeInstrument.tsx';
 import { appendTerminal, Terminal, type UartInfo } from './instruments/Terminal.tsx';
@@ -30,7 +31,8 @@ type BenchStats = {
 
 const hex = (v: number) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
 const PALETTE: PartKind[] = ['breadboard', 'resistor', 'capacitor', 'led', 'diode', 'switch', 'npn', 'nmos', 'opamp', 'regulator', 'supply', 'ground',
-  'i2c-eeprom', 'i2c-temp', 'spi-flash', 'usb-uart', 'sniffer'];
+  'i2c-eeprom', 'i2c-temp', 'spi-flash', 'usb-uart', 'sniffer',
+  'se-atecc608', 'se-ta100', 'se-tropic01', 'se-se050', 'se-stsafe'];
 
 async function sha256(bytes: Uint8Array): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', bytes as BufferSource);
@@ -210,6 +212,12 @@ export function App() {
       if (p.mcuStopped) setRunState('stopped');
       else if (p.reachedTarget && p.timeNs !== '0' && p.requestId) setRunState('paused');
     }
+  }, []);
+
+  // What the WASM build carries (crypto models, secure elements).
+  const [features, setFeatures] = useState<{ wolfcrypt: boolean; ta100: boolean; rustSecureElements: boolean } | null>(null);
+  useEffect(() => {
+    worker().request('features').then(setFeatures).catch(() => setFeatures(null));
   }, []);
 
   function worker(): WorkerClient {
@@ -392,8 +400,14 @@ export function App() {
     const { probes, columns } = probesFor(project);
     scopeColumns.current = columns;
     setBusLog([]);
-    await worker().request('createBench', { netlist: compiled.netlist, probes, logic: compiled.logic,
+    const created = await worker().request('createBench', { netlist: compiled.netlist, probes, logic: compiled.logic,
       options: { lookaheadNs: project.solver.lookaheadNs, sampleNs: project.solver.sampleNs, initial } });
+    const secureElements = (created.secureElements ?? []) as { id: string; spec: string | null; error: string | null }[];
+    for (const se of secureElements) {
+      if (se.error) recordDiagnostic('capability', 'warning', 'SECURE_ELEMENT', `${se.id}: ${se.error}; it stays silent on the bus.`);
+    }
+    const live = secureElements.filter((se) => !se.error);
+    if (live.length) setMessage(`Secure elements live: ${live.map((se) => `${se.id} = ${se.spec}`).join(', ')}.`);
     resetScopes();
     setBenchActive(true);
     setBenchStale(false);
@@ -611,10 +625,16 @@ export function App() {
             <button onClick={() => setHistory(redo)} disabled={!history.future.length}>Redo</button>
           </div>
           <h2>Parts</h2>
-          {PALETTE.map((k) => (
-            <button key={k} className={tool.kind === 'place' && tool.part === k ? 'part-button active' : 'part-button'}
-              onClick={() => setTool({ kind: 'place', part: k })} data-testid={`place-${k}`}>{CATALOG[k].title}</button>
-          ))}
+          {PALETTE.map((k) => {
+            const se = isSecureElement(k) ? SECURE_ELEMENTS[k] : null;
+            const missing = se !== null && features !== null && !features[se.feature];
+            return (
+              <button key={k} className={tool.kind === 'place' && tool.part === k ? 'part-button active' : 'part-button'}
+                onClick={() => setTool({ kind: 'place', part: k })} data-testid={`place-${k}`}
+                title={missing ? 'This WASM build has no model for it: it will stay silent on the bus' : undefined}>
+                {CATALOG[k].title}{missing ? ' — not in this build' : ''}</button>
+            );
+          })}
           <h2>Capabilities</h2>
           <ul className="caps">
             <li className="on">Firmware execution ({cpu}, ELF){cpu === 'imxrt700' ? ' — boots from a BIN/FCB image in the CLI only' : ''}</li>
@@ -629,6 +649,10 @@ export function App() {
             {(layout?.leds?.length ?? 0) > 0 && <li className="on">On-board LEDs lit from {layout!.leds!.map((l) => l.pad).join('/')}</li>}
             <li className="on">TIM2–TIM5 output compare and PWM on their AF pins</li>
             <li className="on">UART terminals; logic-level I²C/SPI/UART devices</li>
+            <li className={features?.wolfcrypt ? 'on' : undefined}>On-chip crypto engines (HASH/AES/PKA/RNG, CASPER/HASHCRYPT, CryptoCell){features?.wolfcrypt ? '' : ': not in this WASM build'}</li>
+            <li className={features?.rustSecureElements || features?.ta100 ? 'on' : undefined}>Secure elements: {[
+              features?.rustSecureElements ? 'ATECC608A, SE050, STSAFE-A120, TROPIC01' : '', features?.ta100 ? 'TA100' : ''
+            ].filter(Boolean).join(', ') || 'not in this WASM build'}</li>
             <li>Solder-bridge, SWD, clock and unmodelled-net contacts: visual only</li>
             <li>ADC, DAC, TIM1/TIM8 and center-aligned PWM: not modelled</li>
           </ul>

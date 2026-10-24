@@ -1,6 +1,7 @@
 import { Circuit, SolverError } from '../sim/circuit.ts';
 import { Bench } from '../sim/bench.ts';
 import { validateNetlist } from '../sim/netlist.ts';
+import { secureElementSpecs } from '../sim/buses.ts';
 import { createMcuPort } from './mcu-port.mjs';
 
 const ERROR_NAMES = [
@@ -588,14 +589,30 @@ export function attachM33muWorker(scope, createModule) {
         const circuit = new Circuit(payload.netlist, solver);
         bench = new Bench(circuit, port, probes, options);
         if (benchFault) { const f = benchFault; bench = null; throw f; }
+        // Secure elements on the bench run as the emulator's own models.
+        const secureElements = [];
+        if (port) {
+          api.detachDevices(session);
+          for (const se of payload.logic ? secureElementSpecs(payload.logic) : []) {
+            let error = se.error ?? null;
+            if (!error) {
+              const status = api.attachDevice(session, se.spec);
+              if (status !== 0) {
+                error = status === 2 ? 'not in this WASM build' : `rejected (${ERROR_NAMES[status] || status})`;
+              }
+            }
+            secureElements.push({ id: se.id, spec: se.spec ?? null, error });
+          }
+        }
         if (port && payload.logic) {
-          bench.attachBuses(payload.logic);
+          bench.attachBuses(payload.logic,
+            Object.fromEntries(secureElements.map((se) => [se.id, se.error])));
           installBusHost(true);
         } else if (port) {
           installBusHost(false);
         }
         postResponse(requestId, {
-          created: true, nets: circuit.netNames, pads, probes: probes.map((p) => p.id),
+          created: true, nets: circuit.netNames, pads, probes: probes.map((p) => p.id), secureElements,
           timeNs: Math.round(bench.timeNs).toString()
         });
         benchFlush(requestId, { timeNs: Math.round(bench.timeNs).toString(), reachedTarget: true,

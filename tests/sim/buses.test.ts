@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BusLayer, Eeprom24c02, SpiFlash, Tmp102, type LineView } from '../../sim/buses.ts';
+import { BusLayer, Eeprom24c02, SpiFlash, Tmp102, secureElementSpecs, type LineView } from '../../sim/buses.ts';
 
 test('24C02 page writes wrap within 8 bytes and reads auto-increment', () => {
   const e = new Eeprom24c02(0x50);
@@ -47,4 +47,36 @@ test('two I2C targets at one address: open-drain read is the AND, clash reported
   assert.equal(data[0], 0x30);
   assert.ok(bus.takeLog().some((r) => /address clash/.test(r.summary)));
   assert.equal(bus.i2c(2, 0x50, true, data), -1, 'I2C2 not routed to a header pin');
+});
+
+test('secure elements: specs from wiring, hand-off only when wired and attached', () => {
+  const power = { VCC: 'V', GND: 'G' };
+  const logic = {
+    pins: { PA4: 'PA4', PA5: 'PA5', PA6: 'PA6', PA7: 'PA7', PB8: 'PB8', PB9: 'PB9', PB10: 'PB10', PF0: 'PF0' },
+    devices: [
+      { id: 'se1', kind: 'se-atecc608' as const, nets: { ...power, CS: 'PA4', SCK: 'PA5', MISO: 'PA6', MOSI: 'PA7' }, params: {} },
+      { id: 'se2', kind: 'se-se050' as const, nets: { ...power, SCL: 'PB8', SDA: 'PB9' }, params: {} },
+      // SCL on I2C2, SDA on I2C1: no single peripheral.
+      { id: 'se3', kind: 'se-stsafe' as const, nets: { ...power, SCL: 'PB10', SDA: 'PB9' }, params: {} },
+      { id: 'se4', kind: 'se-tropic01' as const, nets: { ...power, SCK: 'PA5', MISO: 'PA6', MOSI: 'PA7' }, params: {} }
+    ]
+  };
+  assert.deepEqual(secureElementSpecs(logic).map((s) => s.spec ?? s.error), [
+    'atecc608:SPI1:cs=PA4', 'se050:I2C1:addr=48',
+    'SCL and SDA must reach one I²C peripheral', 'CS must be wired to a GPIO pin']);
+
+  const af: Record<string, { mode: number; af: number }> = {
+    PA5: { mode: 2, af: 5 }, PA6: { mode: 2, af: 5 }, PA7: { mode: 2, af: 5 },
+    PB8: { mode: 2, af: 4 }, PB9: { mode: 2, af: 4 } };
+  const lines: LineView = {
+    level: (n) => (n === 'PA4' ? 0 : 1), volts: (n) => (n === 'V' ? 3.3 : 0),
+    padConfig: (p) => af[p] ?? null, nowNs: () => 0
+  };
+  const bus = new BusLayer(logic, lines, { se1: null, se2: 'not in this WASM build' });
+  assert.equal(bus.spi(1, 0x03), -1, 'wired, selected and attached: the emulator answers');
+  bus.spiEnd(1);
+  assert.equal(bus.i2c(1, 0x48, false, Uint8Array.from([1])), 1, 'unattached model NACKs');
+  const log = bus.takeLog().map((r) => r.summary);
+  assert.ok(log.some((s) => /SPI1 → se1: MOSI \[03\] \(atecc608 model\)/.test(s)), log.join('\n'));
+  assert.ok(log.some((s) => /0x48 W: NACK \(se2: not in this WASM build\)/.test(s)), log.join('\n'));
 });

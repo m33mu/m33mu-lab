@@ -356,7 +356,7 @@ export class Bench {
   }
 
   /** Attach the logic-level bus layer for this circuit. */
-  attachBuses(logic: LogicNetlist): BusLayer {
+  attachBuses(logic: LogicNetlist, attached: Record<string, string | null> = {}): BusLayer {
     const c = this.circuit;
     const lines: LineView = {
       level: (net) => {
@@ -367,7 +367,7 @@ export class Bench {
       padConfig: (pad) => this.padConfigs.get(pad) ?? null,
       nowNs: () => this.timeNs
     };
-    this.bus = new BusLayer(logic, lines);
+    this.bus = new BusLayer(logic, lines, attached);
     return this.bus;
   }
 

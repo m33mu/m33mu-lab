@@ -370,6 +370,30 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  if (process.env.M33MU_WASM_RUST_SE === 'ON') {
+    await check('secure elements example: m33mu models answer on SPI1/I2C1/I2C2, removing one fails the suite', async () => {
+      await page.getByTestId('examples').selectOption('h563-secure-elements');
+      await page.waitForFunction(() => /secure elements/i.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+      await page.getByTestId('real-time').uncheck();
+      await page.getByTestId('run').click();
+      await page.getByTestId('tab-USART3').click();
+      const vcp = page.getByTestId('terminal-USART3').locator('pre');
+      await vcp.getByText(/\[PASS\] All secure element tests passed/).waitFor({ timeout: 90000 });
+      await shot('10-secure-elements');
+      // Unplug the STSAFE (its wires go with it), reset the MCU and run again.
+      await page.locator('g[data-part="se3"] image').click({ force: true });
+      await page.keyboard.press('Delete');
+      await page.getByRole('button', { name: 'Reset' }).click();
+      await page.getByTestId('run').click();
+      await page.getByTestId('tab-USART3').click();
+      await vcp.getByText(/\[FAIL\] Test failed/).waitFor({ timeout: 90000 });
+      await page.getByRole('button', { name: 'Pause' }).click().catch(() => {});
+      await page.getByTestId('real-time').check();
+    });
+  } else {
+    console.log('skip - secure elements example (build without M33MU_WASM_RUST_SE=ON)');
+  }
+
   await check('PWM example: LD1 breathes, D9 RC filter settles', async () => {
     await page.getByTestId('examples').selectOption('h563-pwm');
     await page.waitForFunction(() => /timer PWM/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));

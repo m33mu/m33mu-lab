@@ -198,6 +198,41 @@ EXAMPLES.append(("h563-bus", project(
     "Firmware talks to a 24C02 EEPROM and a TMP102 on I2C1, reads a W25Q flash JEDEC ID on SPI1 and sends 'ping' to a USB-UART adapter on USART2; results print on USART3. Remove a pull-up or an SDA wire to see BUSY or NACK."))
 
 
+# Secure elements: m33mu's ATECC608A (SPI1, CS PD14), SE050 (I2C1) and
+# STSAFE-A120 (I2C2 on PF1/PF0) models, driven by the secure element suite
+# built for the header pins (m33mu tests/firmware/test-stm32h563-web-se).
+se_parts = [
+    part("se1", "se-atecc608", 900, 300),
+    part("se2", "se-se050", 900, 560),
+    part("se3", "se-stsafe", 900, 820),
+    part("r1", "resistor", 760, 100, 90, ohms=4700),
+    part("r2", "resistor", 800, 100, 90, ohms=4700),
+    part("r3", "resistor", 840, 100, 90, ohms=4700),
+    part("r4", "resistor", 880, 100, 90, ohms=4700),
+]
+bus_wires = []
+n = 0
+for mod in ("se1", "se2", "se3"):
+    add(("CN8-7", mod, "VCC"), RED)
+    add(("CN8-11", mod, "GND"), BLK)
+add(("CN7-16", "se1", "CS"), WHT)
+add(("CN7-10", "se1", "SCK"), ORG)
+add(("CN7-14", "se1", "MOSI"), BLU)
+add(("CN9-1", "se1", "MISO"), PUR)
+add(("CN7-2", "se2", "SCL"), YEL)
+add(("CN7-4", "se2", "SDA"), GRN)
+add(("CN9-19", "se3", "SCL"), YEL)
+add(("CN9-21", "se3", "SDA"), GRN)
+for r, contact in (("r1", "CN7-2"), ("r2", "CN7-4"), ("r3", "CN9-19"), ("r4", "CN9-21")):
+    add(None, pt(r, "a"), board("CN8-7"), RED)
+    add(None, pt(r, "b"), board(contact), YEL if contact in ("CN7-2", "CN9-19") else GRN)
+EXAMPLES.append(("h563-secure-elements", project(
+    "example-h563-secure-elements", "H563 secure elements (ATECC608A, SE050, STSAFE-A120)", se_parts, bus_wires,
+    [{"kind": "voltage", "at": board("CN7-2")}, {"kind": "voltage", "at": board("CN7-16")}],
+    2_000_000, firmware="h563-secure-elements.elf", sample_ns=1_000, lookahead_ns=50_000),
+    "The secure element suite asks an ATECC608A on SPI1 for its revision and random bytes, resets an SE050 on I2C1 and runs Echo and GenerateRandom on an STSAFE-A120 on I2C2; m33mu's own device models answer. Results print on USART3. Unplug a module's VCC to see it NACK."))
+
+
 def main():
     index = []
     for name, proj, description in EXAMPLES:
