@@ -13,6 +13,10 @@ export type LayoutContact = {
   x: number;
   y: number;
   signal: string | null;
+  /** Board net name (H563: AGND, IOREF; the electrical identity is `signal`). */
+  net?: string | null;
+  /** Electrical identity when the label differs from it (Pico GP5 -> GPIO5). */
+  socPad?: string | null;
   mapping_verified: boolean;
   electricalEnabled?: boolean;
 };
@@ -80,7 +84,7 @@ export function boardTerminals(project: Project, layouts: Map<string, BoardLayou
         const id = contactId(conn.id, c);
         const ref: TerminalRef = { kind: 'board', board: b.id, contact: id };
         out.push({ key: refKey(ref), ref, x: b.x + c.x, y: b.y + c.y, label: c.signal ? `${id} (${c.signal})` : id,
-          socPad: c.electricalEnabled ? c.signal : null, enabled: c.electricalEnabled === true });
+          socPad: c.electricalEnabled ? (c.socPad ?? c.signal) : null, enabled: c.electricalEnabled === true });
       }
     }
   }

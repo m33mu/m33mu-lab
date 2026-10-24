@@ -102,6 +102,22 @@ def main():
         f"{c['connectorId']}-{c['physicalPadNumber']}": c.get("socPad") or c.get("rail")
         for c in override_contacts if c.get("electricalEnabled")
     }
+    # Pico 2: enabled contacts must be exactly the datasheet-reviewed ones,
+    # with the same nets (boards/pico2-pins.json, scripts/gen-pico2-board.py).
+    pico_path = os.path.join(os.path.dirname(__file__), "..", "boards", "pico2-pins.json")
+    try:
+        pico = json.load(open(pico_path, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return fail("cannot read Pico 2 pin mapping: " + str(exc))
+    if pico.get("cpu") != "rp2350" or not pico.get("sources"):
+        return fail("Pico 2 pin mapping must name rp2350 and cite its sources")
+    enabled_pico = {}
+    for c in pico.get("contacts", []):
+        if c.get("electricalEnabled"):
+            if not c.get("signalMappingVerified") or not c.get("net"):
+                return fail("Pico 2 contact enabled without a verified signal and net")
+            enabled_pico[f"{c['connectorId']}-{c['physicalPadNumber']}"] = c["net"]
+
     public_dir = os.path.join(os.path.dirname(__file__), "..", "public", "boards", "layout")
     for name in sorted(os.listdir(public_dir)):
         layout = json.load(open(os.path.join(public_dir, name), encoding="utf-8"))
@@ -117,7 +133,7 @@ def main():
                 ids.add(cid)
                 points.append((contact["x"], contact["y"], cid))
                 if contact.get("electricalEnabled"):
-                    enabled[cid] = contact.get("signal")
+                    enabled[cid] = contact.get("socPad") or contact.get("signal")
         if cpu == "stm32h563":
             if enabled != enabled_override:
                 return fail(f"H563 layout enables {enabled} but the reviewed mapping enables {enabled_override}")
@@ -131,11 +147,15 @@ def main():
                         break
                     if math.hypot(x2 - x, y2 - y) < min_gap:
                         return fail(f"H563 contacts {cid} and {cid2} are closer than the hit-test radius allows")
+        elif cpu == "rp2350":
+            if enabled != enabled_pico:
+                return fail(f"Pico 2 layout enables {enabled} but the reviewed mapping enables {enabled_pico}")
         elif enabled:
             return fail(f"{cpu} enables contacts without a reviewed mapping")
 
     print("board validation: 15 layouts and " + str(len(override_contacts)) + " H563 mappings valid; "
-          "public layouts checked (H563 enabled: " + ", ".join(sorted(enabled_override)) + ")")
+          "public layouts checked (H563 enabled: " + ", ".join(sorted(enabled_override)) + "; Pico 2 enabled: "
+          + str(len(enabled_pico)) + ")")
     return 0
 
 

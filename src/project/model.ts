@@ -76,6 +76,8 @@ export function newScope(project: Project | null): ScopeConfig {
 
 export const H563_LAYOUT_REVISION = 'MB1404 H563ZI-C01';
 const PROVISIONAL = 'provisional-v1';
+/** Pico 2 header electrical map from the datasheet (boards/pico2-pins.json). */
+export const PICO2_LAYOUT_REVISION = 'Pico 2 datasheet Fig. 2';
 
 /** Every m33mu --cpu profile and the board it is shown on. vcp is the UART
  * label of the board's debugger virtual COM port where a reviewed board manual
@@ -90,7 +92,7 @@ export const BOARDS = {
   mcxn947: { name: 'FRDM-MCXN947', layoutRevision: PROVISIONAL, vcp: null },
   nrf5340: { name: 'nRF5340 DK', layoutRevision: PROVISIONAL, vcp: null },
   nrf54lm20: { name: 'nRF54LM20 DK', layoutRevision: PROVISIONAL, vcp: null },
-  rp2350: { name: 'Raspberry Pi Pico 2', layoutRevision: PROVISIONAL, vcp: null },
+  rp2350: { name: 'Raspberry Pi Pico 2', layoutRevision: PICO2_LAYOUT_REVISION, vcp: null },
   lpc55s69: { name: 'LPCXpresso55S69', layoutRevision: PROVISIONAL, vcp: null },
   pic32ck: { name: 'PIC32CK SG01 Curiosity Ultra', layoutRevision: PROVISIONAL, vcp: null },
   m2354: { name: 'NuMaker-M2354', layoutRevision: PROVISIONAL, vcp: null },
@@ -192,6 +194,8 @@ export function validateProject(value: unknown): Project {
     unique(b.id, 'Board');
     if (b.cpu !== sim.cpu) fail(`Board ${b.id}: CPU ${String(b.cpu)} differs from the simulator CPU ${String(sim.cpu)}`);
     const expected = BOARDS[sim.cpu as CpuName].layoutRevision;
+    // Pico 2 projects saved before its pin map could not wire the board.
+    if (b.cpu === 'rp2350' && b.layoutRevision === PROVISIONAL) b.layoutRevision = expected;
     if (b.layoutRevision !== expected) {
       fail(`Board ${b.id}: layout revision "${String(b.layoutRevision)}" is not ${expected}`);
     }

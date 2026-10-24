@@ -11,7 +11,8 @@ import { Circuit } from '../../sim/circuit.ts';
 
 const root = process.env.M33MU_WEB_ROOT!;
 const layout = JSON.parse(readFileSync(join(root, 'public/boards/layout/stm32h563.json'), 'utf8')) as BoardLayout;
-const layouts = new Map([['stm32h563', layout]]);
+const picoLayout = JSON.parse(readFileSync(join(root, 'public/boards/layout/rp2350.json'), 'utf8')) as BoardLayout;
+const layouts = new Map([['stm32h563', layout], ['rp2350', picoLayout]]);
 
 function blinkProject(): Project {
   const p = emptyProject();
@@ -215,4 +216,28 @@ test('sigc-source part: SIGC capture param becomes a PWL vsource; project round-
   const back = parseProject(serializeProject(p));
   assert.equal(back.parts[0].params.sigc, sigc);
   assert.throws(() => parseProject(serializeProject({ ...p, parts: [{ ...p.parts[0], params: { sigc: 7, trace: 'a', repeat: '1' } }] })));
+});
+
+test('Pico 2: GPn contacts are RP2350 pads, AGND is ground, 3V3(OUT) is the rail, VSYS is visual only', () => {
+  const p = emptyProject('rp2350');
+  p.parts.push({ id: 'r1', kind: 'resistor', x: 500, y: 200, rotation: 0, params: { ohms: 1000 } },
+    { id: 'r2', kind: 'resistor', x: 500, y: 400, rotation: 0, params: { ohms: 1000 } });
+  p.wires.push(
+    { id: 'w1', from: { kind: 'board', board: 'board1', contact: 'J_LEFT-7' }, to: { kind: 'part', part: 'r1', terminal: 'a' }, color: '#d33' },
+    { id: 'w2', from: { kind: 'part', part: 'r1', terminal: 'b' }, to: { kind: 'board', board: 'board1', contact: 'J_RIGHT-33' }, color: '#333' },
+    { id: 'w3', from: { kind: 'board', board: 'board1', contact: 'J_RIGHT-36' }, to: { kind: 'part', part: 'r2', terminal: 'a' }, color: '#d33' },
+    { id: 'w4', from: { kind: 'part', part: 'r2', terminal: 'b' }, to: { kind: 'board', board: 'board1', contact: 'J_LEFT-3' }, color: '#333' });
+  const c = compileCircuit(p, layouts);
+  assert.deepEqual(c.diagnostics.filter((d) => d.severity === 'error'), []);
+  assert.deepEqual(c.pads, ['GPIO5']);
+  const circuit = new Circuit(c.netlist);
+  circuit.operatingPoint();
+  assert.ok(Math.abs(circuit.deviceCurrent('r2') - 3.3e-3) < 1e-9);
+  const vsys = { ...p, wires: [{ id: 'w9', from: { kind: 'board' as const, board: 'board1', contact: 'J_RIGHT-39' },
+    to: { kind: 'part' as const, part: 'r1', terminal: 'a' }, color: '#d33' }] };
+  assert.ok(compileCircuit(vsys, layouts).diagnostics.some((d) => d.severity === 'error'));
+  // A Pico 2 project saved with the provisional layout revision still opens.
+  const old = JSON.parse(serializeProject(emptyProject('rp2350')));
+  old.boards[0].layoutRevision = 'provisional-v1';
+  assert.equal(parseProject(JSON.stringify(old)).boards[0].layoutRevision, 'Pico 2 datasheet Fig. 2');
 });

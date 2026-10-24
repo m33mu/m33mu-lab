@@ -44,6 +44,8 @@ export interface McuPort {
   runUntil(deadlineNs: number, instructionBudget: number, workBudget: number): McuRunResult;
   popPadEvents(): McuPadEvent[];
   padState(socPad: string): Omit<McuPadEvent, 'timeNs' | 'socPad'>;
+  /** The same, or null for a pad this MCU does not have. */
+  padStateIfAny?(socPad: string): Omit<McuPadEvent, 'timeNs' | 'socPad'> | null;
   /** Queue an input level; times at or before now apply at the next boundary. */
   scheduleInput(socPad: string, level: 0 | 1, timeNs: number): void;
   cancelInputs(fromNs: number): void;
@@ -154,9 +156,11 @@ export class Bench {
     circuit.t = t0 * 1e-9;
     if (this.opts.initial === 'zero') circuit.zeroState(); else circuit.operatingPoint();
     if (mcu) {
+      // Bus routing reads the AF of the H563 header pads; other targets
+      // simply do not have some of them.
       for (const socPad of Object.keys(H563_AF)) {
-        const st = mcu.padState(socPad);
-        this.padConfigs.set(socPad, { mode: st.mode, af: st.af ?? 0 });
+        const st = mcu.padStateIfAny ? mcu.padStateIfAny(socPad) : mcu.padState(socPad);
+        if (st) this.padConfigs.set(socPad, { mode: st.mode, af: st.af ?? 0 });
       }
     }
     circuit.onCommit = (c) => this.record(c);

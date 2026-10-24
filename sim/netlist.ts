@@ -209,8 +209,8 @@ export function validateNetlist(netlist: unknown): string[] {
       break;
     case 'pad': {
       const p = d.pad;
-      if (!p || typeof p.socPad !== 'string' || !/^P[A-Z][0-9]{1,2}$/.test(p.socPad)) {
-        errors.push(`${d.id}: pad needs a socPad like PA5`);
+      if (!p || typeof p.socPad !== 'string' || !/^(P[A-Z][0-9]{1,2}|GPIO[0-9]{1,2})$/.test(p.socPad)) {
+        errors.push(`${d.id}: pad needs a socPad like PA5 or GPIO17`);
         break;
       }
       if (pads.has(p.socPad)) errors.push(`${d.id}: pad ${p.socPad} appears twice`);

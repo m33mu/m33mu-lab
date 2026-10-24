@@ -16,7 +16,7 @@
   ],
   "pinLabelArtwork": false,
   "geometryStatus": "stylized_provisional_not_manufacturing_scale",
-  "electricalMapStatus": "verified_official_Pico2_pinout",
+  "electricalMapStatus": "verified_pico2_datasheet_figure2",
   "connectors": [
     {
       "id": "J_LEFT",
@@ -30,140 +30,180 @@
           "x": 78,
           "y": 116,
           "signal": "GP0",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO0",
+          "electricalEnabled": true
         },
         {
           "number": 2,
           "x": 78,
           "y": 154,
           "signal": "GP1",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO1",
+          "electricalEnabled": true
         },
         {
           "number": 3,
           "x": 78,
           "y": 192,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 4,
           "x": 78,
           "y": 230,
           "signal": "GP2",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO2",
+          "electricalEnabled": true
         },
         {
           "number": 5,
           "x": 78,
           "y": 268,
           "signal": "GP3",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO3",
+          "electricalEnabled": true
         },
         {
           "number": 6,
           "x": 78,
           "y": 306,
           "signal": "GP4",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO4",
+          "electricalEnabled": true
         },
         {
           "number": 7,
           "x": 78,
           "y": 344,
           "signal": "GP5",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO5",
+          "electricalEnabled": true
         },
         {
           "number": 8,
           "x": 78,
           "y": 382,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 9,
           "x": 78,
           "y": 420,
           "signal": "GP6",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO6",
+          "electricalEnabled": true
         },
         {
           "number": 10,
           "x": 78,
           "y": 458,
           "signal": "GP7",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO7",
+          "electricalEnabled": true
         },
         {
           "number": 11,
           "x": 78,
           "y": 496,
           "signal": "GP8",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO8",
+          "electricalEnabled": true
         },
         {
           "number": 12,
           "x": 78,
           "y": 534,
           "signal": "GP9",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO9",
+          "electricalEnabled": true
         },
         {
           "number": 13,
           "x": 78,
           "y": 572,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 14,
           "x": 78,
           "y": 610,
           "signal": "GP10",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO10",
+          "electricalEnabled": true
         },
         {
           "number": 15,
           "x": 78,
           "y": 648,
           "signal": "GP11",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO11",
+          "electricalEnabled": true
         },
         {
           "number": 16,
           "x": 78,
           "y": 686,
           "signal": "GP12",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO12",
+          "electricalEnabled": true
         },
         {
           "number": 17,
           "x": 78,
           "y": 724,
           "signal": "GP13",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO13",
+          "electricalEnabled": true
         },
         {
           "number": 18,
           "x": 78,
           "y": 762,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 19,
           "x": 78,
           "y": 800,
           "signal": "GP14",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO14",
+          "electricalEnabled": true
         },
         {
           "number": 20,
           "x": 78,
           "y": 838,
           "signal": "GP15",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO15",
+          "electricalEnabled": true
         }
       ]
     },
@@ -179,140 +219,180 @@
           "x": 332,
           "y": 116,
           "signal": "VBUS",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "VBUS (USB 5 V input): not modelled on the bench"
         },
         {
           "number": 39,
           "x": 332,
           "y": 154,
           "signal": "VSYS",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "VSYS (system input to the SMPS): not modelled on the bench"
         },
         {
           "number": 38,
           "x": 332,
           "y": 192,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 37,
           "x": 332,
           "y": 230,
           "signal": "3V3_EN",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "3V3_EN (SMPS enable): not modelled on the bench"
         },
         {
           "number": 36,
           "x": 332,
           "y": 268,
           "signal": "3V3",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "3V3",
+          "electricalEnabled": true
         },
         {
           "number": 35,
           "x": 332,
           "y": 306,
           "signal": "ADC_VREF",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "ADC_VREF: the ADC is not modelled"
         },
         {
           "number": 34,
           "x": 332,
           "y": 344,
           "signal": "GP28",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO28",
+          "electricalEnabled": true
         },
         {
           "number": 33,
           "x": 332,
           "y": 382,
           "signal": "AGND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 32,
           "x": 332,
           "y": 420,
           "signal": "GP27",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO27",
+          "electricalEnabled": true
         },
         {
           "number": 31,
           "x": 332,
           "y": 458,
           "signal": "GP26",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO26",
+          "electricalEnabled": true
         },
         {
           "number": 30,
           "x": 332,
           "y": 496,
           "signal": "RUN",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "RUN (RP2350 reset): not modelled on the bench"
         },
         {
           "number": 29,
           "x": 332,
           "y": 534,
           "signal": "GP22",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO22",
+          "electricalEnabled": true
         },
         {
           "number": 28,
           "x": 332,
           "y": 572,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 27,
           "x": 332,
           "y": 610,
           "signal": "GP21",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO21",
+          "electricalEnabled": true
         },
         {
           "number": 26,
           "x": 332,
           "y": 648,
           "signal": "GP20",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO20",
+          "electricalEnabled": true
         },
         {
           "number": 25,
           "x": 332,
           "y": 686,
           "signal": "GP19",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO19",
+          "electricalEnabled": true
         },
         {
           "number": 24,
           "x": 332,
           "y": 724,
           "signal": "GP18",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO18",
+          "electricalEnabled": true
         },
         {
           "number": 23,
           "x": 332,
           "y": 762,
           "signal": "GND",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GND",
+          "electricalEnabled": true
         },
         {
           "number": 22,
           "x": 332,
           "y": 800,
           "signal": "GP17",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO17",
+          "electricalEnabled": true
         },
         {
           "number": 21,
           "x": 332,
           "y": 838,
           "signal": "GP16",
-          "mapping_verified": true
+          "mapping_verified": true,
+          "socPad": "GPIO16",
+          "electricalEnabled": true
         }
       ]
     },
@@ -328,26 +408,44 @@
           "x": 159,
           "y": 871,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false,
+          "note": "SWD debug pad: not modelled on the bench"
         },
         {
           "number": 2,
           "x": 205,
           "y": 871,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false,
+          "note": "SWD debug pad: not modelled on the bench"
         },
         {
           "number": 3,
           "x": 251,
           "y": 871,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false,
+          "note": "SWD debug pad: not modelled on the bench"
         }
       ]
     }
   ],
   "warning": "Contact coordinates and physical ordering are for visual hit testing. Except Pico 2 do not assume board header numbers match manufacturer numbering. Electrical use must remain disabled until verified from schematics.",
   "electricalEnabledByDefault": false,
-  "notes": "Graphic silhouettes are original illustrations, not manufacturer CAD or exact top-side facsimiles. Pin labels appear only through UI metadata. Pico J_LEFT and J_RIGHT signals derive from official pinout; pin physical identity is valid, but emulator GPIO bridge availability remains capability gated."
+  "notes": "Graphic silhouettes are original illustrations, not manufacturer CAD or exact top-side facsimiles. Pin labels appear only through UI metadata. Pico J_LEFT and J_RIGHT signals derive from official pinout; pin physical identity is valid, but emulator GPIO bridge availability remains capability gated.",
+  "leds": [
+    {
+      "id": "LED",
+      "pad": "GPIO25",
+      "color": "#2fb34a",
+      "x": 274,
+      "y": 139,
+      "w": 12,
+      "h": 8,
+      "activeHigh": true
+    }
+  ]
 }

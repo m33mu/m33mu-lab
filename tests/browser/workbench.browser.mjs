@@ -455,6 +455,24 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  await check('Pico 2 example: GPIO wiring on the RP2350, on-board LED blinks, button turns GP16 off', async () => {
+    await page.getByTestId('examples').selectOption('pico2-gpio');
+    await page.waitForFunction(() => /Pico 2 GPIO/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await page.getByTestId('real-time').uncheck();
+    await page.getByTestId('run').click();
+    await page.waitForSelector('g[data-part="led1"] circle.glow', { timeout: 60000 });
+    await page.waitForSelector('[data-board-led="LED"][data-lit="on"]', { timeout: 60000 });
+    await shot('12-pico2-gpio');
+    const sw = await center(page.locator('g[data-part="sw1"]'));
+    await page.mouse.move(sw.x, sw.y);
+    await page.mouse.down();
+    await page.waitForSelector('g[data-part="led1"] circle.glow', { state: 'detached', timeout: 30000 });
+    await page.mouse.up();
+    await page.waitForSelector('g[data-part="led1"] circle.glow', { timeout: 30000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('real-time').check();
+  });
+
   await check('board picker: every CPU board renders, firmware runs on another CPU', async () => {
     const cpus = await page.getByTestId('board').locator('option').evaluateAll((os) => os.map((o) => o.value));
     assert.equal(cpus.length, 15);
@@ -462,7 +480,8 @@ try {
       page.once('dialog', (d) => d.accept());
       await page.getByTestId('board').selectOption(c);
       await page.waitForFunction((cpu) => document.querySelector('svg image')?.getAttribute('href')?.includes(`${cpu}.svg`), c);
-      await page.getByText(/visual only until this board's pin map is reviewed/).waitFor();
+      // Pico 2 has a reviewed pin map; the others are display-only.
+      await page.getByText(c === 'rp2350' ? /35 of 43 header contacts wireable/ : /visual only until this board's pin map is reviewed/).waitFor();
     }
     // The worker switches CPU with the board: an nRF5340 ELF prints its banner on UARTE0.
     page.once('dialog', (d) => d.accept());

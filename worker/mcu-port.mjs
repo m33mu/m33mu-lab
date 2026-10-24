@@ -43,9 +43,16 @@ export function createMcuPort(api, session, onError) {
       }
       return out;
     },
+    padStateIfAny(socPad) {
+      const packed = api.padState(session, socPad);
+      return packed < 0 ? null : this.unpack(packed);
+    },
     padState(socPad) {
       const packed = api.padState(session, socPad);
       if (packed < 0) onError(api.lastError());
+      return this.unpack(packed);
+    },
+    unpack(packed) {
       return {
         level: packed & 0xff, mode: (packed >> 8) & 0xff,
         openDrain: ((packed >> 16) & 0xff) !== 0, pull: (packed >>> 24) & 0x3,

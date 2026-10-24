@@ -613,7 +613,7 @@ export function App() {
           title={layout ? `${layout.boardName}${layout.boardRevision ? ` · ${layout.boardRevision}` : ''}` : 'Loading board…'}
           onChange={(e) => { if (isCpu(e.target.value)) void chooseBoard(e.target.value); }}>
           {(Object.keys(BOARDS) as CpuName[]).map((c) => (
-            <option key={c} value={c}>{BOARDS[c].name} · {c}{c === 'stm32h563' ? ` · ${BOARDS[c].layoutRevision}` : ''}</option>
+            <option key={c} value={c}>{BOARDS[c].name} · {c}{c === 'stm32h563' || c === 'rp2350' ? ` · ${BOARDS[c].layoutRevision}` : ''}</option>
           ))}
         </select>
         <div className="firmware" title={firmware?.hash}>

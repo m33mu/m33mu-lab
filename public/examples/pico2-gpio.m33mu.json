@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 2,
+  "projectId": "example-pico2-gpio",
+  "name": "Pico 2 GPIO: button on GP15 lights GP16",
+  "simulator": {
+    "cpu": "rp2350",
+    "firmwareFormat": "elf",
+    "firmwareSha256": "49030b0b2b4b977de3e86b68526919765cd2919334c25e9d2c8905cf430cca5a",
+    "firmwareName": "pico2-gpio.elf"
+  },
+  "boards": [
+    {
+      "id": "board1",
+      "cpu": "rp2350",
+      "layoutRevision": "Pico 2 datasheet Fig. 2",
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "parts": [
+    {
+      "id": "sw1",
+      "kind": "switch",
+      "x": 520,
+      "y": 760,
+      "rotation": 0,
+      "params": {}
+    },
+    {
+      "id": "r1",
+      "kind": "resistor",
+      "x": 520,
+      "y": 840,
+      "rotation": 0,
+      "params": {
+        "ohms": 330
+      }
+    },
+    {
+      "id": "led1",
+      "kind": "led",
+      "x": 700,
+      "y": 840,
+      "rotation": 0,
+      "params": {
+        "color": "green"
+      }
+    },
+    {
+      "id": "gnd1",
+      "kind": "ground",
+      "x": 800,
+      "y": 940,
+      "rotation": 0,
+      "params": {}
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "kind": "board",
+        "board": "board1",
+        "contact": "J_LEFT-20"
+      },
+      "to": {
+        "kind": "part",
+        "part": "sw1",
+        "terminal": "a"
+      },
+      "color": "#f4d35e"
+    },
+    {
+      "id": "w2",
+      "from": {
+        "kind": "part",
+        "part": "sw1",
+        "terminal": "b"
+      },
+      "to": {
+        "kind": "board",
+        "board": "board1",
+        "contact": "J_LEFT-18"
+      },
+      "color": "#222222"
+    },
+    {
+      "id": "w3",
+      "from": {
+        "kind": "board",
+        "board": "board1",
+        "contact": "J_RIGHT-21"
+      },
+      "to": {
+        "kind": "part",
+        "part": "r1",
+        "terminal": "a"
+      },
+      "color": "#2fb34a"
+    },
+    {
+      "id": "w4",
+      "from": {
+        "kind": "part",
+        "part": "r1",
+        "terminal": "b"
+      },
+      "to": {
+        "kind": "part",
+        "part": "led1",
+        "terminal": "a"
+      },
+      "color": "#2fb34a"
+    },
+    {
+      "id": "w5",
+      "from": {
+        "kind": "part",
+        "part": "led1",
+        "terminal": "k"
+      },
+      "to": {
+        "kind": "part",
+        "part": "gnd1",
+        "terminal": "g"
+      },
+      "color": "#222222"
+    },
+    {
+      "id": "w6",
+      "from": {
+        "kind": "part",
+        "part": "gnd1",
+        "terminal": "g"
+      },
+      "to": {
+        "kind": "board",
+        "board": "board1",
+        "contact": "J_RIGHT-23"
+      },
+      "color": "#222222"
+    }
+  ],
+  "instruments": {
+    "scopes": [
+      {
+        "id": "scope1",
+        "name": "Scope 1",
+        "channels": [
+          {
+            "kind": "voltage",
+            "at": {
+              "kind": "board",
+              "board": "board1",
+              "contact": "J_LEFT-20"
+            }
+          },
+          {
+            "kind": "voltage",
+            "at": {
+              "kind": "board",
+              "board": "board1",
+              "contact": "J_RIGHT-21"
+            }
+          }
+        ],
+        "windowNs": 200000000
+      }
+    ]
+  },
+  "solver": {
+    "lookaheadNs": 1000000,
+    "sampleNs": 100000
+  },
+  "ui": {
+    "zoom": 0.5,
+    "panX": 200,
+    "panY": 20
+  }
+}

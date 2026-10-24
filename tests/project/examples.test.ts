@@ -11,7 +11,8 @@ import { Circuit } from '../../sim/circuit.ts';
 const root = process.env.M33MU_WEB_ROOT!;
 const examples = join(root, 'public/examples');
 const layout = JSON.parse(readFileSync(join(root, 'public/boards/layout/stm32h563.json'), 'utf8')) as BoardLayout;
-const layouts = new Map([['stm32h563', layout]]);
+const layouts = new Map([['stm32h563', layout],
+  ['rp2350', JSON.parse(readFileSync(join(root, 'public/boards/layout/rp2350.json'), 'utf8')) as BoardLayout]]);
 const index = JSON.parse(readFileSync(join(examples, 'index.json'), 'utf8'));
 
 function load(id: string) {

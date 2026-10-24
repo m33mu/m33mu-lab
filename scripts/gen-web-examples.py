@@ -31,15 +31,19 @@ def wire(n, a, b, color="#d7263d"):
     return {"id": f"w{n}", "from": a, "to": b, "color": color}
 
 
-def project(pid, name, parts, wires, channels, window_ns, firmware=None, sample_ns=1000, lookahead_ns=50000, pan=(40, 20), zoom=0.5):
-    sim = {"cpu": "stm32h563", "firmwareFormat": "elf", "firmwareSha256": None, "firmwareName": ""}
+LAYOUTS = {"stm32h563": LAYOUT, "rp2350": "Pico 2 datasheet Fig. 2"}
+
+
+def project(pid, name, parts, wires, channels, window_ns, firmware=None, sample_ns=1000, lookahead_ns=50000, pan=(40, 20), zoom=0.5,
+            cpu="stm32h563"):
+    sim = {"cpu": cpu, "firmwareFormat": "elf", "firmwareSha256": None, "firmwareName": ""}
     if firmware:
         data = (OUT / firmware).read_bytes()
         sim["firmwareSha256"] = hashlib.sha256(data).hexdigest()
         sim["firmwareName"] = firmware
     return {
         "schemaVersion": 2, "projectId": pid, "name": name, "simulator": sim,
-        "boards": [{"id": "board1", "cpu": "stm32h563", "layoutRevision": LAYOUT, "x": 0, "y": 0}],
+        "boards": [{"id": "board1", "cpu": cpu, "layoutRevision": LAYOUTS[cpu], "x": 0, "y": 0}],
         "parts": parts, "wires": wires,
         "instruments": {"scopes": [{"id": "scope1", "name": "Scope 1", "channels": channels, "windowNs": window_ns}]},
         "solver": {"lookaheadNs": lookahead_ns, "sampleNs": sample_ns},
@@ -231,6 +235,30 @@ EXAMPLES.append(("h563-secure-elements", project(
     [{"kind": "voltage", "at": board("CN7-2")}, {"kind": "voltage", "at": board("CN7-16")}],
     2_000_000, firmware="h563-secure-elements.elf", sample_ns=1_000, lookahead_ns=50_000),
     "The secure element suite asks an ATECC608A on SPI1 for its revision and random bytes, resets an SE050 on I2C1 and runs Echo and GenerateRandom on an STSAFE-A120 on I2C2; m33mu's own device models answer. Results print on USART3. Unplug a module's VCC to see it NACK."))
+
+
+# Pico 2: m33mu tests/firmware/test-rp2350-web-gpio blinks the on-board LED
+# (GPIO25) and copies GP15 (pull-up input) to GP16. Header: Pico 2 datasheet
+# Figure 2 (GP15 pin 20, GP16 pin 21, GND pins 18 and 23).
+pico_parts = [
+    part("sw1", "switch", 520, 760),
+    part("r1", "resistor", 520, 840, ohms=330),
+    part("led1", "led", 700, 840, color="green"),
+    part("gnd1", "ground", 800, 940),
+]
+pico_wires = [
+    wire(1, board("J_LEFT-20"), pt("sw1", "a"), YEL),
+    wire(2, pt("sw1", "b"), board("J_LEFT-18"), BLK),
+    wire(3, board("J_RIGHT-21"), pt("r1", "a"), GRN),
+    wire(4, pt("r1", "b"), pt("led1", "a"), GRN),
+    wire(5, pt("led1", "k"), pt("gnd1", "g"), BLK),
+    wire(6, pt("gnd1", "g"), board("J_RIGHT-23"), BLK),
+]
+EXAMPLES.append(("pico2-gpio", project(
+    "example-pico2-gpio", "Pico 2 GPIO: button on GP15 lights GP16", pico_parts, pico_wires,
+    [{"kind": "voltage", "at": board("J_LEFT-20")}, {"kind": "voltage", "at": board("J_RIGHT-21")}],
+    200_000_000, firmware="pico2-gpio.elf", sample_ns=100_000, lookahead_ns=1_000_000, cpu="rp2350", pan=(200, 20)),
+    "RP2350 firmware blinks the on-board LED (GPIO25) every 50 ms and copies GP15 to GP16: the internal pull-up keeps GP15 high and the green LED on, pressing the button pulls GP15 low and the LED goes off."))
 
 
 def main():

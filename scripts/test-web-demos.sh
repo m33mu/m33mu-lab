@@ -18,6 +18,7 @@ fi
   "$examples/h563-blink.elf" "$examples/h563-button.elf" "$repo_root/fixtures/demos/golden.json"
 "$task_node" "$repo_root/scripts/test-web-debug.mjs" "$task_build_dir/worker.mjs" "$examples/h563-blink.elf"
 "$task_node" "$repo_root/scripts/test-web-sigc-source.mjs" "$task_build_dir/worker.mjs" "$examples/h563-button.elf"
+"$task_node" "$repo_root/scripts/test-web-rp2350-gpio.mjs" "$task_build_dir/worker.mjs" "$examples/pico2-gpio.elf"
 "$task_node" "$repo_root/scripts/test-web-worker-lifecycle.mjs" "$task_build_dir/worker.mjs" \
   "$examples/h563-blink.elf"
 "${MAKE:-make}" -C "$m33mu_root/tests/firmware/test-stm32h563-uart-echo" CC="${M33MU_ARM_NONE_EABI_GCC:-arm-none-eabi-gcc}" app.elf >/dev/null

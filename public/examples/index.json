@@ -51,6 +51,13 @@
       "description": "The secure element suite asks an ATECC608A on SPI1 for its revision and random bytes, resets an SE050 on I2C1 and runs Echo and GenerateRandom on an STSAFE-A120 on I2C2; m33mu's own device models answer. Results print on USART3. Unplug a module's VCC to see it NACK."
     },
     {
+      "id": "pico2-gpio",
+      "name": "Pico 2 GPIO: button on GP15 lights GP16",
+      "project": "pico2-gpio.m33mu.json",
+      "firmware": "pico2-gpio.elf",
+      "description": "RP2350 firmware blinks the on-board LED (GPIO25) every 50 ms and copies GP15 to GP16: the internal pull-up keeps GP15 high and the green LED on, pressing the button pulls GP15 low and the LED goes off."
+    },
+    {
       "id": "h563-pwm",
       "name": "H563 timer PWM (LD1 breathing, D9 RC filter)",
       "project": "h563-pwm.m33mu.json",
