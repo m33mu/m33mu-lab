@@ -3,6 +3,7 @@ import { Bench } from '../sim/bench.ts';
 import { validateNetlist } from '../sim/netlist.ts';
 import { secureElementSpecs } from '../sim/buses.ts';
 import { createMcuPort } from './mcu-port.mjs';
+import { elfSymbols } from './elf-symbols.mjs';
 
 const ERROR_NAMES = [
   'OK', 'INVALID_ARGUMENT', 'UNSUPPORTED_TARGET', 'SESSION_BUSY',
@@ -12,7 +13,8 @@ const ERROR_NAMES = [
 ];
 
 // Must match MM_WEB_ABI_VERSION in m33mu/include/m33mu/web.h.
-const M33MU_WEB_ABI_VERSION = 2;
+const M33MU_WEB_ABI_VERSION = 3;
+const MAX_MEMORY_READ = 4096;
 const FEATURE_WOLFCRYPT = 1;
 const FEATURE_TA100 = 2;
 const FEATURE_RUST_SE = 4;
@@ -38,6 +40,7 @@ export function attachM33muWorker(scope, createModule) {
   let session = 0;
   let sessionCpu = null;
   let firmwareLoaded = false;
+  let firmwareSymbols = [];
   let sequence = 0;
   let runGeneration = 0;
   let bench = null;
@@ -135,7 +138,12 @@ export function attachM33muWorker(scope, createModule) {
         enableBusHost: wrap('mm_web_abi_enable_bus_host', 'number', ['number', 'number']),
         features: wrap('mm_web_abi_features', 'number', []),
         attachDevice: wrap('mm_web_abi_attach_device', 'number', ['number', 'string']),
-        detachDevices: wrap('mm_web_abi_detach_devices', null, ['number'])
+        detachDevices: wrap('mm_web_abi_detach_devices', null, ['number']),
+        setBreakpoints: wrap('mm_web_abi_set_breakpoints', 'number', ['number', 'number', 'number']),
+        lastBreakpoint: wrap('mm_web_abi_last_breakpoint', 'number', []),
+        lastBreakpointPc: wrap('mm_web_abi_last_breakpoint_pc', 'number', []),
+        readMemory: wrap('mm_web_abi_read_memory', 'number', ['number', 'number', 'number', 'number']),
+        writeMemory: wrap('mm_web_abi_write_memory', 'number', ['number', 'number', 'number', 'number'])
       };
     }
     return wasm;
@@ -325,6 +333,10 @@ export function attachM33muWorker(scope, createModule) {
     const stopped = api.stopped() !== 0;
     const systemReset = api.systemReset() !== 0;
     reportLockup(requestId);
+    if (api.lastBreakpoint() !== 0) {
+      emitState(requestId, false, { paused: true, breakpoint: api.lastBreakpointPc() >>> 0 });
+      return;
+    }
     const state = snapshot();
     const sleepDeadlinePending = state.sleeping &&
       api.hasPendingDeadline(session) !== 0;
@@ -401,7 +413,7 @@ export function attachM33muWorker(scope, createModule) {
       do {
         report = bench.runUntil(sliceTarget, 8);
         if (benchFault) throw benchFault;
-      } while (!report.reachedTarget && !report.mcuStopped &&
+      } while (!report.reachedTarget && !report.mcuStopped && report.breakpointPc == null &&
                Date.now() - wall0 < BENCH_SLICE_MS);
       if (report.reachedTarget && report.timeNs < targetNs) report = { ...report, reachedTarget: false };
     } catch (error) {
@@ -414,16 +426,18 @@ export function attachM33muWorker(scope, createModule) {
     benchFlush(requestId, {
       timeNs: Math.round(report.timeNs).toString(),
       reachedTarget: report.reachedTarget, mcuStopped: report.mcuStopped,
-      systemReset: report.systemReset, rollbacks: report.rollbacks,
+      breakpoint: report.breakpointPc, systemReset: report.systemReset, rollbacks: report.rollbacks,
       solverSteps: bench.circuit.stepCount, rejectedSteps: bench.circuit.rejected,
       simulatedPerWall: (report.timeNs - started.sim) * 1e-9 / (wallMs * 1e-3),
       sliceSimulatedNs: report.timeNs - sim0
     });
     if (bench.mcu) {
       if (report.mcuStopped) reportLockup(requestId);
-      emitState(requestId, report.mcuStopped, { paused: report.reachedTarget });
+      emitState(requestId, report.mcuStopped, report.breakpointPc != null
+        ? { paused: true, breakpoint: report.breakpointPc } : { paused: report.reachedTarget });
     }
-    if (!report.reachedTarget && !report.mcuStopped && generation === runGeneration) {
+    if (!report.reachedTarget && !report.mcuStopped && report.breakpointPc == null &&
+        generation === runGeneration) {
       scope.setTimeout(() => benchSlice(generation, requestId, targetNs, started), 0);
     }
   }
@@ -459,6 +473,7 @@ export function attachM33muWorker(scope, createModule) {
           const status = api.load(session, ptr, bytes.byteLength);
           if (status !== 0) throw errorFromCode(status);
           firmwareLoaded = true;
+          firmwareSymbols = elfSymbols(bytes);
         } finally {
           wasm._free(ptr);
         }
@@ -484,6 +499,7 @@ export function attachM33muWorker(scope, createModule) {
         const result = {
           instructions: api.instructionCount(),
           stopped: api.stopped() !== 0,
+          breakpoint: api.lastBreakpoint() !== 0 ? api.lastBreakpointPc() >>> 0 : null,
           lockup,
           systemReset: api.systemReset() !== 0,
           ...snapshot()
@@ -644,6 +660,76 @@ export function attachM33muWorker(scope, createModule) {
         if (!dev || dev.kind !== 'switch') throw invalid(`No switch ${payload.device}`);
         const changed = bench.setSwitch(payload.device, payload.closed);
         postResponse(requestId, { changed, timeNs: Math.round(bench.timeNs).toString() });
+        return;
+      }
+      case 'setBreakpoints': {
+        const wasm = await ensureSession();
+        const addresses = payload.addresses;
+        if (!Array.isArray(addresses) || addresses.length > 16 ||
+            !addresses.every((a) => Number.isInteger(a) && a >= 0 && a <= 0xffffffff)) {
+          throw invalid('addresses must be up to 16 integers 0..0xffffffff');
+        }
+        const ptr = wasm._malloc(Math.max(4, addresses.length * 4));
+        try {
+          new Uint32Array(wasm.HEAPU8.buffer, ptr, addresses.length).set(addresses);
+          const status = api.setBreakpoints(session, ptr, addresses.length);
+          if (status !== 0) throw errorFromCode(status);
+        } finally {
+          wasm._free(ptr);
+        }
+        postResponse(requestId, { breakpoints: addresses.map((a) => (a & ~1) >>> 0) });
+        return;
+      }
+      case 'readMemory': {
+        const wasm = await ensureSession();
+        requireFirmware();
+        const { address, length } = payload;
+        if (!Number.isInteger(address) || address < 0 || address > 0xffffffff ||
+            !Number.isInteger(length) || length < 1 || length > MAX_MEMORY_READ) {
+          throw invalid(`address must be a 32-bit address and length 1..${MAX_MEMORY_READ}`);
+        }
+        const ptr = wasm._malloc(length);
+        try {
+          // Unmapped bytes read as null rather than failing the whole range.
+          const bytes = [];
+          const status = api.readMemory(session, address >>> 0, ptr, length);
+          if (status === 0) {
+            bytes.push(...wasm.HEAPU8.subarray(ptr, ptr + length));
+          } else {
+            for (let i = 0; i < length; i++) {
+              bytes.push(api.readMemory(session, (address + i) >>> 0, ptr, 1) === 0 ? wasm.HEAPU8[ptr] : null);
+            }
+          }
+          postResponse(requestId, { address, bytes });
+        } finally {
+          wasm._free(ptr);
+        }
+        return;
+      }
+      case 'writeMemory': {
+        const wasm = await ensureSession();
+        requireFirmware();
+        requireNoBench();
+        const { address } = payload;
+        const bytes = payload.bytes instanceof Uint8Array ? payload.bytes :
+          Array.isArray(payload.bytes) ? Uint8Array.from(payload.bytes) : null;
+        if (!Number.isInteger(address) || address < 0 || address > 0xffffffff ||
+            !bytes || bytes.length < 1 || bytes.length > MAX_MEMORY_READ) {
+          throw invalid(`address must be a 32-bit address and bytes 1..${MAX_MEMORY_READ} long`);
+        }
+        const ptr = wasm._malloc(bytes.length);
+        try {
+          wasm.HEAPU8.set(bytes, ptr);
+          const status = api.writeMemory(session, address >>> 0, ptr, bytes.length);
+          if (status !== 0) throw errorFromCode(status);
+        } finally {
+          wasm._free(ptr);
+        }
+        postResponse(requestId, { written: bytes.length });
+        return;
+      }
+      case 'symbols': {
+        postResponse(requestId, { symbols: firmwareSymbols });
         return;
       }
       case 'features': {

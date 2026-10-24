@@ -394,6 +394,27 @@ try {
     console.log('skip - secure elements example (build without M33MU_WASM_RUST_SE=ON)');
   }
 
+  await check('debug tab: breakpoint on SysTick_Handler pauses the bench, memory view, continue', async () => {
+    await page.getByTestId('examples').selectOption('h563-blink');
+    await page.waitForFunction(() => /blink/i.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await page.getByTestId('tab-debug').click();
+    await page.getByTestId('bp-input').fill('SysTick_Handler');
+    await page.getByTestId('debugger').getByRole('button', { name: 'Add' }).click();
+    await page.getByTestId('debugger').getByText('SysTick_Handler').first().waitFor();
+    await page.getByTestId('run').click();
+    await page.getByTestId('bp-hit').getByText(/Paused at 0x0c00013c \(SysTick_Handler\)/).waitFor({ timeout: 30000 });
+    await page.getByTestId('mem-view').getByText(/^[0-9a-f]{8}/).first().waitFor({ timeout: 10000 });
+    const t1 = await page.getByTestId('virtual-time').textContent();
+    await shot('11-debugger');
+    // Continue: the next SysTick pauses again, later in virtual time.
+    await page.getByTestId('run').click();
+    await page.waitForFunction((t) => document.querySelector('[data-testid=virtual-time]')?.textContent !== t, t1, { timeout: 30000 });
+    await page.getByTestId('bp-hit').waitFor({ timeout: 30000 });
+    await page.getByRole('button', { name: /Remove breakpoint/ }).click();
+    await page.getByTestId('run').click();
+    await page.getByRole('button', { name: 'Pause' }).click();
+  });
+
   await check('PWM example: LD1 breathes, D9 RC filter settles', async () => {
     await page.getByTestId('examples').selectOption('h563-pwm');
     await page.waitForFunction(() => /timer PWM/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));

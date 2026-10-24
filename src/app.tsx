@@ -3,6 +3,7 @@ import { BenchCanvas, type Selection, type Tool } from './canvas/BenchCanvas.tsx
 import { Inspector, type McuPadInfo, type Observation } from './Inspector.tsx';
 import { DiagnosticsPanel } from './DiagnosticsPanel.tsx';
 import { isSecureElement, SECURE_ELEMENTS } from '../sim/buses.ts';
+import { Debugger, type ElfSymbol } from './instruments/Debugger.tsx';
 import { appendDiagnostic, type DiagnosticEntry, type DiagnosticSeverity, type DiagnosticSource } from './diagnostics.ts';
 import { ScopeInstrument, type ScopeSink } from './instruments/ScopeInstrument.tsx';
 import { appendTerminal, Terminal, type UartInfo } from './instruments/Terminal.tsx';
@@ -20,6 +21,7 @@ import { WorkerClient, WorkerRequestError, type WorkerEvent } from './worker-cli
 type Machine = {
   registers: number[]; xpsr: number; securityState: number; mode: number; sleeping: boolean;
   cpuHz: number; cycleTotal: string; virtualTimeNs: string; stopped?: boolean; paused?: boolean;
+  breakpoint?: number | null;
 };
 
 type RunState = 'idle' | 'running' | 'paused' | 'stopped';
@@ -66,6 +68,8 @@ export function App() {
   const [hoverText, setHoverText] = useState('');
   const [firmware, setFirmware] = useState<{ name: string; hash: string; bytes: Uint8Array } | null>(null);
   const [machine, setMachine] = useState<Machine | null>(null);
+  const [symbols, setSymbols] = useState<ElfSymbol[]>([]);
+  const [breakpoints, setBreakpointList] = useState<number[]>([]);
   const [runState, setRunState] = useState<RunState>('idle');
   const [benchActive, setBenchActive] = useState(false);
   const [benchStale, setBenchStale] = useState(false);
@@ -183,6 +187,9 @@ export function App() {
     }
     if (e.event === 'state') {
       setMachine(p);
+      if (p.breakpoint != null) {
+        setMessage(`Paused at breakpoint 0x${(p.breakpoint >>> 0).toString(16).padStart(8, '0')}; Run continues.`);
+      }
       if (p.stopped) setRunState('stopped');
       else if (p.paused) setRunState('paused');
     } else if (e.event === 'fault') {
@@ -210,9 +217,17 @@ export function App() {
       if (Object.keys(gpio).length) setMcuPads((old) => ({ ...old, ...gpio }));
       if (p.padDuty) setPadDuty((old) => ({ ...old, ...p.padDuty }));
       if (p.mcuStopped) setRunState('stopped');
+      else if (p.breakpoint != null) setRunState('paused');
       else if (p.reachedTarget && p.timeNs !== '0' && p.requestId) setRunState('paused');
     }
   }, []);
+
+  async function changeBreakpoints(addresses: number[]) {
+    try {
+      await worker().request('setBreakpoints', { addresses });
+      setBreakpointList(addresses);
+    } catch (err) { fail(err); }
+  }
 
   // What the WASM build carries (crypto models, secure elements).
   const [features, setFeatures] = useState<{ wolfcrypt: boolean; ta100: boolean; rustSecureElements: boolean } | null>(null);
@@ -345,6 +360,10 @@ export function App() {
   async function loadElf(bytes: Uint8Array, name: string, hash: string, target: CpuName = cpu) {
     await worker().request('loadFirmware', { bytes, cpu: target });
     setUartText({}); setUartLost(new Set());
+    setSymbols((await worker().request<{ symbols: ElfSymbol[] }>('symbols')).symbols);
+    // Breakpoints belong to one firmware image.
+    setBreakpointList([]);
+    await worker().request('setBreakpoints', { addresses: [] });
     const list = await worker().request<{ uarts: UartInfo[] }>('uartList');
     setUarts(list.uarts);
     setFirmware({ name, hash, bytes });
@@ -686,7 +705,7 @@ export function App() {
                   : n === 'lr' ? machine.registers[14] : n === 'pc' ? machine.registers[15] : machine.xpsr) : '—'}</b></div>
               ))}
             </div>
-            <p className="muted">{machine ? `${machine.securityState ? 'Non-secure' : 'Secure'} ${machine.mode ? 'thread' : 'handler'}${machine.sleeping ? ', sleeping' : ''}` : 'Load an ELF to start the session.'}</p>
+            <p className="muted">{machine ? `${machine.securityState ? 'Secure' : 'Non-secure'} ${machine.mode ? 'handler' : 'thread'}${machine.sleeping ? ', sleeping' : ''}` : 'Load an ELF to start the session.'}</p>
           </div>
           <DiagnosticsPanel circuit={compiled.diagnostics} runtime={diagnosticEntries} metrics={stats}
             onClear={() => setDiagnosticEntries([])} onExport={exportDiagnostics} />
@@ -720,6 +739,14 @@ export function App() {
               </button>
             </span>
           ))}
+          {firmware && (
+            <span className={dockTab === 'debug' ? 'tab active' : 'tab'}>
+              <button role="tab" aria-selected={dockTab === 'debug'} data-testid="tab-debug"
+                onClick={() => { setDockTab('debug'); showDock(true); }}>
+                ⛭ Debug{breakpoints.length ? ` (${breakpoints.length})` : ''}{machine?.breakpoint != null && dockTab !== 'debug' ? ' •' : ''}
+              </button>
+            </span>
+          )}
           <button className="dock-add" onClick={addScope} disabled={project.instruments.scopes.length >= MAX_SCOPES}
             data-testid="add-scope">+ Scope</button>
           <details className="uart-picker">
@@ -775,7 +802,17 @@ export function App() {
               onClear={() => setUartText((old) => ({ ...old, [u.index]: '' }))} />
           </div>
         ))}
-        {dockOpen && project.instruments.scopes.length === 0 && openUarts.length === 0 && (
+        {dockOpen && firmware && dockTab === 'debug' && (
+          <div className="dock-body">
+            <Debugger machine={machine} symbols={symbols} breakpoints={breakpoints}
+              halted={runState !== 'running'} onBreakpoints={(a) => void changeBreakpoints(a)}
+              readMemory={async (address, length) =>
+                (await worker().request<{ bytes: (number | null)[] }>('readMemory', { address, length })).bytes}
+              writeMemory={async (address, bytes) => { await worker().request('writeMemory', { address, bytes }); }}
+              onError={fail} />
+          </div>
+        )}
+        {dockOpen && project.instruments.scopes.length === 0 && openUarts.length === 0 && dockTab !== 'debug' && (
           <div className="dock-body empty"><p className="muted">Add a scope or a UART terminal.</p></div>
         )}
       </section>

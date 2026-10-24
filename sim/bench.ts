@@ -32,6 +32,8 @@ export type McuRunResult = {
   deadlineReached: boolean;
   padChanged: boolean;
   stopped: boolean;
+  /** Paused before this instruction address by a breakpoint. */
+  breakpointPc?: number | null;
   systemReset: boolean;
   instructions: number;
 };
@@ -87,6 +89,8 @@ export type SliceReport = {
   timeNs: number;
   reachedTarget: boolean;
   mcuStopped: boolean;
+  /** The MCU paused at a breakpoint (the circuit is held at its time). */
+  breakpointPc: number | null;
   systemReset: boolean;
   instructions: number;
   solverSteps: number;
@@ -291,7 +295,7 @@ export class Bench {
   runUntil(targetNs: number, windows = 64): SliceReport {
     const c = this.circuit;
     const report: SliceReport = { timeNs: this.timeNs, reachedTarget: false, mcuStopped: this.stopped,
-      systemReset: false, instructions: 0, solverSteps: 0, rollbacks: 0 };
+      breakpointPc: null, systemReset: false, instructions: 0, solverSteps: 0, rollbacks: 0 };
     const steps0 = c.stepCount;
     const mcu = this.mcu;
     if (!mcu || this.stopped) {
@@ -339,9 +343,11 @@ export class Bench {
       const relevant = events.filter((e) => c.hasPad(e.socPad));
       if (relevant.length > 0) this.applyPadEvents(relevant, tm);
       if (events.length > 0) this.bus?.onPadChange();
-      if (r.stopped) {
-        this.stopped = true;
-        report.mcuStopped = true;
+      if (r.stopped || r.breakpointPc != null) {
+        // Hold the circuit at the MCU's time: for good when it stopped, until
+        // the next run for a breakpoint.
+        if (r.stopped) { this.stopped = true; report.mcuStopped = true; }
+        else report.breakpointPc = r.breakpointPc ?? null;
         if (c.t * 1e9 > tm) this.rollbackTo(tm);
         else this.deliver(c.advanceTo(tm * 1e-9), tm);
         this.flush(tm);

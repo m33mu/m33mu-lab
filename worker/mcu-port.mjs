@@ -21,6 +21,7 @@ export function createMcuPort(api, session, onError) {
         deadlineReached: api.deadlineReached() !== 0,
         padChanged: api.padChanged() !== 0,
         stopped: api.stopped() !== 0,
+        breakpointPc: api.lastBreakpoint() !== 0 ? api.lastBreakpointPc() >>> 0 : null,
         systemReset: api.systemReset() !== 0,
         instructions: api.instructionCount()
       };
