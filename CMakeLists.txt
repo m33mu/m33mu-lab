@@ -11,6 +11,15 @@ include(CTest)
 set(M33MU_ROOT "${CMAKE_SOURCE_DIR}/m33mu" CACHE PATH "m33mu source tree")
 set(M33MU_BUILD "${CMAKE_BINARY_DIR}/m33mu" CACHE PATH "m33mu native build tree")
 
+# Crypto in the browser: wolfCrypt is compiled from this wolfSSL source tree
+# (never vendored); the Rust secure elements need
+# `rustup target add wasm32-unknown-emscripten`.
+set(M33MU_WOLFSSL_SRC "" CACHE PATH "wolfSSL source tree for the WASM crypto models")
+# Prebuilt test firmware for the all-CPU and crypto worker tests (unbuilt
+# images are skipped); defaults to the submodule's tests/firmware.
+set(M33MU_FIRMWARE_ROOT "" CACHE PATH "tests/firmware tree with built ELFs")
+option(M33MU_WASM_RUST_SE "Build the Rust secure-element simulators for WASM" OFF)
+
 find_program(M33MU_EMCMAKE emcmake REQUIRED)
 find_program(M33MU_EMCC emcc REQUIRED)
 find_program(M33MU_NODE node REQUIRED)
@@ -37,6 +46,15 @@ set(LAB_ENV
   "M33MU_NPM=${M33MU_NPM}"
   "M33MU_CLI=${M33MU_BUILD}/m33mu"
   "M33MU_PARITY_RUNNER=${M33MU_BUILD}/web_parity_runner")
+if(M33MU_WOLFSSL_SRC)
+  list(APPEND LAB_ENV "M33MU_WOLFSSL_SRC=${M33MU_WOLFSSL_SRC}")
+endif()
+if(M33MU_FIRMWARE_ROOT)
+  list(APPEND LAB_ENV "M33MU_FIRMWARE_ROOT=${M33MU_FIRMWARE_ROOT}")
+endif()
+if(M33MU_WASM_RUST_SE)
+  list(APPEND LAB_ENV "M33MU_WASM_RUST_SE=ON")
+endif()
 if(M33MU_ARM_NONE_EABI_GCC)
   list(APPEND LAB_ENV "M33MU_ARM_NONE_EABI_GCC=${M33MU_ARM_NONE_EABI_GCC}")
 endif()

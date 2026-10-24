@@ -16,8 +16,7 @@ export M33MU_CLI="$task_cli"
 python3 "$repo_root/scripts/check_web_worker_cli_parity.py" \
   "$task_cli" "$task_parity_file"
 export M33MU_CLI_PARITY="$task_parity_file"
-"$task_emcmake" cmake -S "$m33mu_root/cmake/wasm" -B "$task_build_dir"
-cmake --build "$task_build_dir" --target m33mu_web_api --parallel
+"$m33mu_root/scripts/build-wasm-api.sh" "$task_build_dir" "$task_build_dir/wasm" >/dev/null
 if [ ! -d "$repo_root/node_modules/esbuild" ]; then
   "${M33MU_NPM:-npm}" --prefix "$repo_root" ci
 fi

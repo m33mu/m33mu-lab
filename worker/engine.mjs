@@ -11,7 +11,11 @@ const ERROR_NAMES = [
 ];
 
 // Must match MM_WEB_ABI_VERSION in m33mu/include/m33mu/web.h.
-const M33MU_WEB_ABI_VERSION = 1;
+const M33MU_WEB_ABI_VERSION = 2;
+const FEATURE_WOLFCRYPT = 1;
+const FEATURE_TA100 = 2;
+const FEATURE_RUST_SE = 4;
+const MAX_DEVICES = 8;
 const MAX_FIRMWARE_BYTES = 32 * 1024 * 1024;
 const MAX_STEP_BUDGET = 100000;
 const RUN_SLICE = 512;
@@ -127,7 +131,10 @@ export function attachM33muWorker(scope, createModule) {
         uartRead: wrap('mm_web_abi_uart_read', 'number', ['number', 'number', 'number', 'number']),
         uartOverflow: wrap('mm_web_abi_uart_overflow', 'number', []),
         uartWrite: wrap('mm_web_abi_uart_write', 'number', ['number', 'number', 'number', 'number']),
-        enableBusHost: wrap('mm_web_abi_enable_bus_host', 'number', ['number', 'number'])
+        enableBusHost: wrap('mm_web_abi_enable_bus_host', 'number', ['number', 'number']),
+        features: wrap('mm_web_abi_features', 'number', []),
+        attachDevice: wrap('mm_web_abi_attach_device', 'number', ['number', 'string']),
+        detachDevices: wrap('mm_web_abi_detach_devices', null, ['number'])
       };
     }
     return wasm;
@@ -620,6 +627,33 @@ export function attachM33muWorker(scope, createModule) {
         if (!dev || dev.kind !== 'switch') throw invalid(`No switch ${payload.device}`);
         const changed = bench.setSwitch(payload.device, payload.closed);
         postResponse(requestId, { changed, timeNs: Math.round(bench.timeNs).toString() });
+        return;
+      }
+      case 'features': {
+        await loadApi();
+        const bits = api.features() >>> 0;
+        postResponse(requestId, {
+          wolfcrypt: (bits & FEATURE_WOLFCRYPT) !== 0,
+          ta100: (bits & FEATURE_TA100) !== 0,
+          rustSecureElements: (bits & FEATURE_RUST_SE) !== 0
+        });
+        return;
+      }
+      case 'attachDevices': {
+        // Replace every simulated bus device (secure elements, SPI flash)
+        // with payload.specs, written in the m33mu CLI device syntax.
+        await ensureSession(payload.cpu);
+        const specs = payload.specs;
+        if (!Array.isArray(specs) || specs.length > MAX_DEVICES ||
+            !specs.every((x) => typeof x === 'string' && /^[a-z0-9]+:[A-Za-z0-9:=_./-]{1,200}$/.test(x))) {
+          throw invalid(`specs must be up to ${MAX_DEVICES} device specs like "se050:I2C1:addr=0x48"`);
+        }
+        api.detachDevices(session);
+        const devices = specs.map((spec) => {
+          const status = api.attachDevice(session, spec);
+          return { spec, ok: status === 0, error: status === 0 ? null : (ERROR_NAMES[status] || 'ERROR') };
+        });
+        postResponse(requestId, { devices });
         return;
       }
       case 'uartList': {

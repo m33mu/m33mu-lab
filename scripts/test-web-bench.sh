@@ -18,8 +18,7 @@ objdump=$(dirname "$(command -v "$arm_cc")")/arm-none-eabi-objdump
 pass_pc=$("$objdump" -d "$fixture_dir/app.elf" | awk '/bkpt\t0x007f/ { sub(":", "", $1); print $1; exit }')
 [ -n "$pass_pc" ] || { echo "pass BKPT not found in fixture" >&2; exit 1; }
 export EM_CACHE="$task_build_dir/cache"
-"$task_emcmake" cmake -S "$m33mu_root/cmake/wasm" -B "$task_build_dir" >/dev/null
-cmake --build "$task_build_dir" --target m33mu_web_api --parallel >/dev/null
+"$m33mu_root/scripts/build-wasm-api.sh" "$task_build_dir" "$task_build_dir/wasm" >/dev/null
 if [ ! -d "$repo_root/node_modules/esbuild" ]; then
   "${M33MU_NPM:-npm}" --prefix "$repo_root" ci
 fi

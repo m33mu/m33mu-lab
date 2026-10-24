@@ -9,8 +9,7 @@ task_node=${M33MU_NODE:-node}
 trap 'rm -rf "$task_build_dir"' EXIT HUP INT TERM
 examples="$repo_root/public/examples"
 export EM_CACHE="$task_build_dir/cache"
-"${M33MU_EMCMAKE:-emcmake}" cmake -S "$m33mu_root/cmake/wasm" -B "$task_build_dir" >/dev/null
-cmake --build "$task_build_dir" --target m33mu_web_api --parallel >/dev/null
+"$m33mu_root/scripts/build-wasm-api.sh" "$task_build_dir" "$task_build_dir/wasm" >/dev/null
 if [ ! -d "$repo_root/node_modules/esbuild" ]; then
   "${M33MU_NPM:-npm}" --prefix "$repo_root" ci
 fi
@@ -28,4 +27,6 @@ fi
 "${MAKE:-make}" -C "$m33mu_root/tests/firmware/test-stm32h563-web-pwm" CC="${M33MU_ARM_NONE_EABI_GCC:-arm-none-eabi-gcc}" app.elf >/dev/null
 "$task_node" "$repo_root/scripts/test-web-pwm.mjs" "$task_build_dir/worker.mjs" \
   "$m33mu_root/tests/firmware/test-stm32h563-web-pwm/app.elf"
-"$task_node" "$repo_root/scripts/test-web-cpus.mjs" "$task_build_dir/worker.mjs" "$m33mu_root/tests/firmware"
+firmware_root=${M33MU_FIRMWARE_ROOT:-"$m33mu_root/tests/firmware"}
+"$task_node" "$repo_root/scripts/test-web-cpus.mjs" "$task_build_dir/worker.mjs" "$firmware_root"
+"$task_node" "$repo_root/scripts/test-web-crypto.mjs" "$task_build_dir/worker.mjs" "$firmware_root"
