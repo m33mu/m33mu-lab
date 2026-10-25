@@ -18,7 +18,6 @@ for f in \
   nxp/frdm_mcxw71/frdm_mcxw71.dts \
   nxp/frdm_rw612/frdm_rw612_common.dtsi \
   nxp/lpcxpresso55s69/lpcxpresso55s69.dtsi \
-  nxp/mimxrt700_evk/mimxrt700_evk_mimxrt798s_cm33_cpu0.dts \
   microchip/pic32c/pic32ck_sg01_cult/pic32ck_sg01_cult.dts; do
   board=${f#*/}
   mkdir -p "$out/$(dirname "$board")"

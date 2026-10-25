@@ -524,7 +524,7 @@ try {
     const accept = (d) => d.accept();
     page.on('dialog', accept);
     const cpus = await page.getByTestId('board').locator('option').evaluateAll((os) => os.map((o) => o.value));
-    assert.equal(cpus.length, 16);
+    assert.equal(cpus.length, 15);
     for (const c of ['nrf5340', 'rp2350', 'stm32l552']) {
         await page.getByTestId('board').selectOption(c);
       await page.waitForFunction((cpu) => document.querySelector('svg image')?.getAttribute('href')?.includes(`${cpu}.svg`), c);

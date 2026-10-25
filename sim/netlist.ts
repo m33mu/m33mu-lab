@@ -19,7 +19,13 @@ export type DiodeModel = {
 export type BjtModel = { is: number; bf: number; br: number };
 export type MosModel = { vto: number; kp: number; lambda: number };
 /** Five-terminal, rail-limited op-amp macro model. */
-export type OpampModel = { gain: number; rOut: number; rIn: number; headroom: number };
+export type OpampModel = {
+  gain: number; rOut: number; rIn: number; headroom: number;
+  /** Gain-bandwidth product (Hz): one dominant pole at gbw / gain. Absent or 0 = ideal. */
+  gbw?: number;
+  /** Slew-rate limit of the output (V/s). Absent or 0 = unlimited. */
+  slewRate?: number;
+};
 
 /** Behavioural low-dropout regulator: output follows min(vset, vin - dropout)
  * through rOut, sources only, and draws iq from the input. */
@@ -87,7 +93,7 @@ export const MODELS = {
   nmosGeneric: { vto: 1.5, kp: 0.02, lambda: 0 } as MosModel,
   pmosGeneric: { vto: -1.5, kp: 0.02, lambda: 0 } as MosModel,
   ldo3v3: { vset: 3.3, dropout: 0.3, rOut: 0.05, iq: 50e-6 } as RegulatorModel,
-  opampGeneric: { gain: 1e5, rOut: 20, rIn: 1e9, headroom: 0.2 } as OpampModel
+  opampGeneric: { gain: 1e5, rOut: 20, rIn: 1e9, headroom: 0.2, gbw: 1e6, slewRate: 0.5e6 } as OpampModel
 };
 
 export function defaultPad(socPad: string, vdd = 3.3): PadElectrical {
@@ -198,6 +204,10 @@ export function validateNetlist(netlist: unknown): string[] {
       if (!d.model || !positive(d.model.gain) || !positive(d.model.rOut) ||
           !positive(d.model.rIn) || !(finite(d.model.headroom) && d.model.headroom >= 0)) {
         errors.push(`${d.id}: op-amp model needs gain, rOut, rIn > 0 and headroom >= 0`);
+      }
+      for (const k of ['gbw', 'slewRate'] as const) {
+        const v = d.model?.[k];
+        if (v !== undefined && !(finite(v) && v >= 0)) errors.push(`${d.id}: op-amp ${k} must be >= 0`);
       }
       if (d.vcc === d.vee) errors.push(`${d.id}: supply rails must differ`);
       break;

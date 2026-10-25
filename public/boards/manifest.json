@@ -150,16 +150,6 @@
       "contacts": 107,
       "pinsWithVerifiedSignal": 0,
       "manufacturerBoardVerified": true
-    },
-    {
-      "cpu": "imxrt700",
-      "boardName": "MIMXRT700-EVK",
-      "family": "rt700",
-      "width": 1020,
-      "height": 800,
-      "contacts": 190,
-      "pinsWithVerifiedSignal": 0,
-      "manufacturerBoardVerified": true
     }
   ]
 }

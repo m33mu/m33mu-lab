@@ -104,11 +104,14 @@ type Compiled = {
 //  diode/led: [vdIter]
 //  bjt:       [vbeIter, vbcIter]
 //  mos:       [vgsIter, vdsIter]
+//  opamp:     [yPrev] open-loop output relative to mid-rail (dominant pole)
 //  pad:       [vCinPrev, iCinPrev, driveCode, pullCode, digital]
 const STATE_SLOTS: Record<DeviceSpec['kind'], number> = {
   ground: 0, resistor: 0, capacitor: 2, inductor: 1, vsource: 0, isource: 0,
-  diode: 1, led: 1, switch: 1, npn: 2, pnp: 2, nmos: 2, pmos: 2, opamp: 0, regulator: 0, pad: 5
+  diode: 1, led: 1, switch: 1, npn: 2, pnp: 2, nmos: 2, pmos: 2, opamp: 1, regulator: 0, pad: 5
 };
+
+const opampDynamic = (m: { gbw?: number; slewRate?: number }) => !!(m.gbw || m.slewRate);
 
 const DRIVE_CODE: Record<PadDrive, number> = { z: 0, low: 1, high: 2 };
 const PULL_CODE: Record<PadPull, number> = { none: 0, up: 1, down: 2 };
@@ -255,6 +258,9 @@ export class Circuit {
       else if (d.kind === 'pad' && d.spec.kind === 'pad' && d.spec.pad.cIn > 0) {
         this.reactive.push({ index: -1, kind: 'v', a: d.n[0], b: -1 });
       } else if (d.kind === 'inductor') this.reactive.push({ index: d.branch, kind: 'i', a: -1, b: -1 });
+      else if (d.spec.kind === 'opamp' && opampDynamic(d.spec.model)) {
+        this.reactive.push({ index: -1, kind: 'v', a: d.n[2], b: -1 });
+      }
       if (d.spec.kind === 'pad') {
         this.state[d.state + 2] = DRIVE_CODE[d.spec.pad.drive];
         this.state[d.state + 3] = PULL_CODE[d.spec.pad.pull];
@@ -315,7 +321,8 @@ export class Circuit {
     case 'regulator': return this.regulatorCurrents(d.n, s.model,
       d.n.map((i) => this.v(i)))[1] * -1;
     case 'opamp': {
-      const target = this.opampTarget(d.n, s.model.gain, s.model.headroom, this.x).target;
+      const ol = opampDynamic(s.model) ? { y: this.state[d.state], dy: 0 } : this.opampOpenLoop(d, null, this.x, this.state);
+      const target = this.opampTarget(d.n, ol, s.model.headroom, this.x).target;
       return (target - this.v(d.n[2])) / s.model.rOut;
     }
     default: return 0;
@@ -481,23 +488,47 @@ export class Circuit {
     return [out + m.iq, -out, -m.iq];
   }
 
+  /** Open-loop output y (relative to mid-rail) and dy/d(v+ - v-). Ideal: gain * vd.
+   * With a GBW pole and slew limit, one backward-Euler step from the committed
+   * y; the slew limit is a smooth tanh clamp on the step. */
+  private opampOpenLoop(d: Compiled, ctx: Ctx | null, x: Float64Array, st: Float64Array) {
+    const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
+    const vd = this.v(d.n[0], x) - this.v(d.n[1], x);
+    const gain = s.model.gain;
+    if (!ctx || ctx.dc || !opampDynamic(s.model)) return { y: gain * vd, dy: gain };
+    const yPrev = this.state[d.state];
+    const a = s.model.gbw ? ctx.h * 2 * Math.PI * s.model.gbw / gain : Infinity;
+    let y = a === Infinity ? gain * vd : (yPrev + a * gain * vd) / (1 + a);
+    let dy = a === Infinity ? gain : a * gain / (1 + a);
+    if (s.model.slewRate) {
+      const lim = s.model.slewRate * ctx.h;
+      const t = Math.tanh((y - yPrev) / lim);
+      dy *= 1 - t * t;
+      y = yPrev + lim * t;
+    }
+    st[d.state] = y;
+    return { y, dy };
+  }
+
   /** Smoothly limit open-loop output to the supply rails. The derivative is
    * used in the Newton stamp, including changes in the supply voltages. */
-  private opampTarget(n: number[], gain: number, headroom: number, x: Float64Array) {
-    const plus = this.v(n[0], x);
-    const minus = this.v(n[1], x);
+  private opampTarget(n: number[], ol: { y: number; dy: number }, headroom: number, x: Float64Array) {
     const hi = this.v(n[3], x);
     const lo = this.v(n[4], x);
     const mid = (hi + lo) / 2;
     const rawSpan = (hi - lo) / 2 - headroom;
     const span = Math.max(rawSpan, 1e-6);
-    const z = Math.max(-30, Math.min(30, gain * (plus - minus) / span));
-    const t = Math.tanh(z);
-    const sech2 = 1 - t * t;
+    // Sharp smooth limiter u = z / (1 + z^16)^(1/16): linear to ~0.85 of the
+    // span, so the anti-windup clamp can sit just past the rail.
+    const z = Math.max(-1e6, Math.min(1e6, ol.y / span));
+    const z16 = Math.pow(z, 16);
+    const root = Math.pow(1 + z16, 1 / 16);
+    const t = z / root;  // limited output / span
+    const sech2 = 1 / ((1 + z16) * root);
     const dSpan = rawSpan > 1e-6 ? t - z * sech2 : 0;
     return {
       target: mid + span * t,
-      derivative: [gain * sech2, -gain * sech2, 0,
+      derivative: [ol.dy * sech2, -ol.dy * sech2, 0,
         (1 + dSpan) / 2, (1 - dSpan) / 2]
     };
   }
@@ -679,7 +710,7 @@ export class Circuit {
         break;
       }
       case 'opamp': {
-        const op = this.opampTarget(n, s.model.gain, s.model.headroom, x);
+        const op = this.opampTarget(n, this.opampOpenLoop(d, ctx, x, st), s.model.headroom, x);
         const source = (op.target - this.v(n[2], x)) / s.model.rOut;
         const dSource = op.derivative.map((v, j) =>
           (v - (j === 2 ? 1 : 0)) / s.model.rOut);
@@ -765,6 +796,8 @@ export class Circuit {
         this.state[d.state + 1] = 0;
       } else if (d.kind === 'inductor') {
         this.state[d.state] = 0;
+      } else if (d.spec.kind === 'opamp') {
+        this.state[d.state] = this.opampSettled(d);
       }
     }
     this.initDigital();
@@ -778,10 +811,26 @@ export class Circuit {
       if (d.kind === 'capacitor' || d.kind === 'pad') {
         this.state[d.state] = 0;
         this.state[d.state + 1] = 0;
+      } else if (d.kind === 'opamp') {
+        this.state[d.state] = 0;
       }
     }
     this.initDigital();
     this.breakpoint();
+  }
+
+  /** Committed open-loop output after a DC solve, bounded so a saturated
+   * output recovers in finite time (anti-windup). */
+  private opampSettled(d: Compiled): number {
+    const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
+    const y = s.model.gain * (this.v(d.n[0]) - this.v(d.n[1]));
+    return this.opampWindupClamp(d, y, this.x);
+  }
+
+  private opampWindupClamp(d: Compiled, y: number, x: Float64Array): number {
+    const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
+    const span = Math.max((this.v(d.n[3], x) - this.v(d.n[4], x)) / 2 - s.model.headroom, 1e-6);
+    return Math.max(-1.15 * span, Math.min(1.15 * span, y));
   }
 
   private initDigital(): void {
@@ -814,6 +863,8 @@ export class Circuit {
         st[d.state + 1] = method === 'trap' ? geq * (vNew - vPrev) - iPrev : geq * (vNew - vPrev);
       } else if (s.kind === 'inductor') {
         st[d.state] = this.v(d.n[0], xs) - this.v(d.n[1], xs);
+      } else if (s.kind === 'opamp' && opampDynamic(s.model)) {
+        st[d.state] = this.opampWindupClamp(d, st[d.state], xs);
       }
     }
     return true;

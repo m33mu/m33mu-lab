@@ -15,7 +15,7 @@ Without them the build still works: crypto registers read as the CLI without wol
 
 ## On-chip engines
 
-Whatever the target's MMIO model implements, as in the CLI: STM32 HASH/AES/SAES/PKA/RNG, LPC55S69 HASHCRYPT and CASPER, nRF5340 CryptoCell, the MCX/RT700/RW612 secure blocks. Firmware simply uses them. Verified in the browser worker by `scripts/test-web-crypto.mjs` with m33mu's test firmware (HASHCRYPT SHA-256/AES-ECB, CASPER, CryptoCell, U585 PKA ECDSA P-256 sign and verify).
+Whatever the target's MMIO model implements, as in the CLI: STM32 HASH/AES/SAES/PKA/RNG, LPC55S69 HASHCRYPT and CASPER, nRF5340 CryptoCell, the MCX/RW612 secure blocks. Firmware simply uses them. Verified in the browser worker by `scripts/test-web-crypto.mjs` with m33mu's test firmware (HASHCRYPT SHA-256/AES-ECB, CASPER, CryptoCell, U585 PKA ECDSA P-256 sign and verify).
 
 ## Secure elements on the bench
 

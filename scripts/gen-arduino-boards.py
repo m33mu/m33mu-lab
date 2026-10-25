@@ -53,10 +53,6 @@ def pic32(ctrl, pin):
     return f"P{ctrl[-1].upper()}{int(pin)}"
 
 
-def rt700(ctrl, pin):
-    return f"PIO{int(re.sub(r'[^0-9]', '', ctrl))}_{int(pin)}"
-
-
 BOARDS = {
     "nrf5340": ("nordic/nrf5340dk/nrf5340dk_common.dtsi", nordic, True),
     "nrf54lm20": ("nordic/nrf54lm20dk/nrf54lm20dk_common.dtsi", nordic, False),
@@ -66,7 +62,6 @@ BOARDS = {
     "rw612": ("nxp/frdm_rw612/frdm_rw612_common.dtsi", rw612, True),
     "m2354": ("nuvoton/numaker_m2354/user-manual", None, True),
     "pic32ck": ("microchip/pic32c/pic32ck_sg01_cult/pic32ck_sg01_cult.dts", pic32, False),
-    "imxrt700": ("nxp/mimxrt700_evk/mimxrt700_evk_mimxrt798s_cm33_cpu0.dts", rt700, False),
 }
 GPIO = r"&(gpio[0-9a-z]+|hsgpio[0-9]|port[a-z]) (\d+)"
 

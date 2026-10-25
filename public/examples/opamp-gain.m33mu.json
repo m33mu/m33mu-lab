@@ -48,7 +48,9 @@
         "gain": 100000,
         "rOut": 20,
         "rIn": 1000000000,
-        "headroom": 0.2
+        "headroom": 0.2,
+        "gbw": 1000000,
+        "slewRate": 500000
       }
     },
     {

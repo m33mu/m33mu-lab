@@ -97,8 +97,7 @@ export const BOARDS = {
   lpc55s69: { name: 'LPCXpresso55S69', layoutRevision: 'LPCXpresso55S69 (Zephyr Arduino map)', vcp: null },
   pic32ck: { name: 'PIC32CK SG01 Curiosity Ultra', layoutRevision: 'PIC32CK SG01 Curiosity Ultra (Zephyr LEDs/buttons)', vcp: null },
   m2354: { name: 'NuMaker-M2354', layoutRevision: 'NuMaker-M2354 (UM Rev 1.00 Table 3-3)', vcp: null },
-  rw612: { name: 'FRDM-RW612', layoutRevision: 'FRDM-RW612 (Zephyr Arduino map)', vcp: null },
-  imxrt700: { name: 'MIMXRT700-EVK', layoutRevision: 'MIMXRT700-EVK (Zephyr LEDs/buttons)', vcp: null }
+  rw612: { name: 'FRDM-RW612', layoutRevision: 'FRDM-RW612 (Zephyr Arduino map)', vcp: null }
 } as const;
 export type CpuName = keyof typeof BOARDS;
 export const isCpu = (v: unknown): v is CpuName => typeof v === 'string' && Object.hasOwn(BOARDS, v);
@@ -211,6 +210,8 @@ export function validateProject(value: unknown): Project {
     }
     if (!isObject(part.params)) fail(`Part ${part.id}: params must be an object`);
     for (const spec of def.params) {
+      // Parameters added after a part shipped load with the old behaviour.
+      if (part.params[spec.key] === undefined && spec.absent !== undefined) part.params[spec.key] = spec.absent;
       const v = part.params[spec.key];
       if (spec.text) {
         if (typeof v !== 'string' || v.length > spec.text.maxLength) fail(`Part ${part.id}: invalid ${spec.label}`);

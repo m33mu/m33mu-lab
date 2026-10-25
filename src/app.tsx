@@ -687,7 +687,7 @@ export function App() {
           })}
           <h2>Capabilities</h2>
           <ul className="caps">
-            <li className="on">Firmware execution ({cpu}, ELF){cpu === 'imxrt700' ? ' — boots from a BIN/FCB image in the CLI only' : ''}</li>
+            <li className="on">Firmware execution ({cpu}, ELF)</li>
             <li className="on">Analog transient solver (R, C, L, diode, LED, BJT, MOSFET, switch, supplies)</li>
             {(() => {
               const all = layout?.connectors.flatMap((c) => c.contacts) ?? [];

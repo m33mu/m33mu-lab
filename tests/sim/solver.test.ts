@@ -129,8 +129,9 @@ test('op-amp inverting feedback and capacitive load survive snapshot/restore', (
     { kind: 'resistor', id: 'ri', a: 'rin', b: 'fb', ohms: 10e3 },
     { kind: 'resistor', id: 'rf', a: 'out', b: 'fb', ohms: 20e3 },
     { kind: 'capacitor', id: 'cl', a: 'out', b: '0', farads: 1e-6 },
+    // Ideal (no GBW pole): 1 uF behind 20 ohm would ring a 1 MHz part, as it would on the bench.
     { kind: 'opamp', id: 'u1', plus: '0', minus: 'fb', out: 'out', vcc: 'vcc', vee: 'vee',
-      model: MODELS.opampGeneric }
+      model: { ...MODELS.opampGeneric, gbw: 0, slewRate: 0 } }
   ] });
   c.operatingPoint();
   assert.ok(Math.abs(c.nodeVoltage('out')) < 1e-5);
@@ -144,6 +145,60 @@ test('op-amp inverting feedback and capacitive load survive snapshot/restore', (
   assert.equal(c.nodeVoltage('out'), first);
   c.advanceTo(200e-6);
   assert.ok(Math.abs(c.nodeVoltage('out') + 2) < 0.004, `settled output ${c.nodeVoltage('out')}`);
+});
+
+test('op-amp follower slews at its slew rate on a large step', () => {
+  const c = new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'vsource', id: 'vcc', p: 'vcc', n: '0', volts: 5 },
+    { kind: 'vsource', id: 'vin', p: 'in', n: '0', volts: 0,
+      pwl: { timesNs: [0, 1, 1e6], volts: [0, 3, 3] } },
+    { kind: 'resistor', id: 'load', a: 'out', b: '0', ohms: 10e3 },
+    { kind: 'opamp', id: 'u1', plus: 'in', minus: 'out', out: 'out', vcc: 'vcc', vee: '0',
+      model: { ...MODELS.opampGeneric, gbw: 1e6, slewRate: 0.5e6 } }
+  ] });
+  c.operatingPoint();
+  // From the 0.2 V low rail at 0.5 V/us, after < 1 us of saturation recovery.
+  c.advanceTo(4e-6);
+  const mid = c.nodeVoltage('out');
+  assert.ok(mid > 1.4 && mid < 2.2, `slewing output at 4 us ${mid}`);
+  c.advanceTo(5e-6);
+  assert.ok(Math.abs(c.nodeVoltage('out') - mid - 0.5) < 0.02, 'slope is the slew rate');
+  c.advanceTo(20e-6);
+  assert.ok(Math.abs(c.nodeVoltage('out') - 3) < 0.005, `settled ${c.nodeVoltage('out')}`);
+});
+
+test('op-amp follower small-signal step follows the GBW pole', () => {
+  const c = new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'vsource', id: 'vcc', p: 'vcc', n: '0', volts: 5 },
+    { kind: 'vsource', id: 'vin', p: 'in', n: '0', volts: 1,
+      pwl: { timesNs: [0, 0.1, 1e6], volts: [1, 1.01, 1.01] } },
+    { kind: 'opamp', id: 'u1', plus: 'in', minus: 'out', out: 'out', vcc: 'vcc', vee: '0',
+      model: { ...MODELS.opampGeneric, gbw: 1e6, slewRate: 0 } }
+  ] });
+  c.operatingPoint();
+  const tau = 1 / (2 * Math.PI * 1e6);
+  c.advanceTo(tau);
+  const frac = (c.nodeVoltage('out') - 1) / 0.01;
+  assert.ok(Math.abs(frac - (1 - Math.exp(-1))) < 0.05, `fraction at tau ${frac}`);
+  c.advanceTo(10 * tau);
+  assert.ok(Math.abs(c.nodeVoltage('out') - 1.01) < 1e-4);
+});
+
+test('op-amp comparator recovers from saturation quickly (no windup)', () => {
+  const c = new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'vsource', id: 'vcc', p: 'vcc', n: '0', volts: 5 },
+    { kind: 'vsource', id: 'ref', p: 'ref', n: '0', volts: 2.5 },
+    { kind: 'vsource', id: 'vin', p: 'in', n: '0', volts: 5,
+      pwl: { timesNs: [0, 100e3, 100.001e3, 1e9], volts: [5, 5, 0, 0] } },
+    { kind: 'resistor', id: 'load', a: 'out', b: '0', ohms: 10e3 },
+    { kind: 'opamp', id: 'u1', plus: 'in', minus: 'ref', out: 'out', vcc: 'vcc', vee: '0',
+      model: MODELS.opampGeneric }
+  ] });
+  c.operatingPoint();
+  c.advanceTo(100e-6);
+  assert.ok(c.nodeVoltage('out') > 4.5);
+  c.advanceTo(115e-6);
+  assert.ok(c.nodeVoltage('out') < 0.5, `output 15 us after the input fell ${c.nodeVoltage('out')}`);
 });
 
 test('op-amp rejects invalid model parameters', () => {
