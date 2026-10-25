@@ -138,3 +138,10 @@ Updated 2026-10-23 (full-suite validation HEAD `158ff47`; solver acceptance prob
 - m33mu 1038a50 (submodule bump): pad reporting/external inputs for M2354, PIC32CK, RT700.
 - `scripts/gen-arduino-boards.py ../m33mu-ui-plan/m33mu_board_sprites.zip`; evidence in `boards/{m2354,pic32ck,imxrt700}-pins.json`.
 - Tested: `validate-web-boards.py`, `node tests/run-unit.mjs` (60 pass), `cd build && ctest` (8/8 pass).
+
+## 2026-10-25 — RT700 out of the workbench; op-amp dynamics; bus wiring; UX pass
+- i.MX RT700 removed from the board picker, schemas and generated boards (m33mu keeps the CPU).
+- Op-amp: dominant pole at GBW/gain (backward Euler on the open-loop state), tanh slew clamp, sharp rail limiter with anti-windup at 1.15× span. Tests: slewing follower, small-signal step at tau, comparator recovery.
+- `src/project/buswire.ts`: SPI/I²C buses from silkscreen functions and Arduino labels; Inspector "Connect to bus".
+- UX: grouped, filterable parts palette with short names; labelled probe buttons (current / voltage → CH1/CH2); zoom −/+ and fit view (F); inline favicon (no 404 on load).
+- Tested: `node tests/run-unit.mjs` (66 pass), `validate-web-boards.py`, `validate-web-schemas.py`, `cd build && ctest` (8/8), `M33MU_WASM_RUST_SE=ON node tests/browser/workbench.browser.mjs` (all checks ok).

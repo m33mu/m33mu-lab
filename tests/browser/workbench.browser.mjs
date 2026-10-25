@@ -391,6 +391,34 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  await check('one selection wires an SPI flash to SPI1 and the firmware reads its JEDEC ID', async () => {
+    await page.getByTestId('examples').selectOption('h563-bus');
+    await page.waitForFunction(() => /bus demo/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    // Replace the example's hand-wired flash with an unwired one.
+    await page.locator('g[data-part="flash1"]').click({ force: true });
+    await page.keyboard.press('Delete');
+    await page.getByTestId('part-filter').fill('flash');
+    await page.getByTestId('place-spi-flash').click();
+    await page.getByTestId('part-filter').fill('');
+    const canvas = await page.getByTestId('bench-canvas').boundingBox();
+    await page.mouse.click(canvas.x + canvas.width * 0.8, canvas.y + canvas.height * 0.7);
+    await page.keyboard.press('Escape');
+    const placed = await page.evaluate(() => [...document.querySelectorAll('g[data-part]')].map((g) => g.getAttribute('data-part'))
+      .find((id) => /^flash/.test(id)));
+    await page.locator(`g[data-part="${placed}"]`).click({ force: true });
+    assert.match(await page.getByTestId('bus-select').locator('option:checked').textContent(), /^SPI1 \(PA5 SCK, PB5 MOSI, PG9 MISO, PD14 CS\)/);
+    assert.match(await page.getByTestId('bus-cs').locator('option:checked').textContent(), /PD14/);
+    await page.getByTestId('bus-wire').click();
+    await page.waitForFunction(() => /Wired flash/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await shot('09-spi-bus-wired');
+    await page.getByTestId('real-time').uncheck();
+    await page.getByTestId('run').click();
+    await page.getByTestId('tab-USART3').click();
+    await page.getByTestId('terminal-USART3').locator('pre').getByText(/JEDEC=EF4018/).first().waitFor({ timeout: 60000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('real-time').check();
+  });
+
   if (process.env.M33MU_WASM_RUST_SE === 'ON') {
     await check('secure elements example: m33mu models answer on SPI1/I2C1/I2C2, removing one fails the suite', async () => {
       await page.getByTestId('examples').selectOption('h563-secure-elements');

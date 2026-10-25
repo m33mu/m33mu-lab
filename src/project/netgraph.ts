@@ -19,6 +19,10 @@ export type LayoutContact = {
   socPad?: string | null;
   mapping_verified: boolean;
   electricalEnabled?: boolean;
+  /** Peripheral function(s) on the board silkscreen, "/"-separated (SPI1_SCK). */
+  function?: string;
+  /** Free note, e.g. "Arduino D13" for a Zio contact. */
+  note?: string;
 };
 
 export type BoardLayout = {

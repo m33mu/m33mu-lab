@@ -1,5 +1,6 @@
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BenchCanvas, type Selection, type Tool } from './canvas/BenchCanvas.tsx';
+import { busOptions, wireBus } from './project/buswire.ts';
 import { Inspector, type McuPadInfo, type Observation } from './Inspector.tsx';
 import { DiagnosticsPanel } from './DiagnosticsPanel.tsx';
 import { isSecureElement, SECURE_ELEMENTS } from '../sim/buses.ts';
@@ -32,9 +33,16 @@ type BenchStats = {
 };
 
 const hex = (v: number) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
-const PALETTE: PartKind[] = ['breadboard', 'resistor', 'capacitor', 'led', 'diode', 'switch', 'npn', 'nmos', 'opamp', 'regulator', 'supply', 'sigc-source', 'ground',
-  'i2c-eeprom', 'i2c-temp', 'spi-flash', 'usb-uart', 'sniffer',
-  'se-atecc608', 'se-ta100', 'se-tropic01', 'se-se050', 'se-stsafe'];
+const PALETTE: { group: string; parts: [PartKind, string][] }[] = [
+  { group: 'Basics', parts: [['breadboard', 'Breadboard'], ['resistor', 'Resistor'], ['capacitor', 'Capacitor'],
+    ['led', 'LED'], ['switch', 'Push button'], ['ground', 'Ground']] },
+  { group: 'Semiconductors', parts: [['diode', 'Diode 1N4148'], ['npn', 'NPN 2N3904'], ['nmos', 'N-MOSFET'], ['opamp', 'Op-amp']] },
+  { group: 'Power & signals', parts: [['supply', 'DC supply'], ['regulator', 'LDO regulator'], ['sigc-source', 'Signal source (SIGC)']] },
+  { group: 'Bus modules', parts: [['i2c-eeprom', 'I²C EEPROM 24C02'], ['i2c-temp', 'I²C temp TMP102'], ['spi-flash', 'SPI flash W25Q'],
+    ['usb-uart', 'USB-UART adapter'], ['sniffer', 'Bus sniffer']] },
+  { group: 'Secure elements', parts: [['se-atecc608', 'ATECC608A (SPI)'], ['se-ta100', 'TA100 (SPI)'], ['se-tropic01', 'TROPIC01 (SPI)'],
+    ['se-se050', 'SE050 (I²C)'], ['se-stsafe', 'STSAFE-A120 (I²C)']] }
+];
 
 async function sha256(bytes: Uint8Array): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', bytes as BufferSource);
@@ -61,6 +69,7 @@ const assetUrl = (path: string) => new URL(path, document.baseURI).href;
 
 export function App() {
   const [history, setHistory] = useState(() => createHistory<Project>(emptyProject()));
+  const [partFilter, setPartFilter] = useState('');
   const project = history.present;
   const [layout, setLayout] = useState<BoardLayout | null>(null);
   const [selection, setSelection] = useState<Selection>(null);
@@ -112,6 +121,7 @@ export function App() {
   const layouts = useMemo(() => new Map(layout ? [[layout.cpu, layout]] : []), [layout]);
   const compiled = useMemo(() => compileCircuit(project, layouts), [project, layouts]);
   const terminals = useMemo(() => allTerminals(project, layouts), [project, layouts]);
+  const buses = useMemo(() => busOptions(project, layouts), [project.boards, layouts]);
   const terminalMap = useMemo(() => new Map(terminals.map((t) => [t.key, t])), [terminals]);
   const errors = compiled.diagnostics.filter((d) => d.severity === 'error');
   const errorKeys = useMemo(() => new Set(errors.flatMap((d) => d.refs ?? [])), [errors]);
@@ -292,6 +302,47 @@ export function App() {
     setSelection(null);
   }
 
+  function canvasRect() {
+    return document.querySelector('[data-testid=bench-canvas]')?.getBoundingClientRect() ?? null;
+  }
+
+  function zoomBy(factor: number) {
+    const r = canvasRect();
+    if (!r) return;
+    const { zoom, panX, panY } = project.ui;
+    const z = Math.min(8, Math.max(0.1, zoom * factor));
+    const cx = r.width / 2, cy = r.height / 2;
+    view({ ...project, ui: { zoom: z, panX: cx - (cx - panX) / zoom * z, panY: cy - (cy - panY) / zoom * z } });
+  }
+
+  /** Zoom and pan so the boards and every part fit the canvas. */
+  function fitView() {
+    const r = canvasRect();
+    if (!r) return;
+    const xs: number[] = [], ys: number[] = [];
+    for (const b of project.boards) {
+      const l = layouts.get(b.cpu);
+      if (!l) continue;
+      xs.push(b.x, b.x + l.pixelViewbox[2]);
+      ys.push(b.y, b.y + l.pixelViewbox[3]);
+    }
+    for (const t of terminals) { xs.push(t.x); ys.push(t.y); }
+    if (!xs.length) return;
+    const pad = 40;
+    const x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad;
+    const y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + pad;
+    const z = Math.min(8, Math.max(0.1, Math.min(r.width / (x1 - x0), r.height / (y1 - y0))));
+    view({ ...project, ui: { zoom: z, panX: (r.width - (x1 - x0) * z) / 2 - x0 * z, panY: (r.height - (y1 - y0) * z) / 2 - y0 * z } });
+  }
+
+  function wireBusFor(partId: string, busId: string, csKey: string | null) {
+    const bus = buses.find((b) => b.id === busId);
+    if (!bus) return;
+    const r = wireBus(project, terminals, partId, bus, csKey);
+    if (!r.added) { setMessage(`Nothing to wire: ${r.missing.join(', ')} have no matching board contact`); return; }
+    edit(r.project, `Wired ${partId} to ${bus.label}` + (r.missing.length ? `; not wired: ${r.missing.join(', ')}` : ''));
+  }
+
   function rotateSelection() {
     if (selection?.kind !== 'part') return;
     edit({ ...project, parts: project.parts.map((p) => p.id === selection.id ?
@@ -357,6 +408,7 @@ export function App() {
       else if (e.key.toLowerCase() === 'r' && !mod) rotateSelection();
       else if (e.key.toLowerCase() === 'w' && !mod) setTool({ kind: 'wire' });
       else if (e.key.toLowerCase() === 'v' && !mod) setTool({ kind: 'select' });
+      else if (e.key.toLowerCase() === 'f' && !mod) fitView();
       else if (e.key.startsWith('Arrow') && selection?.kind === 'part') {
         e.preventDefault();
         const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key] ?? [0, 0];
@@ -675,14 +727,27 @@ export function App() {
             <button onClick={() => setHistory(redo)} disabled={!history.future.length}>Redo</button>
           </div>
           <h2>Parts</h2>
-          {PALETTE.map((k) => {
-            const se = isSecureElement(k) ? SECURE_ELEMENTS[k] : null;
-            const missing = se !== null && features !== null && !features[se.feature];
+          <input type="search" className="part-filter" placeholder="Filter parts…" value={partFilter}
+            onChange={(e) => setPartFilter(e.target.value)} data-testid="part-filter" aria-label="Filter parts" />
+          {PALETTE.map(({ group, parts }) => {
+            const q = partFilter.trim().toLowerCase();
+            const shown = parts.filter(([k, name]) => !q || name.toLowerCase().includes(q) || CATALOG[k].title.toLowerCase().includes(q));
+            if (!shown.length) return null;
             return (
-              <button key={k} className={tool.kind === 'place' && tool.part === k ? 'part-button active' : 'part-button'}
-                onClick={() => setTool({ kind: 'place', part: k })} data-testid={`place-${k}`}
-                title={missing ? 'This WASM build has no model for it: it will stay silent on the bus' : undefined}>
-                {CATALOG[k].title}{missing ? ' — not in this build' : ''}</button>
+              <div key={group} className="part-group">
+                <h3>{group}</h3>
+                {shown.map(([k, name]) => {
+                  const se = isSecureElement(k) ? SECURE_ELEMENTS[k] : null;
+                  const missing = se !== null && features !== null && !features[se.feature];
+                  return (
+                    <button key={k} className={tool.kind === 'place' && tool.part === k ? 'part-button active' : 'part-button'}
+                      onClick={() => setTool({ kind: 'place', part: k })} data-testid={`place-${k}`}
+                      title={CATALOG[k].title + (missing ? ' — this WASM build has no model for it: it will stay silent on the bus' : '')}>
+                      {se && <img src={assetUrl(`parts/${k}.svg`)} alt="" />}
+                      <span>{name}</span>{missing && <small>not in build</small>}</button>
+                  );
+                })}
+              </div>
             );
           })}
           <h2>Capabilities</h2>
@@ -719,7 +784,12 @@ export function App() {
             brightness={brightness} boardLeds={boardLeds} pressed={pressed} errorKeys={errorKeys}
             onSelect={setSelection} onCommit={edit} onView={view} onPress={press} onBoardButton={boardButton} onHover={setHoverText} />
           <div className="canvas-status">
-            <span>{hoverText || `${Math.round(project.ui.zoom * 100)}%`}</span>
+            <span className="zoom">
+              <button type="button" onClick={() => zoomBy(1 / 1.25)} title="Zoom out" aria-label="Zoom out">−</button>
+              <button type="button" onClick={fitView} title="Fit board and parts in view (F)" data-testid="zoom-fit">{Math.round(project.ui.zoom * 100)}%</button>
+              <button type="button" onClick={() => zoomBy(1.25)} title="Zoom in" aria-label="Zoom in">+</button>
+            </span>
+            <span>{hoverText}</span>
             <span className="spacer" />
             {errors.length > 0 && <span className="error" data-testid="circuit-error">{errors[0].message}</span>}
             {errors.length === 0 && compiled.diagnostics.length > 0 && <span className="warning">{compiled.diagnostics[0].message}</span>}
@@ -728,7 +798,8 @@ export function App() {
         <aside className="side">
           <Inspector project={project} selection={selection} compiled={compiled} terminals={terminalMap}
             observation={observation} mcuPads={mcuPads} benchActive={benchActive}
-            onParam={setParam} onParams={setParams} onRotate={rotateSelection} onDelete={deleteSelection} onProbe={setProbe} />
+            onParam={setParam} onParams={setParams} onRotate={rotateSelection} onDelete={deleteSelection} onProbe={setProbe}
+            buses={buses} onWireBus={wireBusFor} />
           <div className="cpu">
             <h3>CPU {machine && <span className="muted">{formatSi(machine.cpuHz, 'Hz')}</span>}</h3>
             <div className="regs">

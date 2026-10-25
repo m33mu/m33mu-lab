@@ -6,6 +6,7 @@ import { decodeSigc } from './instruments/sigc.ts';
 import { type Project, type ProbeTarget, type TerminalRef, refKey } from './project/model.ts';
 import { type CompiledCircuit, type PlacedTerminal, partTerminals } from './project/netgraph.ts';
 import type { Selection } from './canvas/BenchCanvas.tsx';
+import { type BusOption, csCandidates, defaultChipSelect, partBusKind, usedChipSelects } from './project/buswire.ts';
 
 export type Observation = {
   timeNs: number;
@@ -32,7 +33,51 @@ type Props = {
   onRotate(): void;
   onDelete(): void;
   onProbe(channel: 0 | 1, target: ProbeTarget | null): void;
+  buses: BusOption[];
+  onWireBus(partId: string, busId: string, csKey: string | null): void;
 };
+
+/** Pick a board bus and a chip select, then wire every line in one step. */
+function BusConnect({ partId, kind, props }: { partId: string; kind: 'spi' | 'i2c'; props: Props }) {
+  const options = props.buses.filter((b) => b.kind === kind);
+  const [busId, setBusId] = useState(options[0]?.id ?? '');
+  const bus = options.find((b) => b.id === busId) ?? options[0];
+  const terminals = [...props.terminals.values()];
+  const fallback = bus && kind === 'spi' ? defaultChipSelect(props.project, terminals, partId, bus) : null;
+  const [cs, setCs] = useState<string | null>(null);
+  useEffect(() => setCs(null), [partId, busId]);
+  const cpu = props.project.boards.find((b) => b.id === options[0]?.board)?.cpu;
+  if (!options.length) {
+    return <p className="muted bus-connect">This board has no {kind === 'spi' ? 'SPI' : 'I²C'} header with a known pin map; wire the lines by hand.</p>;
+  }
+  const chosenCs = cs ?? fallback;
+  const used = usedChipSelects(props.project, terminals, partId);
+  return (
+    <fieldset className="bus-connect" data-testid="bus-connect">
+      <legend>Connect to {kind === 'spi' ? 'SPI' : 'I²C'} bus</legend>
+      <label className="param">Bus
+        <select value={bus.id} onChange={(e) => setBusId(e.target.value)} data-testid="bus-select">
+          {options.map((b) => <option key={b.id} value={b.id}>{b.label}</option>)}
+        </select>
+      </label>
+      {kind === 'spi' && (
+        <label className="param">Chip select
+          <select value={chosenCs ?? ''} onChange={(e) => setCs(e.target.value || null)} data-testid="bus-cs">
+            {!chosenCs && <option value="">(none free)</option>}
+            {csCandidates(terminals, bus.board).map((t) => (
+              <option key={t.key} value={t.key}>{t.label}{used.has(t.socPad ?? '') ? ' — CS of another part' : ''}</option>
+            ))}
+          </select>
+        </label>
+      )}
+      <button type="button" className="primary" data-testid="bus-wire" onClick={() => props.onWireBus(partId, bus.id, chosenCs)}>
+        Wire {kind === 'spi' ? 'SCK, MOSI, MISO, CS' : 'SCL, SDA'}, VCC and GND
+      </button>
+      {kind === 'i2c' && <p className="muted">I²C needs pull-ups: add 4.7 kΩ from SCL and SDA to 3V3 unless the board has them.</p>}
+      {cpu !== 'stm32h563' && <p className="muted">The wiring is the board's, but bus devices answer firmware only on the NUCLEO-H563ZI in this build.</p>}
+    </fieldset>
+  );
+}
 
 function ParamInput({ value, unit, onCommit }: { value: number; unit: string; onCommit(v: number): void }) {
   const [text, setText] = useState(formatSi(value, unit));
@@ -91,8 +136,10 @@ export function Inspector(props: Props) {
   };
   const probeButtons = (target: ProbeTarget) => (
     <div className="probe-buttons">
+      <span className="muted">{target.kind === 'current' ? 'Current' : `Voltage${target.at.kind === 'part' ? ` at ${target.at.terminal}` : ''}`} →</span>
       {[0, 1].map((c) => (
-        <button key={c} type="button" onClick={() => props.onProbe(c as 0 | 1, target)}>Probe on CH{c + 1}</button>
+        <button key={c} type="button" onClick={() => props.onProbe(c as 0 | 1, target)}
+          title={`Show this ${target.kind} on scope channel ${c + 1}`}>CH{c + 1}</button>
       ))}
     </div>
   );
@@ -101,7 +148,7 @@ export function Inspector(props: Props) {
     return (
       <div className="inspector empty">
         <p>Select a part, wire or board contact. Drag the background to pan, scroll to zoom.</p>
-        <p><kbd>V</kbd> select · <kbd>W</kbd> wire · <kbd>R</kbd> rotate · <kbd>Del</kbd> delete · <kbd>Ctrl+Z</kbd>/<kbd>Ctrl+Y</kbd> undo/redo</p>
+        <p><kbd>V</kbd> select · <kbd>W</kbd> wire · <kbd>R</kbd> rotate · <kbd>F</kbd> fit view · <kbd>Del</kbd> delete · <kbd>Ctrl+Z</kbd>/<kbd>Ctrl+Y</kbd> undo/redo</p>
       </div>
     );
   }
@@ -169,6 +216,7 @@ export function Inspector(props: Props) {
           )}
         </label>
       ))}
+      {partBusKind(part.kind) && <BusConnect key={part.id} partId={part.id} kind={partBusKind(part.kind)!} props={props} />}
       {part.kind !== 'breadboard' && (
         <dl>
           {terms.map((t) => {
