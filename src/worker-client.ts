@@ -50,7 +50,10 @@ export class WorkerClient {
     return () => this.listeners.delete(listener);
   }
 
+  private closed = false;
+
   request<T = any>(operation: string, payload: Record<string, unknown> = {}, transfer: Transferable[] = []): Promise<T> {
+    if (this.closed) return Promise.reject(new WorkerRequestError('CLOSED', 'Workbench worker was closed'));
     const requestId = this.nextId++;
     const response = new Promise<T>((resolve, reject) => this.pending.set(requestId, { resolve, reject }));
     this.worker.postMessage({ schemaVersion: 1, kind: 'request', requestId, operation, payload }, transfer);
@@ -58,6 +61,7 @@ export class WorkerClient {
   }
 
   terminate(): void {
+    this.closed = true;
     this.worker.terminate();
     for (const p of this.pending.values()) p.reject(new WorkerRequestError('CLOSED', 'Workbench closed'));
     this.pending.clear();

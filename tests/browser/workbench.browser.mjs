@@ -606,6 +606,32 @@ try {
     assert.equal(r[5], r[8]);
   });
 
+  // The Vite dev server runs React StrictMode's mount/unmount/mount: the
+  // worker must survive it (examples load and run, not hang silently).
+  await check('dev server (StrictMode): firmware example loads, analog example runs', async () => {
+    const { createServer: createVite } = await import('vite');
+    const vite = await createVite({ root: webRoot, logLevel: 'silent', server: { port: 5299, strictPort: false } });
+    await vite.listen();
+    try {
+      // Own context: the main one blocks every origin but the dist server.
+      const devContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+      const dev = await devContext.newPage();
+      await dev.goto(vite.resolvedUrls.local[0]);
+      const devStatus = () => dev.getByTestId('status-message').textContent();
+      await dev.getByTestId('examples').selectOption('h563-blink');
+      await dev.waitForFunction(() => /H563 LED blink/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''),
+        null, { timeout: 30000 });
+      await dev.getByTestId('examples').selectOption('divider');
+      await dev.waitForFunction(() => /DC divider/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+      await dev.getByTestId('run').click();
+      await dev.waitForFunction(() => document.querySelector('[data-testid=virtual-time]')?.textContent !== '0 s', null, { timeout: 30000 });
+      assert.doesNotMatch(await devStatus(), /closed|failed/i);
+      await devContext.close();
+    } finally {
+      await vite.close();
+    }
+  });
+
   assert.deepEqual(external, [], 'no network requests outside the local origin');
   assert.deepEqual(consoleErrors.filter((e) => !/favicon/.test(e)), []);
   console.log(`browser: chromium ${browser.version()}; ${results.join('; ')}`);

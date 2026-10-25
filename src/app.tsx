@@ -112,7 +112,9 @@ export function App() {
       .catch((e) => { if (live) setFault(String(e)); });
     return () => { live = false; };
   }, [cpu]);
-  useEffect(() => () => client.current?.terminate(), []);
+  // Dev StrictMode unmounts once before the real mount: drop the dead client
+  // so the next request starts a fresh worker.
+  useEffect(() => () => { client.current?.terminate(); client.current = null; }, []);
   useEffect(() => {
     fetch(assetUrl('examples/index.json')).then((r) => r.ok ? r.json() : { examples: [] })
       .then((d) => setExamples(d.examples ?? [])).catch(() => setExamples([]));
