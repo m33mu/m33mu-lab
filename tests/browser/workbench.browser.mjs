@@ -164,6 +164,7 @@ try {
   await check('H563 blink example runs with a glowing LED and scope trace', async () => {
     await page.getByTestId('examples').selectOption('h563-blink');
     await page.waitForFunction(() => /H563 LED blink/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    assert.equal(await page.getByTestId('examples').inputValue(), 'h563-blink', 'the menu shows the loaded example');
     await page.getByTestId('real-time').uncheck();
     await page.getByTestId('run').click();
     const t0 = Date.now();
@@ -399,6 +400,9 @@ try {
       await page.getByTestId('tab-USART3').click();
       const vcp = page.getByTestId('terminal-USART3').locator('pre');
       await vcp.getByText(/\[PASS\] All secure element tests passed/).waitFor({ timeout: 90000 });
+      // The suite ends at BKPT: Run turns into an enabled Restart.
+      await page.getByRole('button', { name: 'Restart' }).waitFor({ timeout: 30000 });
+      assert.equal(await page.getByTestId('run').isEnabled(), true);
       await shot('10-secure-elements');
       // Unplug the STSAFE (its wires go with it), reset the MCU and run again.
       await page.locator('g[data-part="se3"] image').click({ force: true });

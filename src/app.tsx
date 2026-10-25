@@ -68,6 +68,8 @@ export function App() {
   const [hoverText, setHoverText] = useState('');
   const [firmware, setFirmware] = useState<{ name: string; hash: string; bytes: Uint8Array } | null>(null);
   const [machine, setMachine] = useState<Machine | null>(null);
+  /** Example the current project was opened from ('' for others). */
+  const [currentExample, setCurrentExample] = useState('');
   const [symbols, setSymbols] = useState<ElfSymbol[]>([]);
   const [breakpoints, setBreakpointList] = useState<number[]>([]);
   const [runState, setRunState] = useState<RunState>('idle');
@@ -440,6 +442,8 @@ export function App() {
   async function run() {
     setFault('');
     try {
+      // Firmware that stopped (BKPT, lockup) starts over from reset.
+      if (runState === 'stopped' && firmware) await reset();
       if (hasCircuit) {
         if (!benchActive || benchStale) await startBench();
         await worker().request('runUntil', realTime ? { maxRatio: 1 } : {});
@@ -512,6 +516,7 @@ export function App() {
     setFault('');
     try {
       const p = parseProject(await file.text());
+      setCurrentExample('');
       if (p.simulator.firmwareBase64) {
         const bytes = Uint8Array.from(atob(p.simulator.firmwareBase64), (ch) => ch.charCodeAt(0));
         const hash = await sha256(bytes);
@@ -555,6 +560,7 @@ export function App() {
       setSelection(null);
       setDockTab(p.instruments.scopes[0]?.id ?? '');
       setMessage(`${ex.name}: ${ex.description}`);
+      setCurrentExample(ex.id);
     } catch (err) { fail(err); }
   }
 
@@ -570,6 +576,7 @@ export function App() {
     setFirmware(null); setMachine(null); setRunState('idle');
     resetScopes();
     setHistory(createHistory(emptyProject(next)));
+    setCurrentExample('');
     setSelection(null);
     setMessage(`${BOARDS[next].name}: load an ELF built for ${next}.`);
   }
@@ -603,7 +610,10 @@ export function App() {
     return [`V(${t?.label ?? 'net'})`, 'V'];
   };
   const timeNs = stats?.timeNs ?? (machine ? Number(machine.virtualTimeNs) : 0);
-  const canRun = runState !== 'running' && (hasCircuit ? errors.length === 0 : !!firmware && runState !== 'stopped');
+  const canRun = runState !== 'running' && (hasCircuit ? errors.length === 0 : !!firmware);
+  const runHint = runState === 'running' ? '' : hasCircuit && errors.length ? `Fix the circuit first: ${errors[0].message}`
+    : !hasCircuit && !firmware ? 'Load an ELF (or pick an example) or place a circuit to run'
+    : runState === 'stopped' ? 'Firmware stopped: Run restarts it from reset' : 'Run firmware and circuit';
 
   return (
     <main className="app">
@@ -620,7 +630,7 @@ export function App() {
           <span className={`dot ${runState}`} />{firmware ? firmware.name : 'No firmware'}
         </div>
         <div className="actions">
-          <select className="button" value="" onChange={(e) => void openExample(e.target.value)} aria-label="Examples" data-testid="examples">
+          <select className="button" value={currentExample} onChange={(e) => void openExample(e.target.value)} aria-label="Examples" data-testid="examples">
             <option value="">Examples…</option>
             {examples.map((ex) => <option key={ex.id} value={ex.id}>{ex.name}</option>)}
           </select>
@@ -629,7 +639,7 @@ export function App() {
           <label className="button primary">Load ELF<input type="file" accept=".elf,application/octet-stream" onChange={onElf} data-testid="elf-input" /></label>
           {runState === 'running'
             ? <button className="button" onClick={pause}>Pause</button>
-            : <button className="button go" onClick={run} disabled={!canRun} data-testid="run">Run</button>}
+            : <button className="button go" onClick={run} disabled={!canRun} title={runHint} data-testid="run">{runState === 'stopped' ? 'Restart' : 'Run'}</button>}
           <label className="toggle" title="Cap the bench at real time; off runs as fast as possible">
             <input type="checkbox" checked={realTime} onChange={(e) => setRealTime(e.target.checked)} data-testid="real-time" /> 1× real time
           </label>
