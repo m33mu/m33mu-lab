@@ -95,10 +95,10 @@ export const BOARDS = {
   nrf54lm20: { name: 'nRF54LM20 DK', layoutRevision: 'nRF54LM20 DK (Zephyr LEDs/buttons)', vcp: null },
   rp2350: { name: 'Raspberry Pi Pico 2', layoutRevision: PICO2_LAYOUT_REVISION, vcp: null },
   lpc55s69: { name: 'LPCXpresso55S69', layoutRevision: 'LPCXpresso55S69 (Zephyr Arduino map)', vcp: null },
-  pic32ck: { name: 'PIC32CK SG01 Curiosity Ultra', layoutRevision: PROVISIONAL, vcp: null },
-  m2354: { name: 'NuMaker-M2354', layoutRevision: PROVISIONAL, vcp: null },
+  pic32ck: { name: 'PIC32CK SG01 Curiosity Ultra', layoutRevision: 'PIC32CK SG01 Curiosity Ultra (Zephyr LEDs/buttons)', vcp: null },
+  m2354: { name: 'NuMaker-M2354', layoutRevision: 'NuMaker-M2354 (UM Rev 1.00 Table 3-3)', vcp: null },
   rw612: { name: 'FRDM-RW612', layoutRevision: 'FRDM-RW612 (Zephyr Arduino map)', vcp: null },
-  imxrt700: { name: 'MIMXRT700-EVK', layoutRevision: PROVISIONAL, vcp: null }
+  imxrt700: { name: 'MIMXRT700-EVK', layoutRevision: 'MIMXRT700-EVK (Zephyr LEDs/buttons)', vcp: null }
 } as const;
 export type CpuName = keyof typeof BOARDS;
 export const isCpu = (v: unknown): v is CpuName => typeof v === 'string' && Object.hasOwn(BOARDS, v);

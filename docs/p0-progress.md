@@ -133,3 +133,8 @@ Updated 2026-10-23 (full-suite validation HEAD `158ff47`; solver acceptance prob
 ## Not started
 - [ ] P2 analog device breadth, ADC and instruments.
 - [ ] P3 broad board mappings and developer workflows.
+
+## 2026-10-25 — LEDs/buttons on M2354, PIC32CK, RT700; pad reporting on all non-ST targets
+- m33mu 1038a50 (submodule bump): pad reporting/external inputs for M2354, PIC32CK, RT700.
+- `scripts/gen-arduino-boards.py ../m33mu-ui-plan/m33mu_board_sprites.zip`; evidence in `boards/{m2354,pic32ck,imxrt700}-pins.json`.
+- Tested: `validate-web-boards.py`, `node tests/run-unit.mjs` (60 pass), `cd build && ctest` (8/8 pass).

@@ -49,6 +49,14 @@ def lpc55(ctrl, pin):
     return f"PIO{ctrl[-1]}_{int(pin)}"
 
 
+def pic32(ctrl, pin):
+    return f"P{ctrl[-1].upper()}{int(pin)}"
+
+
+def rt700(ctrl, pin):
+    return f"PIO{int(re.sub(r'[^0-9]', '', ctrl))}_{int(pin)}"
+
+
 BOARDS = {
     "nrf5340": ("nordic/nrf5340dk/nrf5340dk_common.dtsi", nordic, True),
     "nrf54lm20": ("nordic/nrf54lm20dk/nrf54lm20dk_common.dtsi", nordic, False),
@@ -56,8 +64,11 @@ BOARDS = {
     "mcxn947": ("nxp/frdm_mcxn947/frdm_mcxn947.dtsi", mcxn, True),
     "mcxw71c": ("nxp/frdm_mcxw71/frdm_mcxw71.dts", mcxw, True),
     "rw612": ("nxp/frdm_rw612/frdm_rw612_common.dtsi", rw612, True),
+    "m2354": ("nuvoton/numaker_m2354/user-manual", None, True),
+    "pic32ck": ("microchip/pic32c/pic32ck_sg01_cult/pic32ck_sg01_cult.dts", pic32, False),
+    "imxrt700": ("nxp/mimxrt700_evk/mimxrt700_evk_mimxrt798s_cm33_cpu0.dts", rt700, False),
 }
-GPIO = r"&(gpio[0-9a-z]+|hsgpio[0-9]) (\d+)"
+GPIO = r"&(gpio[0-9a-z]+|hsgpio[0-9]|port[a-z]) (\d+)"
 
 # Uno R3 headers, pin 1 first, left to right as on the board.
 D_HIGH = ["SCL", "SDA", "AREF", "GND", "D13", "D12", "D11", "D10", "D9", "D8"]
@@ -68,7 +79,8 @@ RAILS = {"GND": "GND", "3V3": "3V3", "5V": "5V", "IOREF": "3V3"}
 
 
 def zfile(path):
-    return (ZSRC / path.split("/", 1)[1]).read_text(encoding="utf-8")
+    rel = path.split("/", 1)[1]
+    return (ZSRC / rel).read_text(encoding="utf-8")
 
 
 def node_body(text, compatible):
@@ -113,12 +125,26 @@ def leds_keys(text, name, compatible):
     return out
 
 
+# NuMaker-M2354: no Zephyr board; NuMaker-M2354 User Manual Rev 1.00
+# (cpu/m2354/UM_NuMaker-M2354_EN_Rev1.pdf in m33mu) Table 3-3 (NU1-NU4
+# Arduino UNO mapping), Table 3-16 and the schematic (LEDG/LEDR from VCC
+# through 330 R to PD.2/PD.3; SW2 to GND with R62 10 K pull-up on PF.11).
+M2354_UM = "m33mu cpu/m2354/UM_NuMaker-M2354_EN_Rev1.pdf"
+M2354_ARDUINO = {"D0": "PA8", "D1": "PA9", "D2": "PC1", "D3": "PC0", "D4": "PE7", "D5": "PE6", "D6": "PC12",
+                 "D7": "PC11", "D8": "PC9", "D9": "PC10", "D10": "PA3", "D11": "PA0", "D12": "PA1", "D13": "PA2",
+                 "SDA": "PG3", "SCL": "PG2", "A0": "PB11", "A1": "PB10", "A2": "PB9", "A3": "PB8", "A4": "PB7", "A5": "PB6"}
+MANUAL = {"m2354": (M2354_ARDUINO, [("LEDG", "PD2", False), ("LEDR", "PD3", False)], [("SW2", "PF11", False)])}
+
+
 def strip(cpu, base_layout, base_svg, cfg):
     path, name, has_header = cfg
-    text = zfile(path)
-    ard = arduino_map(text, name) if has_header else {}
-    leds = leds_keys(text, name, "gpio-leds")
-    keys = leds_keys(text, name, "gpio-keys")
+    if cpu in MANUAL:
+        ard, leds, keys = MANUAL[cpu]
+    else:
+        text = zfile(path)
+        ard = arduino_map(text, name) if has_header else {}
+        leds = leds_keys(text, name, "gpio-leds")
+        keys = leds_keys(text, name, "gpio-keys")
     vb = base_layout["pixelViewbox"]
     W, H = vb[2], vb[3]
     top = H + 30
@@ -128,8 +154,8 @@ def strip(cpu, base_layout, base_svg, cfg):
     connectors = []
     svg = ['<g id="m33mu-arduino-strip">',
            f'<rect x="10" y="{H + 8:g}" width="{W - 20:g}" height="{150:g}" rx="10" fill="#1b2430" stroke="#5bc4ae" stroke-width="2"/>']
-    caption = (f"Arduino R3 headers, LEDs and buttons: {Path(path).parts[1]} (Zephyr {REV[:12]})" if has_header
-               else f"User LEDs and buttons: {Path(path).parts[1]} (Zephyr {REV[:12]})")
+    origin = "NuMaker-M2354 UM Rev 1.00 Table 3-3" if cpu in MANUAL else f"{Path(path).parts[-2]} (Zephyr {REV[:12]})"
+    caption = (f"Arduino R3 headers, LEDs and buttons: {origin}" if has_header else f"User LEDs and buttons: {origin}")
     svg.append(f'<text x="24" y="{H + 28:g}" font-family="sans-serif" font-size="14" fill="#cfe9e3">{caption}</text>')
 
     def header(cid, labels, x, y, desc):
@@ -174,14 +200,16 @@ def strip(cpu, base_layout, base_svg, cfg):
     layout["pixelViewbox"] = [vb[0], vb[1], W, H + 170]
     layout["leds"] = out_leds
     layout["buttons"] = out_buttons
-    layout["electricalMapStatus"] = (f"Arduino R3 strip, LEDs and buttons from Zephyr {Path(path).parts[1]} "
-                                     "(gpio-map, gpio-leds, gpio-keys); sprite connectors visual-only")
+    layout["electricalMapStatus"] = f"Arduino R3 strip, LEDs and buttons from {origin}; sprite connectors visual-only"
     layout["generator"] = "scripts/gen-arduino-boards.py"
     out_svg = re.sub(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"', f'viewBox="0 0 {W:g} {H + 170:g}"', base_svg, count=1)
     out_svg = re.sub(r'height="[0-9.]+"', f'height="{H + 170:g}"', out_svg, count=1)
     out_svg = out_svg.replace("</svg>", "\n".join(svg) + "\n</svg>")
     pins = {"schemaVersion": 1, "boardId": base_layout["boardName"], "cpu": cpu, "electricalMapStatus": "verified",
-            "sources": [{"kind": "zephyr-board-definition",
+            "sources": [{"kind": "manufacturer-user-manual", "url": M2354_UM,
+                         "evidence": "Table 3-3 Arduino UNO Extension Connectors and M2354KJFAE Mapping GPIO List; "
+                                     "Table 3-16 LEDs and schematic LEDG/LEDR, SW2 nets"}] if cpu in MANUAL else
+                        [{"kind": "zephyr-board-definition",
                          "url": f"https://github.com/zephyrproject-rtos/zephyr/blob/{REV}/boards/{path}",
                          "evidence": "arduino-header-r3 gpio-map, gpio-leds and gpio-keys nodes"}],
             "review": {"reviewer": "Claude (m33mu-lab session)", "reviewedAt": "2026-10-25",

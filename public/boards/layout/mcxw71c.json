@@ -16,7 +16,7 @@
   ],
   "pinLabelArtwork": false,
   "geometryStatus": "stylized_provisional_not_manufacturing_scale",
-  "electricalMapStatus": "Arduino R3 strip, LEDs and buttons from Zephyr frdm_mcxw71 (gpio-map, gpio-leds, gpio-keys); sprite connectors visual-only",
+  "electricalMapStatus": "Arduino R3 strip, LEDs and buttons from frdm_mcxw71 (Zephyr c425eabae572); sprite connectors visual-only",
   "connectors": [
     {
       "id": "J1",
