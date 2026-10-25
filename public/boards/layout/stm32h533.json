@@ -2,718 +2,1350 @@
   "schemaVersion": 1,
   "cpu": "stm32h533",
   "boardName": "NUCLEO-H533RE",
+  "boardRevision": "Nucleo-64",
   "boardFamily": "nucleo64",
   "manufacturer": "STMicroelectronics",
   "manufacturerBoardVerified": true,
-  "manufacturerSource": "https://www.st.com/en/evaluation-tools/nucleo-h533re",
+  "manufacturerSource": "https://github.com/zephyrproject-rtos/zephyr/blob/c425eabae5724d39fdd828d31ec35dc850795fe1/boards/st/nucleo_h533re",
   "artwork": "../svg/stm32h533.svg",
-  "preview": "../png/stm32h533.png",
   "pixelViewbox": [
     0,
     0,
-    600,
-    790
+    700.0,
+    825.0
   ],
+  "pixelsPerMm": 10.0,
   "pinLabelArtwork": false,
-  "geometryStatus": "stylized_provisional_not_manufacturing_scale",
-  "electricalMapStatus": "UNVERIFIED_VENDOR_SCHEMATIC_REQUIRED",
+  "geometryStatus": "illustrative: morpho and Arduino headers on the 2.54 mm grid, positions approximate",
+  "electricalMapStatus": "verified from Zephyr nucleo_h533re (morpho GPIOs and Arduino R3 map); other contacts visual-only",
+  "warning": "Only contacts marked electricalEnabled can be wired; the others are visual locators.",
+  "electricalEnabledByDefault": false,
+  "generator": "scripts/gen-st-boards.py",
+  "leds": [
+    {
+      "id": "LD2",
+      "pad": "PA5",
+      "color": "#2fb34a",
+      "x": 330,
+      "y": 300,
+      "w": 16,
+      "h": 10,
+      "activeHigh": true
+    }
+  ],
+  "buttons": [
+    {
+      "id": "B1",
+      "pad": "PC13",
+      "x": 200,
+      "y": 690,
+      "w": 70,
+      "h": 70,
+      "activeHigh": true
+    }
+  ],
   "connectors": [
     {
       "id": "CN7",
-      "kind": "socket",
+      "kind": "morpho-male",
       "rows": 19,
       "columns": 2,
-      "numbering": "row-major",
+      "description": "ST morpho, 2x19",
+      "geometryMeasured": false,
       "contacts": [
         {
           "number": 1,
-          "x": 72,
-          "y": 296,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-1",
+          "x": 32.0,
+          "y": 120.0,
+          "signal": "PC10",
+          "net": "PC10",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 2,
-          "x": 89,
-          "y": 296,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-2",
+          "x": 57.4,
+          "y": 120.0,
+          "signal": "PC11",
+          "net": "PC11",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 3,
-          "x": 72,
-          "y": 316,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-3",
+          "x": 32.0,
+          "y": 145.4,
+          "signal": "PC12",
+          "net": "PC12",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 4,
-          "x": 89,
-          "y": 316,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-4",
+          "x": 57.4,
+          "y": 145.4,
+          "signal": "PD2",
+          "net": "PD2",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 5,
-          "x": 72,
-          "y": 336,
+          "contactId": "CN7-5",
+          "x": 32.0,
+          "y": 170.8,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 6,
-          "x": 89,
-          "y": 336,
+          "contactId": "CN7-6",
+          "x": 57.4,
+          "y": 170.8,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 7,
-          "x": 72,
-          "y": 356,
+          "contactId": "CN7-7",
+          "x": 32.0,
+          "y": 196.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 8,
-          "x": 89,
-          "y": 356,
+          "contactId": "CN7-8",
+          "x": 57.4,
+          "y": 196.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 9,
-          "x": 72,
-          "y": 376,
+          "contactId": "CN7-9",
+          "x": 32.0,
+          "y": 221.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 10,
-          "x": 89,
-          "y": 376,
+          "contactId": "CN7-10",
+          "x": 57.4,
+          "y": 221.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 11,
-          "x": 72,
-          "y": 396,
+          "contactId": "CN7-11",
+          "x": 32.0,
+          "y": 247.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 12,
-          "x": 89,
-          "y": 396,
+          "contactId": "CN7-12",
+          "x": 57.4,
+          "y": 247.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 13,
-          "x": 72,
-          "y": 416,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-13",
+          "x": 32.0,
+          "y": 272.4,
+          "signal": "PA13",
+          "net": "PA13",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 14,
-          "x": 89,
-          "y": 416,
+          "contactId": "CN7-14",
+          "x": 57.4,
+          "y": 272.4,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 15,
-          "x": 72,
-          "y": 436,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-15",
+          "x": 32.0,
+          "y": 297.8,
+          "signal": "PA14",
+          "net": "PA14",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 16,
-          "x": 89,
-          "y": 436,
+          "contactId": "CN7-16",
+          "x": 57.4,
+          "y": 297.8,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 17,
-          "x": 72,
-          "y": 456,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-17",
+          "x": 32.0,
+          "y": 323.2,
+          "signal": "PA15",
+          "net": "PA15",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 18,
-          "x": 89,
-          "y": 456,
+          "contactId": "CN7-18",
+          "x": 57.4,
+          "y": 323.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 19,
-          "x": 72,
-          "y": 476,
+          "contactId": "CN7-19",
+          "x": 32.0,
+          "y": 348.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 20,
-          "x": 89,
-          "y": 476,
+          "contactId": "CN7-20",
+          "x": 57.4,
+          "y": 348.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 21,
-          "x": 72,
-          "y": 496,
+          "contactId": "CN7-21",
+          "x": 32.0,
+          "y": 374.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 22,
-          "x": 89,
-          "y": 496,
+          "contactId": "CN7-22",
+          "x": 57.4,
+          "y": 374.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 23,
-          "x": 72,
-          "y": 516,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-23",
+          "x": 32.0,
+          "y": 399.4,
+          "signal": "PC13",
+          "net": "PC13",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 24,
-          "x": 89,
-          "y": 516,
+          "contactId": "CN7-24",
+          "x": 57.4,
+          "y": 399.4,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 25,
-          "x": 72,
-          "y": 536,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-25",
+          "x": 32.0,
+          "y": 424.8,
+          "signal": "PC14",
+          "net": "PC14",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 26,
-          "x": 89,
-          "y": 536,
+          "contactId": "CN7-26",
+          "x": 57.4,
+          "y": 424.8,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 27,
-          "x": 72,
-          "y": 556,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-27",
+          "x": 32.0,
+          "y": 450.2,
+          "signal": "PC15",
+          "net": "PC15",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 28,
-          "x": 89,
-          "y": 556,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-28",
+          "x": 57.4,
+          "y": 450.2,
+          "signal": "PA0",
+          "net": "PA0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 29,
-          "x": 72,
-          "y": 576,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-29",
+          "x": 32.0,
+          "y": 475.6,
+          "signal": "PF0",
+          "net": "PF0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 30,
-          "x": 89,
-          "y": 576,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-30",
+          "x": 57.4,
+          "y": 475.6,
+          "signal": "PA1",
+          "net": "PA1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 31,
-          "x": 72,
-          "y": 596,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-31",
+          "x": 32.0,
+          "y": 501.0,
+          "signal": "PF1",
+          "net": "PF1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 32,
-          "x": 89,
-          "y": 596,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-32",
+          "x": 57.4,
+          "y": 501.0,
+          "signal": "PB1",
+          "net": "PB1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 33,
-          "x": 72,
-          "y": 616,
+          "contactId": "CN7-33",
+          "x": 32.0,
+          "y": 526.4,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 34,
-          "x": 89,
-          "y": 616,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-34",
+          "x": 57.4,
+          "y": 526.4,
+          "signal": "PB0",
+          "net": "PB0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 35,
-          "x": 72,
-          "y": 636,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-35",
+          "x": 32.0,
+          "y": 551.8,
+          "signal": "PC2",
+          "net": "PC2",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 36,
-          "x": 89,
-          "y": 636,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-36",
+          "x": 57.4,
+          "y": 551.8,
+          "signal": "PC1",
+          "net": "PC1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 37,
-          "x": 72,
-          "y": 656,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-37",
+          "x": 32.0,
+          "y": 577.2,
+          "signal": "PC3",
+          "net": "PC3",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 38,
-          "x": 89,
-          "y": 656,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN7-38",
+          "x": 57.4,
+          "y": 577.2,
+          "signal": "PC0",
+          "net": "PC0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         }
       ]
     },
     {
       "id": "CN10",
-      "kind": "socket",
+      "kind": "morpho-male",
       "rows": 19,
       "columns": 2,
-      "numbering": "row-major",
+      "description": "ST morpho, 2x19",
+      "geometryMeasured": false,
       "contacts": [
         {
           "number": 1,
-          "x": 494,
-          "y": 296,
+          "contactId": "CN10-1",
+          "x": 643.0,
+          "y": 120.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 2,
-          "x": 511,
-          "y": 296,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-2",
+          "x": 668.4,
+          "y": 120.0,
+          "signal": "PA9",
+          "net": "PA9",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 3,
-          "x": 494,
-          "y": 316,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-3",
+          "x": 643.0,
+          "y": 145.4,
+          "signal": "PB6",
+          "net": "PB6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 4,
-          "x": 511,
-          "y": 316,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-4",
+          "x": 668.4,
+          "y": 145.4,
+          "signal": "PA12",
+          "net": "PA12",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 5,
-          "x": 494,
-          "y": 336,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-5",
+          "x": 643.0,
+          "y": 170.8,
+          "signal": "PB7",
+          "net": "PB7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 6,
-          "x": 511,
-          "y": 336,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-6",
+          "x": 668.4,
+          "y": 170.8,
+          "signal": "PC5",
+          "net": "PC5",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 7,
-          "x": 494,
-          "y": 356,
+          "contactId": "CN10-7",
+          "x": 643.0,
+          "y": 196.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 8,
-          "x": 511,
-          "y": 356,
+          "contactId": "CN10-8",
+          "x": 668.4,
+          "y": 196.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 9,
-          "x": 494,
-          "y": 376,
+          "contactId": "CN10-9",
+          "x": 643.0,
+          "y": 221.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 10,
-          "x": 511,
-          "y": 376,
+          "contactId": "CN10-10",
+          "x": 668.4,
+          "y": 221.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 11,
-          "x": 494,
-          "y": 396,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-11",
+          "x": 643.0,
+          "y": 247.0,
+          "signal": "PA5",
+          "net": "PA5",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 12,
-          "x": 511,
-          "y": 396,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-12",
+          "x": 668.4,
+          "y": 247.0,
+          "signal": "PA12",
+          "net": "PA12",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 13,
-          "x": 494,
-          "y": 416,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-13",
+          "x": 643.0,
+          "y": 272.4,
+          "signal": "PA6",
+          "net": "PA6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 14,
-          "x": 511,
-          "y": 416,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-14",
+          "x": 668.4,
+          "y": 272.4,
+          "signal": "PA11",
+          "net": "PA11",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 15,
-          "x": 494,
-          "y": 436,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-15",
+          "x": 643.0,
+          "y": 297.8,
+          "signal": "PA7",
+          "net": "PA7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 16,
-          "x": 511,
-          "y": 436,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-16",
+          "x": 668.4,
+          "y": 297.8,
+          "signal": "PB12",
+          "net": "PB12",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 17,
-          "x": 494,
-          "y": 456,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-17",
+          "x": 643.0,
+          "y": 323.2,
+          "signal": "PC9",
+          "net": "PC9",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 18,
-          "x": 511,
-          "y": 456,
+          "contactId": "CN10-18",
+          "x": 668.4,
+          "y": 323.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 19,
-          "x": 494,
-          "y": 476,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-19",
+          "x": 643.0,
+          "y": 348.6,
+          "signal": "PC6",
+          "net": "PC6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 20,
-          "x": 511,
-          "y": 476,
+          "contactId": "CN10-20",
+          "x": 668.4,
+          "y": 348.6,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 21,
-          "x": 494,
-          "y": 496,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-21",
+          "x": 643.0,
+          "y": 374.0,
+          "signal": "PC7",
+          "net": "PC7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 22,
-          "x": 511,
-          "y": 496,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-22",
+          "x": 668.4,
+          "y": 374.0,
+          "signal": "PB2",
+          "net": "PB2",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 23,
-          "x": 494,
-          "y": 516,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-23",
+          "x": 643.0,
+          "y": 399.4,
+          "signal": "PA8",
+          "net": "PA8",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 24,
-          "x": 511,
-          "y": 516,
+          "contactId": "CN10-24",
+          "x": 668.4,
+          "y": 399.4,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 25,
-          "x": 494,
-          "y": 536,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-25",
+          "x": 643.0,
+          "y": 424.8,
+          "signal": "PB10",
+          "net": "PB10",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 26,
-          "x": 511,
-          "y": 536,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-26",
+          "x": 668.4,
+          "y": 424.8,
+          "signal": "PB15",
+          "net": "PB15",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 27,
-          "x": 494,
-          "y": 556,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-27",
+          "x": 643.0,
+          "y": 450.2,
+          "signal": "PB4",
+          "net": "PB4",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 28,
-          "x": 511,
-          "y": 556,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-28",
+          "x": 668.4,
+          "y": 450.2,
+          "signal": "PB14",
+          "net": "PB14",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 29,
-          "x": 494,
-          "y": 576,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-29",
+          "x": 643.0,
+          "y": 475.6,
+          "signal": "PB5",
+          "net": "PB5",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 30,
-          "x": 511,
-          "y": 576,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-30",
+          "x": 668.4,
+          "y": 475.6,
+          "signal": "PB13",
+          "net": "PB13",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 31,
-          "x": 494,
-          "y": 596,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-31",
+          "x": 643.0,
+          "y": 501.0,
+          "signal": "PB3",
+          "net": "PB3",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 32,
-          "x": 511,
-          "y": 596,
+          "contactId": "CN10-32",
+          "x": 668.4,
+          "y": 501.0,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         },
         {
           "number": 33,
-          "x": 494,
-          "y": 616,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-33",
+          "x": 643.0,
+          "y": 526.4,
+          "signal": "PC8",
+          "net": "PC8",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 34,
-          "x": 511,
-          "y": 616,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-34",
+          "x": 668.4,
+          "y": 526.4,
+          "signal": "PC4",
+          "net": "PC4",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 35,
-          "x": 494,
-          "y": 636,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-35",
+          "x": 643.0,
+          "y": 551.8,
+          "signal": "PB14",
+          "net": "PB14",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 36,
-          "x": 511,
-          "y": 636,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-36",
+          "x": 668.4,
+          "y": 551.8,
+          "signal": "PB8",
+          "net": "PB8",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 37,
-          "x": 494,
-          "y": 656,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN10-37",
+          "x": 643.0,
+          "y": 577.2,
+          "signal": "PB15",
+          "net": "PB15",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 38,
-          "x": 511,
-          "y": 656,
+          "contactId": "CN10-38",
+          "x": 668.4,
+          "y": 577.2,
           "signal": null,
-          "mapping_verified": false
+          "net": null,
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "morpho pin not listed in the Zephyr NUCLEO-H533RE morpho map (power, debug or NC)"
         }
       ]
     },
     {
-      "id": "ARD_D",
-      "kind": "socket",
+      "id": "CN5",
+      "kind": "arduino-female",
       "rows": 10,
       "columns": 1,
-      "numbering": "row-major",
+      "description": "Arduino D8-D15, GND, AREF (Uno R3)",
+      "geometryMeasured": false,
       "contacts": [
         {
           "number": 1,
-          "x": 180,
-          "y": 325,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-1",
+          "x": 560.0,
+          "y": 120.0,
+          "signal": "PB6",
+          "net": "PB6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D15"
         },
         {
           "number": 2,
-          "x": 180,
-          "y": 350,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-2",
+          "x": 560.0,
+          "y": 145.4,
+          "signal": "PB7",
+          "net": "PB7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D14"
         },
         {
           "number": 3,
-          "x": 180,
-          "y": 375,
+          "contactId": "CN5-3",
+          "x": 560.0,
+          "y": 170.8,
           "signal": null,
-          "mapping_verified": false
+          "net": "AREF",
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "AREF: not modelled on the bench"
         },
         {
           "number": 4,
-          "x": 180,
-          "y": 400,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-4",
+          "x": 560.0,
+          "y": 196.2,
+          "signal": "GND",
+          "net": "GND",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
         },
         {
           "number": 5,
-          "x": 180,
-          "y": 425,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-5",
+          "x": 560.0,
+          "y": 221.6,
+          "signal": "PA5",
+          "net": "PA5",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D13"
         },
         {
           "number": 6,
-          "x": 180,
-          "y": 450,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-6",
+          "x": 560.0,
+          "y": 247.0,
+          "signal": "PA6",
+          "net": "PA6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D12"
         },
         {
           "number": 7,
-          "x": 180,
-          "y": 475,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-7",
+          "x": 560.0,
+          "y": 272.4,
+          "signal": "PA7",
+          "net": "PA7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D11"
         },
         {
           "number": 8,
-          "x": 180,
-          "y": 500,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-8",
+          "x": 560.0,
+          "y": 297.8,
+          "signal": "PC9",
+          "net": "PC9",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D10"
         },
         {
           "number": 9,
-          "x": 180,
-          "y": 525,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-9",
+          "x": 560.0,
+          "y": 323.2,
+          "signal": "PC6",
+          "net": "PC6",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D9"
         },
         {
           "number": 10,
-          "x": 180,
-          "y": 550,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN5-10",
+          "x": 560.0,
+          "y": 348.6,
+          "signal": "PC7",
+          "net": "PC7",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D8"
         }
       ]
     },
     {
-      "id": "ARD_A",
-      "kind": "socket",
+      "id": "CN9",
+      "kind": "arduino-female",
       "rows": 8,
       "columns": 1,
-      "numbering": "row-major",
+      "description": "Arduino D0-D7 (Uno R3)",
+      "geometryMeasured": false,
       "contacts": [
         {
           "number": 1,
-          "x": 410,
-          "y": 325,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-1",
+          "x": 560.0,
+          "y": 415.0,
+          "signal": "PA8",
+          "net": "PA8",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D7"
         },
         {
           "number": 2,
-          "x": 410,
-          "y": 350,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-2",
+          "x": 560.0,
+          "y": 440.4,
+          "signal": "PB10",
+          "net": "PB10",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D6"
         },
         {
           "number": 3,
-          "x": 410,
-          "y": 375,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-3",
+          "x": 560.0,
+          "y": 465.8,
+          "signal": "PB4",
+          "net": "PB4",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D5"
         },
         {
           "number": 4,
-          "x": 410,
-          "y": 400,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-4",
+          "x": 560.0,
+          "y": 491.2,
+          "signal": "PB5",
+          "net": "PB5",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D4"
         },
         {
           "number": 5,
-          "x": 410,
-          "y": 425,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-5",
+          "x": 560.0,
+          "y": 516.6,
+          "signal": "PB3",
+          "net": "PB3",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D3"
         },
         {
           "number": 6,
-          "x": 410,
-          "y": 450,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-6",
+          "x": 560.0,
+          "y": 542.0,
+          "signal": "PC8",
+          "net": "PC8",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D2"
         },
         {
           "number": 7,
-          "x": 410,
-          "y": 475,
-          "signal": null,
-          "mapping_verified": false
+          "contactId": "CN9-7",
+          "x": 560.0,
+          "y": 567.4,
+          "signal": "PB14",
+          "net": "PB14",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D1"
         },
         {
           "number": 8,
-          "x": 410,
-          "y": 500,
+          "contactId": "CN9-8",
+          "x": 560.0,
+          "y": 592.8,
+          "signal": "PB15",
+          "net": "PB15",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino D0"
+        }
+      ]
+    },
+    {
+      "id": "CN6",
+      "kind": "arduino-female",
+      "rows": 8,
+      "columns": 1,
+      "description": "Arduino power (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "CN6-1",
+          "x": 140.0,
+          "y": 220.0,
           "signal": null,
-          "mapping_verified": false
+          "net": "NC",
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "NC: not modelled on the bench"
+        },
+        {
+          "number": 2,
+          "contactId": "CN6-2",
+          "x": 140.0,
+          "y": 245.4,
+          "signal": "3V3",
+          "net": "3V3",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
+        },
+        {
+          "number": 3,
+          "contactId": "CN6-3",
+          "x": 140.0,
+          "y": 270.8,
+          "signal": null,
+          "net": "NRST",
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "NRST: not modelled on the bench"
+        },
+        {
+          "number": 4,
+          "contactId": "CN6-4",
+          "x": 140.0,
+          "y": 296.2,
+          "signal": "3V3",
+          "net": "3V3",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
+        },
+        {
+          "number": 5,
+          "contactId": "CN6-5",
+          "x": 140.0,
+          "y": 321.6,
+          "signal": "5V",
+          "net": "5V",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
+        },
+        {
+          "number": 6,
+          "contactId": "CN6-6",
+          "x": 140.0,
+          "y": 347.0,
+          "signal": "GND",
+          "net": "GND",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
+        },
+        {
+          "number": 7,
+          "contactId": "CN6-7",
+          "x": 140.0,
+          "y": 372.4,
+          "signal": "GND",
+          "net": "GND",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true
+        },
+        {
+          "number": 8,
+          "contactId": "CN6-8",
+          "x": 140.0,
+          "y": 397.8,
+          "signal": null,
+          "net": "VIN",
+          "mapping_verified": false,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": false,
+          "note": "VIN: not modelled on the bench"
+        }
+      ]
+    },
+    {
+      "id": "CN8",
+      "kind": "arduino-female",
+      "rows": 6,
+      "columns": 1,
+      "description": "Arduino A0-A5 (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "CN8-1",
+          "x": 140.0,
+          "y": 450.0,
+          "signal": "PA0",
+          "net": "PA0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A0"
+        },
+        {
+          "number": 2,
+          "contactId": "CN8-2",
+          "x": 140.0,
+          "y": 475.4,
+          "signal": "PA1",
+          "net": "PA1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A1"
+        },
+        {
+          "number": 3,
+          "contactId": "CN8-3",
+          "x": 140.0,
+          "y": 500.8,
+          "signal": "PB1",
+          "net": "PB1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A2"
+        },
+        {
+          "number": 4,
+          "contactId": "CN8-4",
+          "x": 140.0,
+          "y": 526.2,
+          "signal": "PB0",
+          "net": "PB0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A3"
+        },
+        {
+          "number": 5,
+          "contactId": "CN8-5",
+          "x": 140.0,
+          "y": 551.6,
+          "signal": "PC1",
+          "net": "PC1",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A4"
+        },
+        {
+          "number": 6,
+          "contactId": "CN8-6",
+          "x": 140.0,
+          "y": 577.0,
+          "signal": "PC0",
+          "net": "PC0",
+          "mapping_verified": true,
+          "artworkAnchorVerified": false,
+          "electricalEnabled": true,
+          "note": "Arduino A5"
         }
       ]
     }
-  ],
-  "warning": "Contact coordinates and physical ordering are for visual hit testing. Except Pico 2 do not assume board header numbers match manufacturer numbering. Electrical use must remain disabled until verified from schematics.",
-  "electricalEnabledByDefault": false,
-  "notes": "Graphic silhouettes are original illustrations, not manufacturer CAD or exact top-side facsimiles. Pin labels appear only through UI metadata."
+  ]
 }

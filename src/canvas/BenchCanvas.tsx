@@ -31,6 +31,8 @@ type Props = {
   onCommit(next: Project, label: string): void;
   onView(next: Project): void;
   onPress(switchId: string, pressed: boolean): void;
+  /** An on-board button went down or up. */
+  onBoardButton?(button: { id: string; pad: string; activeHigh: boolean }, pressed: boolean): void;
   onHover(text: string): void;
 };
 
@@ -197,6 +199,18 @@ export function BenchCanvas(props: Props) {
         {board && vb && (
           <g transform={`translate(${board.x} ${board.y})`}>
             <image href={props.artworkUrl} x={vb[0]} y={vb[1]} width={vb[2]} height={vb[3]} />
+            {(layout?.buttons ?? []).map((btn) => (
+              <rect key={btn.id} data-board-button={btn.id} x={btn.x} y={btn.y} width={btn.w} height={btn.h} rx={8}
+                className={props.pressed.has(`board:${btn.id}`) ? 'board-button pressed' : 'board-button'}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  props.onBoardButton?.(btn, true);
+                  const up = () => { props.onBoardButton?.(btn, false); window.removeEventListener('pointerup', up); };
+                  window.addEventListener('pointerup', up);
+                }}>
+                <title>{`${btn.id} (${btn.pad}): press and hold`}</title>
+              </rect>
+            ))}
             {(layout?.leds ?? []).map((led) => {
               const b = Math.sqrt(Math.max(0, Math.min(1, props.boardLeds[led.id] ?? 0)));
               return (

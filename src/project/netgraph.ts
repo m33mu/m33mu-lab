@@ -31,6 +31,8 @@ export type BoardLayout = {
   warning?: string;
   /** On-board user LEDs, lit from their pad. */
   leds?: { id: string; pad: string; color: string; x: number; y: number; w: number; h: number; activeHigh: boolean }[];
+  /** On-board push buttons on a pad (pressed = activeHigh level). */
+  buttons?: { id: string; pad: string; x: number; y: number; w: number; h: number; activeHigh: boolean }[];
 };
 
 export type PlacedTerminal = {

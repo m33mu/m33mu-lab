@@ -199,6 +199,8 @@ export function App() {
       recordDiagnostic('worker', 'error', String(p.code ?? 'FAULT'), String(p.message ?? 'Worker fault'));
       setRunState('paused');
     } else if (e.event === 'gpio') {
+      // Without a circuit, board LEDs follow the pad level directly.
+      setPadDuty((old) => ({ ...old, [p.socPad]: p.level === 1 ? 1 : 0 }));
       setMessage(`GPIO ${p.socPad} → ${['low', 'high', 'high-Z'][p.level] ?? '?'} at ${p.eventTimeNs} ns`);
     } else if (e.event === 'bench') {
       const width = p.probes.length + 1;
@@ -491,6 +493,14 @@ export function App() {
     } catch (err) { fail(err); }
   }
 
+  /** On-board button: drives its pad at the current virtual time. */
+  function boardButton(btn: { id: string; pad: string; activeHigh: boolean }, down: boolean) {
+    setPressed((old) => { const n = new Set(old); if (down) n.add(`board:${btn.id}`); else n.delete(`board:${btn.id}`); return n; });
+    if (!firmware) { if (down) setMessage(`${btn.id} is on ${btn.pad}: load firmware to use it.`); return; }
+    void worker().request('pressButton', { socPad: btn.pad, level: down === btn.activeHigh }).catch(fail);
+    if (down) setMessage(`${btn.id} pressed: ${btn.pad} ${btn.activeHigh ? 'high' : 'low'}.`);
+  }
+
   function press(id: string, down: boolean) {
     setPressed((old) => { const n = new Set(old); if (down) n.add(id); else n.delete(id); return n; });
     if (benchActive && !benchStale) void worker().request('setSwitch', { device: id, closed: down }).catch(fail);
@@ -556,6 +566,7 @@ export function App() {
         setRunState(firmware ? 'paused' : 'idle');
       }
       setHistory(createHistory(p));
+      setPadDuty({});
       setDiagnosticEntries([]);
       setSelection(null);
       setDockTab(p.instruments.scopes[0]?.id ?? '');
@@ -623,7 +634,7 @@ export function App() {
           title={layout ? `${layout.boardName}${layout.boardRevision ? ` · ${layout.boardRevision}` : ''}` : 'Loading board…'}
           onChange={(e) => { if (isCpu(e.target.value)) void chooseBoard(e.target.value); }}>
           {(Object.keys(BOARDS) as CpuName[]).map((c) => (
-            <option key={c} value={c}>{BOARDS[c].name} · {c}{c === 'stm32h563' || c === 'rp2350' ? ` · ${BOARDS[c].layoutRevision}` : ''}</option>
+            <option key={c} value={c}>{BOARDS[c].name} · {c}{BOARDS[c].layoutRevision !== 'provisional-v1' ? ` · ${BOARDS[c].layoutRevision}` : ''}</option>
           ))}
         </select>
         <div className="firmware" title={firmware?.hash}>
@@ -681,8 +692,9 @@ export function App() {
                 : <li>Board contacts: visual only until this board's pin map is reviewed</li>;
             })()}
             {(layout?.leds?.length ?? 0) > 0 && <li className="on">On-board LEDs lit from {layout!.leds!.map((l) => l.pad).join('/')}</li>}
-            <li className="on">TIM2–TIM5 output compare and PWM on their AF pins</li>
-            <li className="on">UART terminals; logic-level I²C/SPI/UART devices</li>
+            {(layout?.buttons?.length ?? 0) > 0 && <li className="on">On-board {layout!.buttons!.map((b) => `${b.id} (${b.pad})`).join(', ')}: press and hold on the drawing</li>}
+            {cpu.startsWith('stm32h5') && <li className="on">TIM2–TIM5 output compare and PWM on their AF pins</li>}
+            <li className="on">UART terminals{cpu === 'stm32h563' ? '; logic-level I²C/SPI/UART devices and secure elements on the header' : ' (I²C/SPI device wiring: NUCLEO-H563ZI only)'}</li>
             <li className={features?.wolfcrypt ? 'on' : undefined}>On-chip crypto engines (HASH/AES/PKA/RNG, CASPER/HASHCRYPT, CryptoCell){features?.wolfcrypt ? '' : ': not in this WASM build'}</li>
             <li className={features?.rustSecureElements || features?.ta100 ? 'on' : undefined}>Secure elements: {[
               features?.rustSecureElements ? 'ATECC608A, SE050, STSAFE-A120, TROPIC01' : '', features?.ta100 ? 'TA100' : ''
@@ -700,7 +712,7 @@ export function App() {
             artworkUrl={layout ? assetUrl(`boards/${layout.artwork.replace('../', '')}`) : ''}
             terminals={terminals} selection={selection} tool={tool} running={benchActive && runState === 'running'}
             brightness={brightness} boardLeds={boardLeds} pressed={pressed} errorKeys={errorKeys}
-            onSelect={setSelection} onCommit={edit} onView={view} onPress={press} onHover={setHoverText} />
+            onSelect={setSelection} onCommit={edit} onView={view} onPress={press} onBoardButton={boardButton} onHover={setHoverText} />
           <div className="canvas-status">
             <span>{hoverText || `${Math.round(project.ui.zoom * 100)}%`}</span>
             <span className="spacer" />

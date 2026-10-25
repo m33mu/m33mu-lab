@@ -224,6 +224,8 @@ def layout():
         "generator": "scripts/gen-h563-board.py",
         "leds": [{"id": name, "pad": pad, "color": color, "x": 298 + i * 40, "y": 1005, "w": 16, "h": 10,
                   "activeHigh": True} for i, (name, pad, color) in enumerate(LEDS)],
+        # B1 (blue) drives PC13 high when pressed (UM3115 Rev 3 section 11.3).
+        "buttons": [{"id": "B1", "pad": "PC13", "x": 165, "y": 1060, "w": 70, "h": 70, "activeHigh": True}],
         "connectors": [
             {"id": cid, "kind": kind, "rows": rows, "columns": 2,
              "description": desc, "geometryMeasured": measured,

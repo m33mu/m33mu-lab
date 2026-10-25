@@ -477,15 +477,33 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  await check('on-board button: holding B1 lights LD1 through the firmware', async () => {
+    await page.getByTestId('examples').selectOption('h563-b1');
+    await page.waitForFunction(() => /user button B1/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await page.getByTestId('run').click();
+    await page.waitForSelector('[data-board-led="LD1"][data-lit="off"]');
+    // B1 is near the bottom edge of the board: fold the dock away first.
+    if ((await page.getByTestId('dock-toggle').getAttribute('aria-expanded')) === 'true') await page.getByTestId('dock-toggle').click();
+    const b1 = await center(page.locator('[data-board-button="B1"]'));
+    await page.mouse.move(b1.x, b1.y);
+    await page.mouse.down();
+    await page.waitForSelector('[data-board-led="LD1"][data-lit="on"]', { timeout: 30000 });
+    await page.mouse.up();
+    await page.waitForSelector('[data-board-led="LD1"][data-lit="off"]', { timeout: 30000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('dock-toggle').click();
+  });
+
   await check('board picker: every CPU board renders, firmware runs on another CPU', async () => {
     const cpus = await page.getByTestId('board').locator('option').evaluateAll((os) => os.map((o) => o.value));
-    assert.equal(cpus.length, 15);
+    assert.equal(cpus.length, 16);
     for (const c of ['nrf5340', 'rp2350', 'stm32l552']) {
       page.once('dialog', (d) => d.accept());
       await page.getByTestId('board').selectOption(c);
       await page.waitForFunction((cpu) => document.querySelector('svg image')?.getAttribute('href')?.includes(`${cpu}.svg`), c);
       // Pico 2 has a reviewed pin map; the others are display-only.
-      await page.getByText(c === 'rp2350' ? /35 of 43 header contacts wireable/ : /visual only until this board's pin map is reviewed/).waitFor();
+      const wireable = { rp2350: /35 of 43 header contacts wireable/, stm32l552: /36 of 240 header contacts wireable/ }[c];
+      await page.getByText(wireable ?? /visual only until this board's pin map is reviewed/).waitFor();
     }
     // The worker switches CPU with the board: an nRF5340 ELF prints its banner on UARTE0.
     page.once('dialog', (d) => d.accept());

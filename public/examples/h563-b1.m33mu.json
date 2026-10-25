@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "projectId": "example-h563-b1",
+  "name": "H563 user button B1 lights LD1",
+  "simulator": {
+    "cpu": "stm32h563",
+    "firmwareFormat": "elf",
+    "firmwareSha256": "c27eb9ce9ece9caf4ee359575e75aa75d6e4d415353b9eb78dc24601cbe149f1",
+    "firmwareName": "h563-b1.elf"
+  },
+  "boards": [
+    {
+      "id": "board1",
+      "cpu": "stm32h563",
+      "layoutRevision": "MB1404 H563ZI-C01",
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "parts": [],
+  "wires": [],
+  "instruments": {
+    "scopes": [
+      {
+        "id": "scope1",
+        "name": "Scope 1",
+        "channels": [
+          null,
+          null
+        ],
+        "windowNs": 100000000
+      }
+    ]
+  },
+  "solver": {
+    "lookaheadNs": 1000000,
+    "sampleNs": 100000
+  },
+  "ui": {
+    "zoom": 0.5,
+    "panX": 40,
+    "panY": 20
+  }
+}

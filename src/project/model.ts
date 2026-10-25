@@ -84,10 +84,11 @@ export const PICO2_LAYOUT_REVISION = 'Pico 2 datasheet Fig. 2';
  * gives it; otherwise the first UART that transmits opens a terminal. */
 export const BOARDS = {
   stm32h563: { name: 'NUCLEO-H563ZI', layoutRevision: H563_LAYOUT_REVISION, vcp: 'USART3' },
-  stm32h533: { name: 'NUCLEO-H533RE', layoutRevision: PROVISIONAL, vcp: null },
+  stm32h533: { name: 'NUCLEO-H533RE', layoutRevision: 'Nucleo-64 (Zephyr nucleo_h533re pin map)', vcp: null },
   stm32h5f4: { name: 'STM32H5F4 (Nucleo-style proxy)', layoutRevision: PROVISIONAL, vcp: null },
-  stm32u585: { name: 'STM32U585 (Nucleo-style proxy)', layoutRevision: PROVISIONAL, vcp: null },
-  stm32l552: { name: 'NUCLEO-L552ZE-Q', layoutRevision: PROVISIONAL, vcp: null },
+  stm32u585: { name: 'NUCLEO-U575ZI-Q with STM32U585', layoutRevision: 'MB1549 (Zephyr nucleo_u575zi_q Zio map)', vcp: null },
+  stm32l552: { name: 'NUCLEO-L552ZE-Q', layoutRevision: 'MB1361 (Zephyr Arduino map)', vcp: null },
+  stm32n657: { name: 'NUCLEO-N657X0-Q', layoutRevision: 'MB1940 (Zephyr Arduino map)', vcp: null },
   mcxw71c: { name: 'FRDM-MCXW71', layoutRevision: PROVISIONAL, vcp: null },
   mcxn947: { name: 'FRDM-MCXN947', layoutRevision: PROVISIONAL, vcp: null },
   nrf5340: { name: 'nRF5340 DK', layoutRevision: PROVISIONAL, vcp: null },
@@ -194,8 +195,8 @@ export function validateProject(value: unknown): Project {
     unique(b.id, 'Board');
     if (b.cpu !== sim.cpu) fail(`Board ${b.id}: CPU ${String(b.cpu)} differs from the simulator CPU ${String(sim.cpu)}`);
     const expected = BOARDS[sim.cpu as CpuName].layoutRevision;
-    // Pico 2 projects saved before its pin map could not wire the board.
-    if (b.cpu === 'rp2350' && b.layoutRevision === PROVISIONAL) b.layoutRevision = expected;
+    // Projects saved while a board was provisional could not wire it.
+    if (b.layoutRevision === PROVISIONAL && expected !== PROVISIONAL) b.layoutRevision = expected;
     if (b.layoutRevision !== expected) {
       fail(`Board ${b.id}: layout revision "${String(b.layoutRevision)}" is not ${expected}`);
     }

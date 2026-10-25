@@ -118,6 +118,7 @@ def main():
                 return fail("Pico 2 contact enabled without a verified signal and net")
             enabled_pico[f"{c['connectorId']}-{c['physicalPadNumber']}"] = c["net"]
 
+    extra_boards = []
     public_dir = os.path.join(os.path.dirname(__file__), "..", "public", "boards", "layout")
     for name in sorted(os.listdir(public_dir)):
         layout = json.load(open(os.path.join(public_dir, name), encoding="utf-8"))
@@ -150,12 +151,25 @@ def main():
         elif cpu == "rp2350":
             if enabled != enabled_pico:
                 return fail(f"Pico 2 layout enables {enabled} but the reviewed mapping enables {enabled_pico}")
+        elif os.path.exists(os.path.join(os.path.dirname(__file__), "..", "boards", f"{cpu}-pins.json")):
+            # Boards generated from cited sources (gen-st-boards.py,
+            # gen-arduino-boards.py): the layout enables exactly the evidence.
+            doc = json.load(open(os.path.join(os.path.dirname(__file__), "..", "boards", f"{cpu}-pins.json"), encoding="utf-8"))
+            if not doc.get("sources"):
+                return fail(f"{cpu} pin mapping cites no sources")
+            reviewed = {f"{c['connectorId']}-{c['physicalPadNumber']}": c.get("socPad") or c.get("net")
+                        for c in doc.get("contacts", []) if c.get("electricalEnabled")}
+            if any(not doc_c.get("signalMappingVerified") for doc_c in doc.get("contacts", []) if doc_c.get("electricalEnabled")):
+                return fail(f"{cpu} enables a contact without a verified signal")
+            if enabled != reviewed:
+                return fail(f"{cpu} layout enables {sorted(set(enabled) ^ set(reviewed))[:5]} differently from its reviewed mapping")
+            extra_boards.append(f"{cpu} {len(enabled)}")
         elif enabled:
             return fail(f"{cpu} enables contacts without a reviewed mapping")
 
     print("board validation: 15 layouts and " + str(len(override_contacts)) + " H563 mappings valid; "
           "public layouts checked (H563 enabled: " + ", ".join(sorted(enabled_override)) + "; Pico 2 enabled: "
-          + str(len(enabled_pico)) + ")")
+          + str(len(enabled_pico)) + "; " + ", ".join(extra_boards) + ")")
     return 0
 
 

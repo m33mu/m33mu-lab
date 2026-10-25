@@ -58,6 +58,13 @@
       "description": "RP2350 firmware blinks the on-board LED (GPIO25) every 50 ms and copies GP15 to GP16: the internal pull-up keeps GP15 high and the green LED on, pressing the button pulls GP15 low and the LED goes off."
     },
     {
+      "id": "h563-b1",
+      "name": "H563 user button B1 lights LD1",
+      "project": "h563-b1.m33mu.json",
+      "firmware": "h563-b1.elf",
+      "description": "No circuit: press and hold the blue B1 button on the board drawing; the firmware copies PC13 to the green LD1 (PB0)."
+    },
+    {
       "id": "h563-pwm",
       "name": "H563 timer PWM (LD1 breathing, D9 RC filter)",
       "project": "h563-pwm.m33mu.json",

@@ -226,3 +226,6 @@ select.board-name { background: var(--panel, #1c222b); color: var(--text, #d8dee
 .dbg-mem .na { color: #4b5964; }
 .dbg-mem .ascii { color: var(--teal); }
 @media (max-width: 900px) { .debugger { grid-template-columns: 1fr; } }
+.board-button { fill: #ffffff; fill-opacity: 0; cursor: pointer; stroke: #5bc4ae; stroke-opacity: 0; stroke-width: 3; }
+.board-button:hover { stroke-opacity: .8; }
+.board-button.pressed { fill: #000; fill-opacity: .25; stroke-opacity: 1; }

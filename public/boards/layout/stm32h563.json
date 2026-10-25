@@ -53,6 +53,17 @@
       "activeHigh": true
     }
   ],
+  "buttons": [
+    {
+      "id": "B1",
+      "pad": "PC13",
+      "x": 165,
+      "y": 1060,
+      "w": 70,
+      "h": 70,
+      "activeHigh": true
+    }
+  ],
   "connectors": [
     {
       "id": "CN7",

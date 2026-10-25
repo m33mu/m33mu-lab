@@ -663,6 +663,24 @@ export function attachM33muWorker(scope, createModule) {
         postResponse(requestId, { changed, timeNs: Math.round(bench.timeNs).toString() });
         return;
       }
+      case 'pressButton': {
+        // An on-board button drives its pad now, with or without a bench.
+        await ensureSession();
+        requireFirmware();
+        if (typeof payload.socPad !== 'string' || typeof payload.level !== 'boolean') {
+          throw invalid('pressButton requires socPad and boolean level');
+        }
+        if (bench && bench.mcu) {
+          bench.mcu.scheduleInput(payload.socPad, payload.level ? 1 : 0, bench.mcu.nowNs());
+        } else {
+          const now = (BigInt(api.virtualTimeHigh(session) >>> 0) << 32n) | BigInt(api.virtualTimeLow(session) >>> 0);
+          const status = api.gpio(session, payload.socPad, Number(now >> 32n), Number(now & 0xffffffffn),
+            payload.level ? 1 : 0);
+          if (status !== 0) throw errorFromCode(status);
+        }
+        postResponse(requestId, { socPad: payload.socPad, level: payload.level });
+        return;
+      }
       case 'setBreakpoints': {
         const wasm = await ensureSession();
         const addresses = payload.addresses;

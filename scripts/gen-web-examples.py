@@ -261,6 +261,13 @@ EXAMPLES.append(("pico2-gpio", project(
     "RP2350 firmware blinks the on-board LED (GPIO25) every 50 ms and copies GP15 to GP16: the internal pull-up keeps GP15 high and the green LED on, pressing the button pulls GP15 low and the LED goes off."))
 
 
+# On-board B1 (PC13) copied to LD1 (PB0) by tests/firmware/test-stm32h563-web-b1.
+EXAMPLES.append(("h563-b1", project(
+    "example-h563-b1", "H563 user button B1 lights LD1", [], [], [None, None], 100_000_000,
+    firmware="h563-b1.elf", sample_ns=100_000, lookahead_ns=1_000_000),
+    "No circuit: press and hold the blue B1 button on the board drawing; the firmware copies PC13 to the green LD1 (PB0)."))
+
+
 def main():
     index = []
     for name, proj, description in EXAMPLES:
