@@ -44,7 +44,21 @@ assert.ok(vmax > 3.2, `PWM high ${vmax} V`);
 // LD1: duty ramps by 2 % per 20 ms, reported by padDuty.
 const duty = batches.map((b) => [Number(b.timeNs), b.padDuty?.PB0]).filter(([, d]) => d !== undefined);
 const late = await w.runBench(520_000_000);
-const lateDuty = late.map((b) => b.padDuty?.PB0).filter((d) => d !== undefined).at(-1);
+// Each batch reports the duty since the previous one; batches are sized by
+// wall time, so average them, weighted by length, over the last >= 10 ms.
+let lateDuty = 0;
+{
+  let span = 0;
+  let sum = 0;
+  for (let i = late.length - 1; i > 0 && span < 10e6; i--) {
+    const dt = Number(late[i].timeNs) - Number(late[i - 1].timeNs);
+    const d = late[i].padDuty?.PB0;
+    if (d === undefined || dt <= 0) continue;
+    span += dt;
+    sum += d * dt;
+  }
+  lateDuty = span > 0 ? sum / span : NaN;
+}
 assert.ok(duty.length > 0);
 assert.ok(lateDuty > 0.4 && lateDuty < 0.6, `LD1 duty at 0.5 s: ${lateDuty}`);
 await w.request('destroyBench');

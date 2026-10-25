@@ -2,7 +2,7 @@
 // ones match their references.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseProject } from '../../src/project/model.ts';
 import { compileCircuit, type BoardLayout } from '../../src/project/netgraph.ts';
@@ -10,9 +10,9 @@ import { Circuit } from '../../sim/circuit.ts';
 
 const root = process.env.M33MU_WEB_ROOT!;
 const examples = join(root, 'public/examples');
-const layout = JSON.parse(readFileSync(join(root, 'public/boards/layout/stm32h563.json'), 'utf8')) as BoardLayout;
-const layouts = new Map([['stm32h563', layout],
-  ['rp2350', JSON.parse(readFileSync(join(root, 'public/boards/layout/rp2350.json'), 'utf8')) as BoardLayout]]);
+// Every board layout, keyed by CPU.
+const layouts = new Map(readdirSync(join(root, 'public/boards/layout')).map((f) => [f.replace(/\.json$/, ''),
+  JSON.parse(readFileSync(join(root, 'public/boards/layout', f), 'utf8')) as BoardLayout]));
 const index = JSON.parse(readFileSync(join(examples, 'index.json'), 'utf8'));
 
 function load(id: string) {
@@ -27,6 +27,7 @@ test('every example parses and compiles cleanly', () => {
   for (const e of index.examples) load(e.id);
   assert.deepEqual(load('h563-blink').compiled.pads, ['PA5']);
   assert.deepEqual(load('h563-button').compiled.pads, ['PA5', 'PA6']);
+  assert.deepEqual(load('nrf5340-gpio').compiled.pads, ['P1.04', 'P1.05']);
 });
 
 test('divider example reads 3 V within 1e-6', () => {

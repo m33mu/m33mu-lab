@@ -65,6 +65,13 @@
       "description": "No circuit: press and hold the blue B1 button on the board drawing; the firmware copies PC13 to the green LD1 (PB0)."
     },
     {
+      "id": "nrf5340-gpio",
+      "name": "nRF5340 DK GPIO: D2 switch lights D3, Button 1 lights LED1",
+      "project": "nrf5340-gpio.m33mu.json",
+      "firmware": "nrf5340-gpio.elf",
+      "description": "Firmware copies Arduino D2 (P1.04, pull-up) to D3 (P1.05): the green LED is on until you press the switch. Hold Push button 1 on the board strip and LED 0 (P0.28, active low) lights."
+    },
+    {
       "id": "h563-pwm",
       "name": "H563 timer PWM (LD1 breathing, D9 RC filter)",
       "project": "h563-pwm.m33mu.json",

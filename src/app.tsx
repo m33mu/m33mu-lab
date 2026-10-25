@@ -200,7 +200,11 @@ export function App() {
       setRunState('paused');
     } else if (e.event === 'gpio') {
       // Without a circuit, board LEDs follow the pad level directly.
-      setPadDuty((old) => ({ ...old, [p.socPad]: p.level === 1 ? 1 : 0 }));
+      setPadDuty((old) => {
+        const next = { ...old };
+        if (p.level === 2) delete next[p.socPad]; else next[p.socPad] = p.level === 1 ? 1 : 0;
+        return next;
+      });
       setMessage(`GPIO ${p.socPad} → ${['low', 'high', 'high-Z'][p.level] ?? '?'} at ${p.eventTimeNs} ns`);
     } else if (e.event === 'bench') {
       const width = p.probes.length + 1;
@@ -611,8 +615,9 @@ export function App() {
   // On-board LEDs: share of time their pad drove the anode high.
   const boardLeds: Record<string, number> = {};
   for (const led of layout?.leds ?? []) {
-    const lit = padDuty[led.pad] ?? (mcuPads[led.pad]?.level === 1 ? 1 : 0);
-    boardLeds[led.id] = led.activeHigh ? lit : 1 - lit;
+    // Share of time the pad was high; undefined while it is not driven.
+    const high = padDuty[led.pad] ?? (mcuPads[led.pad] && mcuPads[led.pad].level !== 2 ? mcuPads[led.pad].level : undefined);
+    boardLeds[led.id] = high === undefined ? 0 : led.activeHigh ? high : 1 - high;
   }
   const channelLabel = (ch: ProbeTarget | null): [string, string] => {
     if (!ch) return ['—', 'V'];

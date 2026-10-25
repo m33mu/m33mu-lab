@@ -31,7 +31,7 @@ def wire(n, a, b, color="#d7263d"):
     return {"id": f"w{n}", "from": a, "to": b, "color": color}
 
 
-LAYOUTS = {"stm32h563": LAYOUT, "rp2350": "Pico 2 datasheet Fig. 2"}
+LAYOUTS = {"stm32h563": LAYOUT, "rp2350": "Pico 2 datasheet Fig. 2", "nrf5340": "nRF5340 DK (Zephyr Arduino map)"}
 
 
 def project(pid, name, parts, wires, channels, window_ns, firmware=None, sample_ns=1000, lookahead_ns=50000, pan=(40, 20), zoom=0.5,
@@ -266,6 +266,29 @@ EXAMPLES.append(("h563-b1", project(
     "example-h563-b1", "H563 user button B1 lights LD1", [], [], [None, None], 100_000_000,
     firmware="h563-b1.elf", sample_ns=100_000, lookahead_ns=1_000_000),
     "No circuit: press and hold the blue B1 button on the board drawing; the firmware copies PC13 to the green LD1 (PB0)."))
+
+
+# nRF5340 DK: tests/firmware/test-nrf5340-web-gpio copies Button 1 (P0.23) to
+# LED1 (P0.28) and Arduino D2 (P1.04) to D3 (P1.05); header from Zephyr.
+nrf_parts = [
+    part("sw1", "switch", 300, 760),
+    part("r1", "resistor", 450, 840, ohms=330),
+    part("led1", "led", 620, 840, color="green"),
+    part("gnd1", "ground", 720, 940),
+]
+nrf_wires = [
+    wire(1, board("ARD_DLOW-6"), pt("sw1", "a"), YEL),
+    wire(2, pt("sw1", "b"), board("ARD_DHIGH-4"), BLK),
+    wire(3, board("ARD_DLOW-5"), pt("r1", "a"), GRN),
+    wire(4, pt("r1", "b"), pt("led1", "a"), GRN),
+    wire(5, pt("led1", "k"), pt("gnd1", "g"), BLK),
+    wire(6, pt("gnd1", "g"), board("ARD_POWER-6"), BLK),
+]
+EXAMPLES.append(("nrf5340-gpio", project(
+    "example-nrf5340-gpio", "nRF5340 DK GPIO: D2 switch lights D3, Button 1 lights LED1", nrf_parts, nrf_wires,
+    [{"kind": "voltage", "at": board("ARD_DLOW-6")}, {"kind": "voltage", "at": board("ARD_DLOW-5")}],
+    20_000_000, firmware="nrf5340-gpio.elf", sample_ns=10_000, lookahead_ns=100_000, cpu="nrf5340", pan=(60, 20)),
+    "Firmware copies Arduino D2 (P1.04, pull-up) to D3 (P1.05): the green LED is on until you press the switch. Hold Push button 1 on the board strip and LED 0 (P0.28, active low) lights."))
 
 
 def main():

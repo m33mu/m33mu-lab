@@ -127,7 +127,7 @@ export class Bench {
   readonly padConfigs = new Map<string, { mode: number; af: number }>();
   /** Per pad: level since lastNs and the high time accumulated since the
    * last takeDuty(), for on-board LED brightness under PWM. */
-  private duty = new Map<string, { level: number; lastNs: number; highNs: number; fromNs: number }>();
+  private duty = new Map<string, { level: number; lastNs: number; highNs: number; fromNs: number; driven: boolean }>();
   bus: BusLayer | null = null;
 
   constructor(circuit: Circuit, mcu: McuPort | null, probes: Probe[] = [],
@@ -261,22 +261,25 @@ export class Bench {
 
   private trackDuty(socPad: string, level: number, timeNs: number): void {
     const d = this.duty.get(socPad);
-    if (!d) { this.duty.set(socPad, { level, lastNs: timeNs, highNs: 0, fromNs: timeNs }); return; }
+    if (!d) { this.duty.set(socPad, { level, lastNs: timeNs, highNs: 0, fromNs: timeNs, driven: level !== 2 }); return; }
     if (d.level === 1) d.highNs += Math.max(0, timeNs - d.lastNs);
     d.level = level;
+    if (level !== 2) d.driven = true;
     d.lastNs = Math.max(d.lastNs, timeNs);
   }
 
-  /** Fraction of time each reported pad drove high since the last call. */
+  /** Fraction of time each pad drove high since the last call; pads that
+   * were not driven at all in that time are left out. */
   takeDuty(nowNs = this.timeNs): Record<string, number> {
     const out: Record<string, number> = {};
     for (const [pad, d] of this.duty) {
       if (d.level === 1) d.highNs += Math.max(0, nowNs - d.lastNs);
       d.lastNs = Math.max(d.lastNs, nowNs);
       const span = nowNs - d.fromNs;
-      out[pad] = span > 0 ? Math.min(1, d.highNs / span) : (d.level === 1 ? 1 : 0);
+      if (d.driven || d.level !== 2) out[pad] = span > 0 ? Math.min(1, d.highNs / span) : (d.level === 1 ? 1 : 0);
       d.highNs = 0;
       d.fromNs = nowNs;
+      d.driven = d.level !== 2;
     }
     return out;
   }

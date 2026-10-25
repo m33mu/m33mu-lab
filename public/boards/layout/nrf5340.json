@@ -12,11 +12,11 @@
     0,
     0,
     950,
-    580
+    750
   ],
   "pinLabelArtwork": false,
   "geometryStatus": "stylized_provisional_not_manufacturing_scale",
-  "electricalMapStatus": "UNVERIFIED_VENDOR_SCHEMATIC_REQUIRED",
+  "electricalMapStatus": "Arduino R3 strip, LEDs and buttons from Zephyr nrf5340dk (gpio-map, gpio-leds, gpio-keys); sprite connectors visual-only",
   "connectors": [
     {
       "id": "P1",
@@ -30,392 +30,448 @@
           "x": 75,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 2,
           "x": 98,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 3,
           "x": 121,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 4,
           "x": 144,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 5,
           "x": 167,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 6,
           "x": 190,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 7,
           "x": 213,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 8,
           "x": 236,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 9,
           "x": 259,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 10,
           "x": 282,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 11,
           "x": 305,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 12,
           "x": 328,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 13,
           "x": 351,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 14,
           "x": 374,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 15,
           "x": 397,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 16,
           "x": 420,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 17,
           "x": 443,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 18,
           "x": 466,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 19,
           "x": 489,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 20,
           "x": 512,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 21,
           "x": 535,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 22,
           "x": 558,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 23,
           "x": 581,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 24,
           "x": 604,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 25,
           "x": 627,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 26,
           "x": 650,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 27,
           "x": 673,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 28,
           "x": 696,
           "y": 92,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 29,
           "x": 75,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 30,
           "x": 98,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 31,
           "x": 121,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 32,
           "x": 144,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 33,
           "x": 167,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 34,
           "x": 190,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 35,
           "x": 213,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 36,
           "x": 236,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 37,
           "x": 259,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 38,
           "x": 282,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 39,
           "x": 305,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 40,
           "x": 328,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 41,
           "x": 351,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 42,
           "x": 374,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 43,
           "x": 397,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 44,
           "x": 420,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 45,
           "x": 443,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 46,
           "x": 466,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 47,
           "x": 489,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 48,
           "x": 512,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 49,
           "x": 535,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 50,
           "x": 558,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 51,
           "x": 581,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 52,
           "x": 604,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 53,
           "x": 627,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 54,
           "x": 650,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 55,
           "x": 673,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 56,
           "x": 696,
           "y": 114,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         }
       ]
     },
@@ -431,406 +487,464 @@
           "x": 75,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 2,
           "x": 98,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 3,
           "x": 121,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 4,
           "x": 144,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 5,
           "x": 167,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 6,
           "x": 190,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 7,
           "x": 213,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 8,
           "x": 236,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 9,
           "x": 259,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 10,
           "x": 282,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 11,
           "x": 305,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 12,
           "x": 328,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 13,
           "x": 351,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 14,
           "x": 374,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 15,
           "x": 397,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 16,
           "x": 420,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 17,
           "x": 443,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 18,
           "x": 466,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 19,
           "x": 489,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 20,
           "x": 512,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 21,
           "x": 535,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 22,
           "x": 558,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 23,
           "x": 581,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 24,
           "x": 604,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 25,
           "x": 627,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 26,
           "x": 650,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 27,
           "x": 673,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 28,
           "x": 696,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 29,
           "x": 719,
           "y": 469,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 30,
           "x": 75,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 31,
           "x": 98,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 32,
           "x": 121,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 33,
           "x": 144,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 34,
           "x": 167,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 35,
           "x": 190,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 36,
           "x": 213,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 37,
           "x": 236,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 38,
           "x": 259,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 39,
           "x": 282,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 40,
           "x": 305,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 41,
           "x": 328,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 42,
           "x": 351,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 43,
           "x": 374,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 44,
           "x": 397,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 45,
           "x": 420,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 46,
           "x": 443,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 47,
           "x": 466,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 48,
           "x": 489,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 49,
           "x": 512,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 50,
           "x": 535,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 51,
           "x": 558,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 52,
           "x": 581,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 53,
           "x": 604,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 54,
           "x": 627,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 55,
           "x": 650,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 56,
           "x": 673,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 57,
           "x": 696,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 58,
           "x": 719,
           "y": 492,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         }
       ]
     },
@@ -846,187 +960,686 @@
           "x": 597,
           "y": 158,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 2,
           "x": 617,
           "y": 158,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 3,
           "x": 597,
           "y": 179,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 4,
           "x": 617,
           "y": 179,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 5,
           "x": 597,
           "y": 200,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 6,
           "x": 617,
           "y": 200,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 7,
           "x": 597,
           "y": 221,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 8,
           "x": 617,
           "y": 221,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 9,
           "x": 597,
           "y": 242,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 10,
           "x": 617,
           "y": 242,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 11,
           "x": 597,
           "y": 263,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 12,
           "x": 617,
           "y": 263,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 13,
           "x": 597,
           "y": 284,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 14,
           "x": 617,
           "y": 284,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 15,
           "x": 597,
           "y": 305,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 16,
           "x": 617,
           "y": 305,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 17,
           "x": 597,
           "y": 326,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 18,
           "x": 617,
           "y": 326,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 19,
           "x": 597,
           "y": 347,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 20,
           "x": 617,
           "y": 347,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 21,
           "x": 597,
           "y": 368,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 22,
           "x": 617,
           "y": 368,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 23,
           "x": 597,
           "y": 389,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 24,
           "x": 617,
           "y": 389,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 25,
           "x": 597,
           "y": 410,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
         },
         {
           "number": 26,
           "x": 617,
           "y": 410,
           "signal": null,
-          "mapping_verified": false
+          "mapping_verified": false,
+          "electricalEnabled": false
+        }
+      ]
+    },
+    {
+      "id": "ARD_DHIGH",
+      "kind": "arduino-female",
+      "rows": 1,
+      "columns": 10,
+      "description": "Arduino D8-D15 header (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "ARD_DHIGH-1",
+          "x": 40.0,
+          "y": 650,
+          "signal": "SCL",
+          "net": "SCL",
+          "socPad": "P1.03",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 2,
+          "contactId": "ARD_DHIGH-2",
+          "x": 62.0,
+          "y": 650,
+          "signal": "SDA",
+          "net": "SDA",
+          "socPad": "P1.02",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 3,
+          "contactId": "ARD_DHIGH-3",
+          "x": 84.0,
+          "y": 650,
+          "signal": "AREF",
+          "net": "AREF",
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "AREF: not modelled on the bench"
+        },
+        {
+          "number": 4,
+          "contactId": "ARD_DHIGH-4",
+          "x": 106.0,
+          "y": 650,
+          "signal": "GND",
+          "net": "GND",
+          "socPad": "GND",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 5,
+          "contactId": "ARD_DHIGH-5",
+          "x": 128.0,
+          "y": 650,
+          "signal": "D13",
+          "net": "D13",
+          "socPad": "P1.15",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 6,
+          "contactId": "ARD_DHIGH-6",
+          "x": 150.0,
+          "y": 650,
+          "signal": "D12",
+          "net": "D12",
+          "socPad": "P1.14",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 7,
+          "contactId": "ARD_DHIGH-7",
+          "x": 172.0,
+          "y": 650,
+          "signal": "D11",
+          "net": "D11",
+          "socPad": "P1.13",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 8,
+          "contactId": "ARD_DHIGH-8",
+          "x": 194.0,
+          "y": 650,
+          "signal": "D10",
+          "net": "D10",
+          "socPad": "P1.12",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 9,
+          "contactId": "ARD_DHIGH-9",
+          "x": 216.0,
+          "y": 650,
+          "signal": "D9",
+          "net": "D9",
+          "socPad": "P1.11",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 10,
+          "contactId": "ARD_DHIGH-10",
+          "x": 238.0,
+          "y": 650,
+          "signal": "D8",
+          "net": "D8",
+          "socPad": "P1.10",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "ARD_DLOW",
+      "kind": "arduino-female",
+      "rows": 1,
+      "columns": 8,
+      "description": "Arduino D0-D7 header (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "ARD_DLOW-1",
+          "x": 273.2,
+          "y": 650,
+          "signal": "D7",
+          "net": "D7",
+          "socPad": "P1.09",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 2,
+          "contactId": "ARD_DLOW-2",
+          "x": 295.2,
+          "y": 650,
+          "signal": "D6",
+          "net": "D6",
+          "socPad": "P1.08",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 3,
+          "contactId": "ARD_DLOW-3",
+          "x": 317.2,
+          "y": 650,
+          "signal": "D5",
+          "net": "D5",
+          "socPad": "P1.07",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 4,
+          "contactId": "ARD_DLOW-4",
+          "x": 339.2,
+          "y": 650,
+          "signal": "D4",
+          "net": "D4",
+          "socPad": "P1.06",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 5,
+          "contactId": "ARD_DLOW-5",
+          "x": 361.2,
+          "y": 650,
+          "signal": "D3",
+          "net": "D3",
+          "socPad": "P1.05",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 6,
+          "contactId": "ARD_DLOW-6",
+          "x": 383.2,
+          "y": 650,
+          "signal": "D2",
+          "net": "D2",
+          "socPad": "P1.04",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 7,
+          "contactId": "ARD_DLOW-7",
+          "x": 405.2,
+          "y": 650,
+          "signal": "D1",
+          "net": "D1",
+          "socPad": "P1.01",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 8,
+          "contactId": "ARD_DLOW-8",
+          "x": 427.2,
+          "y": 650,
+          "signal": "D0",
+          "net": "D0",
+          "socPad": "P1.00",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        }
+      ]
+    },
+    {
+      "id": "ARD_POWER",
+      "kind": "arduino-female",
+      "rows": 1,
+      "columns": 8,
+      "description": "Arduino power header (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "ARD_POWER-1",
+          "x": 106.0,
+          "y": 716.0,
+          "signal": "NC",
+          "net": "NC",
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "NC: not modelled on the bench"
+        },
+        {
+          "number": 2,
+          "contactId": "ARD_POWER-2",
+          "x": 128.0,
+          "y": 716.0,
+          "signal": "IOREF",
+          "net": "IOREF",
+          "socPad": "3V3",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 3,
+          "contactId": "ARD_POWER-3",
+          "x": 150.0,
+          "y": 716.0,
+          "signal": "RESET",
+          "net": "RESET",
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "RESET: not modelled on the bench"
+        },
+        {
+          "number": 4,
+          "contactId": "ARD_POWER-4",
+          "x": 172.0,
+          "y": 716.0,
+          "signal": "3V3",
+          "net": "3V3",
+          "socPad": "3V3",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 5,
+          "contactId": "ARD_POWER-5",
+          "x": 194.0,
+          "y": 716.0,
+          "signal": "5V",
+          "net": "5V",
+          "socPad": "5V",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 6,
+          "contactId": "ARD_POWER-6",
+          "x": 216.0,
+          "y": 716.0,
+          "signal": "GND",
+          "net": "GND",
+          "socPad": "GND",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 7,
+          "contactId": "ARD_POWER-7",
+          "x": 238.0,
+          "y": 716.0,
+          "signal": "GND",
+          "net": "GND",
+          "socPad": "GND",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 8,
+          "contactId": "ARD_POWER-8",
+          "x": 260.0,
+          "y": 716.0,
+          "signal": "VIN",
+          "net": "VIN",
+          "mapping_verified": true,
+          "electricalEnabled": false,
+          "note": "VIN: not modelled on the bench"
+        }
+      ]
+    },
+    {
+      "id": "ARD_ANALOG",
+      "kind": "arduino-female",
+      "rows": 1,
+      "columns": 6,
+      "description": "Arduino analog header (Uno R3)",
+      "geometryMeasured": false,
+      "contacts": [
+        {
+          "number": 1,
+          "contactId": "ARD_ANALOG-1",
+          "x": 304.0,
+          "y": 716.0,
+          "signal": "A0",
+          "net": "A0",
+          "socPad": "P0.04",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 2,
+          "contactId": "ARD_ANALOG-2",
+          "x": 326.0,
+          "y": 716.0,
+          "signal": "A1",
+          "net": "A1",
+          "socPad": "P0.05",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 3,
+          "contactId": "ARD_ANALOG-3",
+          "x": 348.0,
+          "y": 716.0,
+          "signal": "A2",
+          "net": "A2",
+          "socPad": "P0.06",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 4,
+          "contactId": "ARD_ANALOG-4",
+          "x": 370.0,
+          "y": 716.0,
+          "signal": "A3",
+          "net": "A3",
+          "socPad": "P0.07",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 5,
+          "contactId": "ARD_ANALOG-5",
+          "x": 392.0,
+          "y": 716.0,
+          "signal": "A4",
+          "net": "A4",
+          "socPad": "P0.25",
+          "mapping_verified": true,
+          "electricalEnabled": true
+        },
+        {
+          "number": 6,
+          "contactId": "ARD_ANALOG-6",
+          "x": 414.0,
+          "y": 716.0,
+          "signal": "A5",
+          "net": "A5",
+          "socPad": "P0.26",
+          "mapping_verified": true,
+          "electricalEnabled": true
         }
       ]
     }
   ],
   "warning": "Contact coordinates and physical ordering are for visual hit testing. Except Pico 2 do not assume board header numbers match manufacturer numbering. Electrical use must remain disabled until verified from schematics.",
   "electricalEnabledByDefault": false,
-  "notes": "Graphic silhouettes are original illustrations, not manufacturer CAD or exact top-side facsimiles. Pin labels appear only through UI metadata."
+  "notes": "Graphic silhouettes are original illustrations, not manufacturer CAD or exact top-side facsimiles. Pin labels appear only through UI metadata.",
+  "leds": [
+    {
+      "id": "Green LED 0",
+      "pad": "P0.28",
+      "color": "#2fb34a",
+      "x": 480.0,
+      "y": 644,
+      "w": 22,
+      "h": 12,
+      "activeHigh": false
+    },
+    {
+      "id": "Green LED 1",
+      "pad": "P0.29",
+      "color": "#2fb34a",
+      "x": 530.0,
+      "y": 644,
+      "w": 22,
+      "h": 12,
+      "activeHigh": false
+    },
+    {
+      "id": "Green LED 2",
+      "pad": "P0.30",
+      "color": "#2fb34a",
+      "x": 580.0,
+      "y": 644,
+      "w": 22,
+      "h": 12,
+      "activeHigh": false
+    },
+    {
+      "id": "Green LED 3",
+      "pad": "P0.31",
+      "color": "#2fb34a",
+      "x": 630.0,
+      "y": 644,
+      "w": 22,
+      "h": 12,
+      "activeHigh": false
+    }
+  ],
+  "buttons": [
+    {
+      "id": "Push button 1",
+      "pad": "P0.23",
+      "x": 480.0,
+      "y": 698.0,
+      "w": 36,
+      "h": 36,
+      "activeHigh": false
+    },
+    {
+      "id": "Push button 2",
+      "pad": "P0.24",
+      "x": 530.0,
+      "y": 698.0,
+      "w": 36,
+      "h": 36,
+      "activeHigh": false
+    },
+    {
+      "id": "Push button 3",
+      "pad": "P0.08",
+      "x": 580.0,
+      "y": 698.0,
+      "w": 36,
+      "h": 36,
+      "activeHigh": false
+    },
+    {
+      "id": "Push button 4",
+      "pad": "P0.09",
+      "x": 630.0,
+      "y": 698.0,
+      "w": 36,
+      "h": 36,
+      "activeHigh": false
+    }
+  ],
+  "generator": "scripts/gen-arduino-boards.py"
 }

@@ -209,7 +209,7 @@ export function validateNetlist(netlist: unknown): string[] {
       break;
     case 'pad': {
       const p = d.pad;
-      if (!p || typeof p.socPad !== 'string' || !/^(P[A-Z][0-9]{1,2}|GPIO[0-9]{1,2})$/.test(p.socPad)) {
+      if (!p || typeof p.socPad !== 'string' || !/^(P[A-Z][0-9]{1,2}|GPIO[0-9]{1,2}|P[0-9]\.[0-9]{2}|PIO[0-9]_[0-9]{1,2}|P[0-9]_[0-9]{1,2})$/.test(p.socPad)) {
         errors.push(`${d.id}: pad needs a socPad like PA5 or GPIO17`);
         break;
       }

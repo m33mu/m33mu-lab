@@ -494,19 +494,46 @@ try {
     await page.getByTestId('dock-toggle').click();
   });
 
+  await check('nRF5340 DK example: Arduino D2/D3 and on-board Button 1 / LED 0 through P0/P1 pads', async () => {
+    await page.getByTestId('examples').selectOption('nrf5340-gpio');
+    await page.waitForFunction(() => /nRF5340 DK GPIO/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    if ((await page.getByTestId('dock-toggle').getAttribute('aria-expanded')) === 'true') await page.getByTestId('dock-toggle').click();
+    await page.getByTestId('real-time').uncheck();
+    await page.getByTestId('run').click();
+    await page.waitForSelector('g[data-part="led1"] circle.glow', { timeout: 60000 });
+    await page.waitForSelector('[data-board-led="Green LED 0"][data-lit="off"]');
+    const sw = await center(page.locator('g[data-part="sw1"]'));
+    await page.mouse.move(sw.x, sw.y);
+    await page.mouse.down();
+    await page.waitForSelector('g[data-part="led1"] circle.glow', { state: 'detached', timeout: 30000 });
+    await page.mouse.up();
+    const b1 = await center(page.locator('[data-board-button="Push button 1"]'));
+    await page.mouse.move(b1.x, b1.y);
+    await page.mouse.down();
+    await page.waitForSelector('[data-board-led="Green LED 0"][data-lit="on"]', { timeout: 30000 });
+    // Active-low LEDs on pins the firmware never drives stay dark.
+    assert.equal(await page.locator('[data-board-led="Green LED 1"]').getAttribute('data-lit'), 'off');
+    await shot('13-nrf5340-gpio');
+    await page.mouse.up();
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('real-time').check();
+    await page.getByTestId('dock-toggle').click();
+  });
+
   await check('board picker: every CPU board renders, firmware runs on another CPU', async () => {
+    const accept = (d) => d.accept();
+    page.on('dialog', accept);
     const cpus = await page.getByTestId('board').locator('option').evaluateAll((os) => os.map((o) => o.value));
     assert.equal(cpus.length, 16);
     for (const c of ['nrf5340', 'rp2350', 'stm32l552']) {
-      page.once('dialog', (d) => d.accept());
-      await page.getByTestId('board').selectOption(c);
+        await page.getByTestId('board').selectOption(c);
       await page.waitForFunction((cpu) => document.querySelector('svg image')?.getAttribute('href')?.includes(`${cpu}.svg`), c);
       // Pico 2 has a reviewed pin map; the others are display-only.
-      const wireable = { rp2350: /35 of 43 header contacts wireable/, stm32l552: /36 of 240 header contacts wireable/ }[c];
+      const wireable = { rp2350: /35 of 43 header contacts wireable/, stm32l552: /36 of 240 header contacts wireable/,
+        nrf5340: /28 of \d+ header contacts wireable/ }[c];
       await page.getByText(wireable ?? /visual only until this board's pin map is reviewed/).waitFor();
     }
     // The worker switches CPU with the board: an nRF5340 ELF prints its banner on UARTE0.
-    page.once('dialog', (d) => d.accept());
     await page.getByTestId('board').selectOption('nrf5340');
     const nrf = new URL('../../m33mu/tests/firmware/test-nrf5340/app.elf', import.meta.url);
     if (existsSync(nrf)) {
@@ -518,9 +545,9 @@ try {
       await page.getByTestId('real-time').check();
     }
     await shot('10-board-nrf5340');
-    page.once('dialog', (d) => d.accept());
     await page.getByTestId('board').selectOption('stm32h563');
     await page.waitForFunction(() => document.querySelector('svg image')?.getAttribute('href')?.includes('stm32h563.svg'));
+    page.off('dialog', accept);
   });
 
   await check('worker destroy and recreate in the browser', async () => {

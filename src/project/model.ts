@@ -89,15 +89,15 @@ export const BOARDS = {
   stm32u585: { name: 'NUCLEO-U575ZI-Q with STM32U585', layoutRevision: 'MB1549 (Zephyr nucleo_u575zi_q Zio map)', vcp: null },
   stm32l552: { name: 'NUCLEO-L552ZE-Q', layoutRevision: 'MB1361 (Zephyr Arduino map)', vcp: null },
   stm32n657: { name: 'NUCLEO-N657X0-Q', layoutRevision: 'MB1940 (Zephyr Arduino map)', vcp: null },
-  mcxw71c: { name: 'FRDM-MCXW71', layoutRevision: PROVISIONAL, vcp: null },
-  mcxn947: { name: 'FRDM-MCXN947', layoutRevision: PROVISIONAL, vcp: null },
-  nrf5340: { name: 'nRF5340 DK', layoutRevision: PROVISIONAL, vcp: null },
-  nrf54lm20: { name: 'nRF54LM20 DK', layoutRevision: PROVISIONAL, vcp: null },
+  mcxw71c: { name: 'FRDM-MCXW71', layoutRevision: 'FRDM-MCXW71 (Zephyr Arduino map)', vcp: null },
+  mcxn947: { name: 'FRDM-MCXN947', layoutRevision: 'FRDM-MCXN947 (Zephyr Arduino map)', vcp: null },
+  nrf5340: { name: 'nRF5340 DK', layoutRevision: 'nRF5340 DK (Zephyr Arduino map)', vcp: null },
+  nrf54lm20: { name: 'nRF54LM20 DK', layoutRevision: 'nRF54LM20 DK (Zephyr LEDs/buttons)', vcp: null },
   rp2350: { name: 'Raspberry Pi Pico 2', layoutRevision: PICO2_LAYOUT_REVISION, vcp: null },
-  lpc55s69: { name: 'LPCXpresso55S69', layoutRevision: PROVISIONAL, vcp: null },
+  lpc55s69: { name: 'LPCXpresso55S69', layoutRevision: 'LPCXpresso55S69 (Zephyr Arduino map)', vcp: null },
   pic32ck: { name: 'PIC32CK SG01 Curiosity Ultra', layoutRevision: PROVISIONAL, vcp: null },
   m2354: { name: 'NuMaker-M2354', layoutRevision: PROVISIONAL, vcp: null },
-  rw612: { name: 'FRDM-RW612', layoutRevision: PROVISIONAL, vcp: null },
+  rw612: { name: 'FRDM-RW612', layoutRevision: 'FRDM-RW612 (Zephyr Arduino map)', vcp: null },
   imxrt700: { name: 'MIMXRT700-EVK', layoutRevision: PROVISIONAL, vcp: null }
 } as const;
 export type CpuName = keyof typeof BOARDS;
