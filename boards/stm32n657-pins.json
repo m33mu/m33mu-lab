@@ -6,9 +6,9 @@
  "electricalMapStatus": "verified",
  "sources": [
   {
-   "kind": "zephyr-board-definition",
-   "url": "https://github.com/zephyrproject-rtos/zephyr/blob/c425eabae5724d39fdd828d31ec35dc850795fe1/boards/st/nucleo_n657x0_q",
-   "evidence": "gpio-map of the Arduino R3 / ST Zio / ST morpho connector nodes"
+   "kind": "manufacturer-user-manual",
+   "url": "https://www.st.com/resource/en/user_manual/um3417-stm32n6-nucleo144-board-mb1940-stmicroelectronics.pdf",
+   "evidence": "UM3417 Rev 1 Table 11 (Arduino Uno V3), Tables 12-13 (ST morpho CN3/CN15, CN2/CN16)"
   }
  ],
  "review": {
@@ -18,473 +18,102 @@
  },
  "contacts": [
   {
-   "connectorId": "CN7",
-   "physicalPadNumber": 1,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 2,
-   "net": "PH9",
-   "socPad": "PH9",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D15"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 3,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 4,
-   "net": "PC1",
-   "socPad": "PC1",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D14"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 5,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 6,
-   "net": "VREFP",
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "VREFP: not modelled on the bench"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 7,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 8,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 9,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 10,
-   "net": "PE15",
-   "socPad": "PE15",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D13"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 11,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 12,
-   "net": "PG1",
-   "socPad": "PG1",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D12"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 13,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 14,
-   "net": "PG2",
-   "socPad": "PG2",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D11"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 15,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 16,
-   "net": "PA3",
-   "socPad": "PA3",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D10"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 17,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 18,
-   "net": "PD7",
-   "socPad": "PD7",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D9"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 19,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN7",
-   "physicalPadNumber": 20,
-   "net": "PD12",
-   "socPad": "PD12",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D8"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 1,
-   "net": "PA8",
-   "socPad": "PA8",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A0"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 2,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 3,
-   "net": "PA9",
-   "socPad": "PA9",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A1"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 4,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 5,
-   "net": "PA10",
-   "socPad": "PA10",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A2"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 6,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 7,
-   "net": "PA12",
-   "socPad": "PA12",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A3"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 8,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 9,
-   "net": "PF3",
-   "socPad": "PF3",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A4"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 10,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 11,
-   "net": "PG15",
-   "socPad": "PG15",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino A5"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 12,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 13,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 14,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 15,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 16,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 17,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 18,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 19,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 20,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 21,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 22,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 23,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 24,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 25,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 26,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 27,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 28,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 29,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN9",
-   "physicalPadNumber": 30,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN8",
+   "connectorId": "CN3",
    "physicalPadNumber": 1,
    "net": "NC",
    "socPad": null,
-   "signalMappingVerified": false,
+   "signalMappingVerified": true,
    "electricalEnabled": false,
    "note": "NC: not modelled on the bench"
   },
   {
-   "connectorId": "CN8",
+   "connectorId": "CN3",
    "physicalPadNumber": 2,
-   "net": null,
+   "net": "OTG1_HSDM_CON",
    "socPad": null,
-   "signalMappingVerified": false,
+   "signalMappingVerified": true,
    "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "note": "OTG1_HSDM_CON: not modelled on the bench"
   },
   {
-   "connectorId": "CN8",
+   "connectorId": "CN3",
    "physicalPadNumber": 3,
+   "net": "PC2",
+   "socPad": "PC2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 4,
+   "net": "OTG1_HSDP_CON",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "OTG1_HSDP_CON: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 5,
+   "net": "VDDIO",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VDDIO: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 6,
+   "net": "5V",
+   "socPad": "5V",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 7,
+   "net": "BOOT0",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "BOOT0: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 8,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 9,
+   "net": "PH0",
+   "socPad": "PH0",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 10,
+   "net": "VDDIO4",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VDDIO4: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 11,
+   "net": "PH1",
+   "socPad": "PH1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 12,
    "net": "3V3",
    "socPad": "3V3",
    "signalMappingVerified": true,
@@ -492,68 +121,310 @@
    "note": "IOREF (board 3V3 net)"
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 4,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "connectorId": "CN3",
+   "physicalPadNumber": 13,
+   "net": "PC4",
+   "socPad": "PC4",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 5,
+   "connectorId": "CN3",
+   "physicalPadNumber": 14,
    "net": "NRST",
    "socPad": null,
-   "signalMappingVerified": false,
+   "signalMappingVerified": true,
    "electricalEnabled": false,
    "note": "NRST: not modelled on the bench"
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 6,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "connectorId": "CN3",
+   "physicalPadNumber": 15,
+   "net": "PC5",
+   "socPad": "PC5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 7,
+   "connectorId": "CN3",
+   "physicalPadNumber": 16,
    "net": "3V3",
    "socPad": "3V3",
    "signalMappingVerified": true,
    "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 8,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "connectorId": "CN3",
+   "physicalPadNumber": 17,
+   "net": "PC0",
+   "socPad": "PC0",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 9,
+   "connectorId": "CN3",
+   "physicalPadNumber": 18,
    "net": "5V",
    "socPad": "5V",
    "signalMappingVerified": true,
    "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 10,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "connectorId": "CN3",
+   "physicalPadNumber": 19,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
+   "connectorId": "CN3",
+   "physicalPadNumber": 20,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 21,
+   "net": "PE4",
+   "socPad": "PE4",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 22,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 23,
+   "net": "PC13",
+   "socPad": "PC13",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 24,
+   "net": "VIN",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VIN: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 25,
+   "net": "PC3",
+   "socPad": "PC3",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 26,
+   "net": "PH4",
+   "socPad": "PH4",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 27,
+   "net": "PC15",
+   "socPad": "PC15",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 28,
+   "net": "PF5",
+   "socPad": "PF5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 29,
+   "net": "PC14",
+   "socPad": "PC14",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 30,
+   "net": "PC10",
+   "socPad": "PC10",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 31,
+   "net": "VDDIO5",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VDDIO5: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 32,
+   "net": "PF6",
+   "socPad": "PF6",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 33,
+   "net": "VBAT",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VBAT: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 34,
+   "net": "PA2",
+   "socPad": "PA2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 35,
+   "net": "BOOT1",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "BOOT1: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 36,
+   "net": "PC12",
+   "socPad": "PC12",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 37,
+   "net": "PC8",
+   "socPad": "PC8",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN3",
+   "physicalPadNumber": 38,
+   "net": "PH2",
+   "socPad": "PH2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 1,
+   "net": "PF8",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 2,
+   "net": "NC/PB1",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC/PB1: disconnected by default (UM3417 Rev 1 Table 13 note 1)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 3,
+   "net": "PG7",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 4,
+   "net": "PF2",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 5,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 6,
+   "net": "PF1",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 7,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 8,
+   "net": "PF0",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 9,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 10,
+   "net": "PF9",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
    "physicalPadNumber": 11,
    "net": "GND",
    "socPad": "GND",
@@ -561,70 +432,447 @@
    "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
+   "connectorId": "CN2",
    "physicalPadNumber": 12,
-   "net": null,
+   "net": "PH5",
    "socPad": null,
-   "signalMappingVerified": false,
+   "signalMappingVerified": true,
    "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
   },
   {
-   "connectorId": "CN8",
+   "connectorId": "CN2",
    "physicalPadNumber": 13,
+   "net": "PG5",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 14,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 15,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 16,
+   "net": "NC/PB13",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC/PB13: disconnected by default (UM3417 Rev 1 Table 13 note 1)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 17,
+   "net": "PG14",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 18,
+   "net": "PG4",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 19,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 20,
+   "net": "PG6",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 21,
+   "net": "NC/PG12",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC/PG12: disconnected by default (UM3417 Rev 1 Table 13 note 1)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 22,
    "net": "GND",
    "socPad": "GND",
    "signalMappingVerified": true,
    "electricalEnabled": true
   },
   {
-   "connectorId": "CN8",
-   "physicalPadNumber": 14,
-   "net": null,
+   "connectorId": "CN2",
+   "physicalPadNumber": 23,
+   "net": "PG3",
    "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN8",
-   "physicalPadNumber": 15,
-   "net": "VIN",
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "VIN: not modelled on the bench"
-  },
-  {
-   "connectorId": "CN8",
-   "physicalPadNumber": 16,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 1,
-   "net": "3V3",
-   "socPad": "3V3",
    "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "AVDD (board 3V3 net)"
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
   },
   {
-   "connectorId": "CN10",
+   "connectorId": "CN2",
+   "physicalPadNumber": 24,
+   "net": "NC/PG9",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC/PG9: disconnected by default (UM3417 Rev 1 Table 13 note 1)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 25,
+   "net": "PC9",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 26,
+   "net": "PB15",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 27,
+   "net": "PC11",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 28,
+   "net": "PC6",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 29,
+   "net": "PH8",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 30,
+   "net": "PH7",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 31,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN2",
+   "physicalPadNumber": 32,
+   "net": "PH3",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN2 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 1,
+   "net": "PE12",
+   "socPad": "PE12",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
    "physicalPadNumber": 2,
+   "net": "PE6",
+   "socPad": "PE6",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 3,
+   "net": "PH9",
+   "socPad": "PH9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 4,
+   "net": "PE5",
+   "socPad": "PE5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 5,
+   "net": "PC1",
+   "socPad": "PC1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 6,
+   "net": "PD6",
+   "socPad": "PD6",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 7,
+   "net": "VREFP",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VREFP: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 8,
+   "net": "5V_STLK",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "5V_STLK: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 9,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 10,
+   "net": "PB2",
+   "socPad": "PB2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 11,
+   "net": "PE15",
+   "socPad": "PE15",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 12,
+   "net": "NC/PB3",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC/PB3: disconnected by default (UM3417 Rev 1 Table 13 note 1)"
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 13,
+   "net": "PG1",
+   "socPad": "PG1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 14,
+   "net": "PB8",
+   "socPad": "PB8",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 15,
+   "net": "PG2",
+   "socPad": "PG2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 16,
+   "net": "PB9",
+   "socPad": "PB9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 17,
+   "net": "PA3",
+   "socPad": "PA3",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 18,
+   "net": "PB14",
+   "socPad": "PB14",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 19,
+   "net": "PD7",
+   "socPad": "PD7",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 20,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 21,
+   "net": "PD12",
+   "socPad": "PD12",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 22,
+   "net": "PE7",
+   "socPad": "PE7",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 23,
    "net": "PE11",
    "socPad": "PE11",
    "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D7"
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN10",
-   "physicalPadNumber": 3,
+   "connectorId": "CN15",
+   "physicalPadNumber": 24,
+   "net": "PE1",
+   "socPad": "PE1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 25,
+   "net": "PD5",
+   "socPad": "PD5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 26,
+   "net": "PE14",
+   "socPad": "PE14",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 27,
+   "net": "PE10",
+   "socPad": "PE10",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 28,
+   "net": "PE13",
+   "socPad": "PE13",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 29,
+   "net": "PE0",
+   "socPad": "PE0",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 30,
+   "net": "PE2",
+   "socPad": "PE2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 31,
+   "net": "PE9",
+   "socPad": "PE9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 32,
    "net": "GND",
    "socPad": "GND",
    "signalMappingVerified": true,
@@ -632,24 +880,596 @@
    "note": "AGND (board GND net)"
   },
   {
-   "connectorId": "CN10",
-   "physicalPadNumber": 4,
-   "net": "PD5",
-   "socPad": "PD5",
+   "connectorId": "CN15",
+   "physicalPadNumber": 33,
+   "net": "PD0",
+   "socPad": "PD0",
    "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D6"
+   "electricalEnabled": true
   },
   {
-   "connectorId": "CN10",
-   "physicalPadNumber": 5,
+   "connectorId": "CN15",
+   "physicalPadNumber": 34,
+   "net": "PD10",
+   "socPad": "PD10",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 35,
+   "net": "PD8",
+   "socPad": "PD8",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 36,
+   "net": "PD11",
+   "socPad": "PD11",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 37,
+   "net": "PD9",
+   "socPad": "PD9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN15",
+   "physicalPadNumber": 38,
+   "net": "PA1",
+   "socPad": "PA1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 1,
    "net": "GND",
    "socPad": "GND",
    "signalMappingVerified": true,
    "electricalEnabled": true
   },
   {
-   "connectorId": "CN10",
+   "connectorId": "CN16",
+   "physicalPadNumber": 2,
+   "net": "PP1",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 3,
+   "net": "PP0",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 4,
+   "net": "PP2",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 5,
+   "net": "PO0",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 6,
+   "net": "PP3",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 7,
+   "net": "PO1",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 8,
+   "net": "PP4",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 9,
+   "net": "PO2",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 10,
+   "net": "PP5",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 11,
+   "net": "PO3",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 12,
+   "net": "PP6",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 13,
+   "net": "PO4",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 14,
+   "net": "PP7",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 15,
+   "net": "PE8",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 16,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 17,
+   "net": "NC",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NC: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 18,
+   "net": "PP8",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 19,
+   "net": "PD13",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 20,
+   "net": "PP9",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 21,
+   "net": "PA4",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 22,
+   "net": "PP10",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 23,
+   "net": "PD15",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 24,
+   "net": "PP11",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 25,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 26,
+   "net": "PP12",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 27,
+   "net": "PD3",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 28,
+   "net": "PP13",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 29,
+   "net": "PG13",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 30,
+   "net": "PP14",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 31,
+   "net": "PN12",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN16",
+   "physicalPadNumber": 32,
+   "net": "PP15",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "CN16 is not soldered by default (UM3417 Rev 1 section 8.2)"
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 1,
+   "net": "5V_IN",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "5V_IN: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 2,
+   "net": "3V3",
+   "socPad": "3V3",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "IOREF (board 3V3 net)"
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 3,
+   "net": "NRST",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "NRST: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 4,
+   "net": "3V3",
+   "socPad": "3V3",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 5,
+   "net": "5V",
+   "socPad": "5V",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 6,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 7,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN5",
+   "physicalPadNumber": 8,
+   "net": "VIN",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "VIN: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 1,
+   "net": "PF5",
+   "socPad": "PF5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A0; also PA8 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 2,
+   "net": "PC10",
+   "socPad": "PC10",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A1; also PA9 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 3,
+   "net": "PF6",
+   "socPad": "PF6",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A2; also PA10 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 4,
+   "net": "PA2",
+   "socPad": "PA2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A3; also PA12 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 5,
+   "net": "PC12",
+   "socPad": "PC12",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A4; also PF3 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN4",
+   "physicalPadNumber": 6,
+   "net": "PH2",
+   "socPad": "PH2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino A5; also PG15 (1.8 V ADC) through an amplifier, not modelled"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 1,
+   "net": "PD12",
+   "socPad": "PD12",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D8"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 2,
+   "net": "PD7",
+   "socPad": "PD7",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D9"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 3,
+   "net": "PA3",
+   "socPad": "PA3",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D10"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 4,
+   "net": "PG2",
+   "socPad": "PG2",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D11"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 5,
+   "net": "PG1",
+   "socPad": "PG1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D12"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 6,
+   "net": "PE15",
+   "socPad": "PE15",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D13"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 7,
+   "net": "GND",
+   "socPad": "GND",
+   "signalMappingVerified": true,
+   "electricalEnabled": true
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 8,
+   "net": "AREF",
+   "socPad": null,
+   "signalMappingVerified": true,
+   "electricalEnabled": false,
+   "note": "AREF: not modelled on the bench"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 9,
+   "net": "PC1",
+   "socPad": "PC1",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D14"
+  },
+  {
+   "connectorId": "CN14",
+   "physicalPadNumber": 10,
+   "net": "PH9",
+   "socPad": "PH9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D15"
+  },
+  {
+   "connectorId": "CN13",
+   "physicalPadNumber": 1,
+   "net": "PD9",
+   "socPad": "PD9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D0"
+  },
+  {
+   "connectorId": "CN13",
+   "physicalPadNumber": 2,
+   "net": "PD8",
+   "socPad": "PD8",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D1"
+  },
+  {
+   "connectorId": "CN13",
+   "physicalPadNumber": 3,
+   "net": "PD0",
+   "socPad": "PD0",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D2"
+  },
+  {
+   "connectorId": "CN13",
+   "physicalPadNumber": 4,
+   "net": "PE9",
+   "socPad": "PE9",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D3"
+  },
+  {
+   "connectorId": "CN13",
+   "physicalPadNumber": 5,
+   "net": "PE0",
+   "socPad": "PE0",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D4"
+  },
+  {
+   "connectorId": "CN13",
    "physicalPadNumber": 6,
    "net": "PE10",
    "socPad": "PE10",
@@ -658,1513 +1478,22 @@
    "note": "Arduino D5"
   },
   {
-   "connectorId": "CN10",
+   "connectorId": "CN13",
    "physicalPadNumber": 7,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
+   "net": "PD5",
+   "socPad": "PD5",
+   "signalMappingVerified": true,
+   "electricalEnabled": true,
+   "note": "Arduino D6"
   },
   {
-   "connectorId": "CN10",
+   "connectorId": "CN13",
    "physicalPadNumber": 8,
-   "net": "PE0",
-   "socPad": "PE0",
+   "net": "PE11",
+   "socPad": "PE11",
    "signalMappingVerified": true,
    "electricalEnabled": true,
-   "note": "Arduino D4"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 9,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 10,
-   "net": "PE9",
-   "socPad": "PE9",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D3"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 11,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 12,
-   "net": "PD0",
-   "socPad": "PD0",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D2"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 13,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 14,
-   "net": "PD8",
-   "socPad": "PD8",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D1"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 15,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 16,
-   "net": "PD9",
-   "socPad": "PD9",
-   "signalMappingVerified": true,
-   "electricalEnabled": true,
-   "note": "Arduino D0"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 17,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 18,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 19,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 20,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 21,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 22,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 23,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 24,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 25,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 26,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 27,
-   "net": "GND",
-   "socPad": "GND",
-   "signalMappingVerified": true,
-   "electricalEnabled": true
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 28,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 29,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 30,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 31,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 32,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 33,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN10",
-   "physicalPadNumber": 34,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "Zio pin not listed in the board's Zephyr pin map"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 1,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 2,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 3,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 4,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 5,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 6,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 7,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 8,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 9,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 10,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 11,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 12,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 13,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 14,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 15,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 16,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 17,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 18,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 19,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 20,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 21,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 22,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 23,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 24,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 25,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 26,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 27,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 28,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 29,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 30,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 31,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 32,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 33,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 34,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 35,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 36,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 37,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 38,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 39,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 40,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 41,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 42,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 43,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 44,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 45,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 46,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 47,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 48,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 49,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 50,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 51,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 52,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 53,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 54,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 55,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 56,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 57,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 58,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 59,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 60,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 61,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 62,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 63,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 64,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 65,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 66,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 67,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 68,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 69,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN11",
-   "physicalPadNumber": 70,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 1,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 2,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 3,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 4,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 5,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 6,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 7,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 8,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 9,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 10,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 11,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 12,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 13,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 14,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 15,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 16,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 17,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 18,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 19,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 20,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 21,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 22,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 23,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 24,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 25,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 26,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 27,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 28,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 29,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 30,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 31,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 32,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 33,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 34,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 35,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 36,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 37,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 38,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 39,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 40,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 41,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 42,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 43,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 44,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 45,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 46,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 47,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 48,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 49,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 50,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 51,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 52,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 53,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 54,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 55,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 56,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 57,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 58,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 59,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 60,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 61,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 62,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 63,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 64,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 65,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 66,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 67,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 68,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 69,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
-  },
-  {
-   "connectorId": "CN12",
-   "physicalPadNumber": 70,
-   "net": null,
-   "socPad": null,
-   "signalMappingVerified": false,
-   "electricalEnabled": false,
-   "note": "ST morpho pin: no public pin map for this board in the sources used"
+   "note": "Arduino D7"
   }
  ]
 }

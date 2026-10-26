@@ -4,7 +4,9 @@
 Pin identities come from Zephyr's board definitions (Apache-2.0), fetched
 into boards/sources/zephyr/ by scripts/fetch-zephyr-boards.sh:
 
-* NUCLEO-L552ZE-Q, NUCLEO-N657X0-Q: Arduino R3 map (arduino_r3_connector.dtsi).
+* NUCLEO-L552ZE-Q: Arduino R3 map (arduino_r3_connector.dtsi).
+* NUCLEO-N657X0-Q: Arduino Uno V3 and ST morpho headers from UM3417 Rev 1
+  Tables 11-13 (this board has no Zio connectors).
 * STM32U585 on NUCLEO-U575ZI-Q (U575/U585 are pin compatible): every Zio
   GPIO contact from st_zio_connector.dtsi (UM2861 Rev 10 Tables 15-18), plus
   the Arduino map.
@@ -90,10 +92,6 @@ N144 = {
     "stm32u585": dict(name="NUCLEO-U575ZI-Q with STM32U585", rev="MB1549 (U575ZI-Q; U585 pin compatible)",
                       zephyr="nucleo_u575zi_q", arduino="nucleo_u575zi_q/arduino_r3_connector.dtsi", zio=True,
                       leds=[("LD1", "PC7", "#2fb34a", True), ("LD2", "PB7", "#2e86de", True), ("LD3", "PG2", "#d62d2d", True)],
-                      button=("B1", "PC13")),
-    "stm32n657": dict(name="NUCLEO-N657X0-Q", rev="MB1940", zephyr="nucleo_n657x0_q",
-                      arduino="nucleo_n657x0_q/arduino_r3_connector.dtsi", zio=None,
-                      leds=[("LD6", "PG0", "#2fb34a", False), ("LD7", "PG8", "#2e86de", False), ("LD5", "PG10", "#d62d2d", False)],
                       button=("B1", "PC13")),
 }
 
@@ -270,6 +268,120 @@ def build_h533():
     return layout, "\n".join(s) + "\n"
 
 
+# ---------------------------------------------------- NUCLEO-N657X0-Q (MB1940)
+
+# UM3417 Rev 1 (January 2025) Table 11 (Arduino Uno V3) and Tables 12-13
+# (ST morpho). This board has Arduino headers and ST morpho, not Zio.
+# Analog header pins drive a 3.3 V digital I/O directly and a 1.8 V ADC input
+# through an amplifier (Figure 14); the bench node is the digital pad.
+N657_ARDUINO = {
+    "CN5": ["5V_IN", "IOREF", "NRST", "3V3", "5V", "GND", "GND", "VIN"],
+    "CN4": ["PF5", "PC10", "PF6", "PA2", "PC12", "PH2"],
+    "CN13": ["PD9", "PD8", "PD0", "PE9", "PE0", "PE10", "PD5", "PE11"],
+    "CN14": ["PD12", "PD7", "PA3", "PG2", "PG1", "PE15", "GND", "AREF", "PC1", "PH9"],
+}
+N657_ARD_LABEL = {
+    "CN4": [f"A{i}" for i in range(6)], "CN13": [f"D{i}" for i in range(8)],
+    "CN14": ["D8", "D9", "D10", "D11", "D12", "D13", None, None, "D14", "D15"],
+}
+N657_ADC = {"PF5": "PA8", "PC10": "PA9", "PF6": "PA10", "PA2": "PA12", "PC12": "PF3", "PH2": "PG15"}
+# Odd pins then even pins, 1..N; "NC/PBx" pins are disconnected by default.
+N657_MORPHO = {
+    "CN3": ["NC", "OTG1_HSDM_CON", "PC2", "OTG1_HSDP_CON", "VDDIO", "5V", "BOOT0", "GND", "PH0", "VDDIO4",
+            "PH1", "IOREF", "PC4", "NRST", "PC5", "3V3", "PC0", "5V", "GND", "GND", "PE4", "GND", "PC13", "VIN",
+            "PC3", "PH4", "PC15", "PF5", "PC14", "PC10", "VDDIO5", "PF6", "VBAT", "PA2", "BOOT1", "PC12",
+            "PC8", "PH2"],
+    "CN15": ["PE12", "PE6", "PH9", "PE5", "PC1", "PD6", "VREFP", "5V_STLK", "GND", "PB2", "PE15", "NC/PB3",
+             "PG1", "PB8", "PG2", "PB9", "PA3", "PB14", "PD7", "GND", "PD12", "PE7", "PE11", "PE1", "PD5", "PE14",
+             "PE10", "PE13", "PE0", "PE2", "PE9", "AGND", "PD0", "PD10", "PD8", "PD11", "PD9", "PA1"],
+    "CN2": ["PF8", "NC/PB1", "PG7", "PF2", "NC", "PF1", "NC", "PF0", "NC", "PF9", "GND", "PH5", "PG5", "NC",
+            "NC", "NC/PB13", "PG14", "PG4", "NC", "PG6", "NC/PG12", "GND", "PG3", "NC/PG9", "PC9", "PB15",
+            "PC11", "PC6", "PH8", "PH7", "NC", "PH3"],
+    "CN16": ["GND", "PP1", "PP0", "PP2", "PO0", "PP3", "PO1", "PP4", "PO2", "PP5", "PO3", "PP6", "PO4", "PP7",
+             "PE8", "GND", "NC", "PP8", "PD13", "PP9", "PA4", "PP10", "PD15", "PP11", "GND", "PP12", "PD3",
+             "PP13", "PG13", "PP14", "PN12", "PP15"],
+}
+N657_UNSOLDERED = {"CN2", "CN16"}
+UM3417 = "UM3417 Rev 1"
+
+
+def n657_contact(cid, n, name, x, y, label=None):
+    if name in RAIL_ALIAS:
+        net, enabled = RAIL_ALIAS[name], True
+        note = None if net == name else f"{name} (board {net} net)"
+    elif re.fullmatch(r"P[A-Q]\d+", name):
+        net, enabled = name, cid not in N657_UNSOLDERED
+        note = (f"Arduino {label}" if label else None)
+        if name in N657_ADC and cid == "CN4":
+            note = f"Arduino {label}; also {N657_ADC[name]} (1.8 V ADC) through an amplifier, not modelled"
+        if not enabled:
+            note = f"{cid} is not soldered by default ({UM3417} section 8.2)"
+    else:
+        net, enabled = name, False
+        note = (f"{name}: disconnected by default ({UM3417} Table 13 note 1)" if name.startswith("NC/")
+                else f"{name}: not modelled on the bench")
+    return {"number": n, "contactId": f"{cid}-{n}", "x": round(x * PX, 2), "y": round(y * PX, 2),
+            "signal": net if enabled else None, "net": net, "mapping_verified": True,
+            "artworkAnchorVerified": False, "electricalEnabled": enabled, **({"note": note} if note else {})}
+
+
+def build_n657():
+    connectors = []
+    for cid, x, y1 in (("CN3", 3.16, 12.0), ("CN2", 3.16, 64.0), ("CN15", 64.28, 12.0), ("CN16", 64.28, 64.0)):
+        names = N657_MORPHO[cid]
+        cs = [n657_contact(cid, n, name, x + ((n - 1) % 2) * PITCH, y1 + ((n - 1) // 2) * PITCH)
+              for n, name in enumerate(names, 1)]
+        unsoldered = cid in N657_UNSOLDERED
+        connectors.append({"id": cid, "kind": "morpho-male-unpopulated" if unsoldered else "morpho-male",
+                           "rows": len(names) // 2, "columns": 2,
+                           "description": f"ST morpho, 2x{len(names) // 2}" + (", not soldered by default" if unsoldered else ""),
+                           "geometryMeasured": False, "contacts": cs})
+    for cid, x, y1, desc in (("CN5", 14.0, 22.0, "Arduino power (Uno V3)"), ("CN4", 14.0, 45.0, "Arduino A0-A5 (Uno V3)"),
+                             ("CN14", 56.0, 12.0, "Arduino D8-D15, GND, AREF (Uno V3)"),
+                             ("CN13", 56.0, 41.5, "Arduino D0-D7 (Uno V3)")):
+        names = N657_ARDUINO[cid]
+        labels = N657_ARD_LABEL.get(cid, [None] * len(names))
+        cs = [n657_contact(cid, n, name, x, y1 + (n - 1) * PITCH, labels[n - 1]) for n, name in enumerate(names, 1)]
+        connectors.append({"id": cid, "kind": "arduino-female", "rows": len(names), "columns": 1, "description": desc,
+                           "geometryMeasured": False, "contacts": cs})
+    cfg = dict(name="NUCLEO-N657X0-Q", rev="MB1940",
+               leds=[("LD6", "PG0", "#2fb34a", False), ("LD7", "PG8", "#2e86de", False), ("LD5", "PG10", "#d62d2d", False)],
+               button=("B1", "PC13"))
+    layout = {
+        "schemaVersion": 1, "cpu": "stm32n657", "boardName": cfg["name"], "boardRevision": "MB1940",
+        "boardFamily": "nucleo144", "manufacturer": "STMicroelectronics", "manufacturerBoardVerified": True,
+        "manufacturerSource": "https://www.st.com/resource/en/user_manual/um3417-stm32n6-nucleo144-board-mb1940-stmicroelectronics.pdf",
+        "artwork": "../svg/stm32n657.svg", "pixelViewbox": [0, 0, h563.W * PX, h563.H * PX],
+        "pixelsPerMm": PX, "pinLabelArtwork": False,
+        "geometryStatus": "illustrative: Nucleo-144 outline, morpho and Arduino headers on the 2.54 mm grid, positions approximate",
+        "electricalMapStatus": f"verified from {UM3417} Tables 11-13 (Arduino Uno V3 and ST morpho); CN2/CN16 not soldered by default",
+        "warning": "Only contacts marked electricalEnabled can be wired; the others are visual locators.",
+        "electricalEnabledByDefault": False, "generator": "scripts/gen-st-boards.py",
+        "leds": [{"id": i, "pad": p, "color": c, "x": 298 + k * 40, "y": 1005, "w": 16, "h": 10, "activeHigh": hi}
+                 for k, (i, p, c, hi) in enumerate(cfg["leds"])],
+        "buttons": [{"id": "B1", "pad": "PC13", "x": 165, "y": 1060, "w": 70, "h": 70, "activeHigh": True}],
+        "connectors": connectors,
+    }
+    return layout, n657_svg(cfg, connectors)
+
+
+def n657_svg(cfg, connectors):
+    svg = nucleo144_svg(cfg, []).replace("</svg>\n", "")
+    s = [svg]
+    for conn in connectors:
+        cs = conn["contacts"]
+        for c in cs:
+            if conn["kind"].startswith("morpho"):
+                fill = "#c99a3b" if conn["kind"] == "morpho-male" else "#d8c7a0"
+                s.append(f'<circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="9" fill="{fill}"/><circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="4.5" fill="#1a1a1a"/>')
+            else:
+                s.append(f'<rect x="{c["x"]-11:g}" y="{c["y"]-13:g}" width="22" height="26" fill="#16181b"/>'
+                         f'<rect x="{c["x"]-6:g}" y="{c["y"]-6:g}" width="12" height="12" fill="#3a3d42"/>')
+        s.append(f'<text x="{cs[0]["x"]:g}" y="{cs[0]["y"] - 22:g}" font-family="sans-serif" font-size="14" text-anchor="middle" fill="#2b5cab">{conn["id"]}</text>')
+    s.append("</svg>")
+    return "\n".join(s) + "\n"
+
+
 def pins_doc(cpu, layout, sources):
     return {"schemaVersion": 1, "boardId": layout["boardName"], "cpu": cpu, "boardRevision": layout["boardRevision"],
             "electricalMapStatus": "verified", "sources": sources,
@@ -285,12 +397,17 @@ def main():
     base = ROOT / "public" / "boards"
     boards = {cpu: build_nucleo144(cpu, cfg) for cpu, cfg in N144.items()}
     boards["stm32h533"] = build_h533()
+    boards["stm32n657"] = build_n657()
     for cpu, (layout, svg) in boards.items():
         (base / "svg" / f"{cpu}.svg").write_text(svg, encoding="utf-8")
         (base / "layout" / f"{cpu}.json").write_text(json.dumps(layout, indent=2) + "\n", encoding="utf-8")
-        zdir = N144[cpu]["zephyr"] if cpu in N144 else "nucleo_h533re"
-        sources = [{"kind": "zephyr-board-definition", "url": f"{ZURL}{zdir}",
-                    "evidence": "gpio-map of the Arduino R3 / ST Zio / ST morpho connector nodes"}]
+        if cpu == "stm32n657":
+            sources = [{"kind": "manufacturer-user-manual", "url": layout["manufacturerSource"],
+                        "evidence": f"{UM3417} Table 11 (Arduino Uno V3), Tables 12-13 (ST morpho CN3/CN15, CN2/CN16)"}]
+        else:
+            zdir = N144[cpu]["zephyr"] if cpu in N144 else "nucleo_h533re"
+            sources = [{"kind": "zephyr-board-definition", "url": f"{ZURL}{zdir}",
+                        "evidence": "gpio-map of the Arduino R3 / ST Zio / ST morpho connector nodes"}]
         if cpu == "stm32u585":
             sources.append({"kind": "zephyr-board-definition", "url": f"{ZURL}nucleo_u575zi_q/st_zio_connector.dtsi",
                             "evidence": "Pinout taken from UM2861 (Rev 10) Tables 15-18 (per the file)"})
