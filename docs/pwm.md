@@ -6,8 +6,9 @@ through the same AF table the input-capture path uses (`g_tim_pins` in each
 part's `*_mmio.c`, from the datasheet alternate-function tables). The
 STM32U585 and L552 drive them through `mm_stm32{u585,l552}_timer_output()`
 with tables from ST's pin data (Zephyr hal_stm32 pinctrl); the bench reads the
-same channels from `sim/stm32-af.ts` (`STM32_TIM_AF`). Output only on the U5/L5:
-input capture is not routed there yet.
+same channels from `sim/stm32-af.ts` (`STM32_TIM_AF`). Input capture uses the
+same tables: an edge on a pin whose AF selects a channel is that channel's
+input (`test-stm32{u585,l552}-signal-timer-capture`).
 
 ## What is modelled
 

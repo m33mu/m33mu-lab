@@ -1,0 +1,61 @@
+name: test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with the m33mu submodule)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install deps
+        # m33mu's native build (CLI and web_parity_runner) needs the same
+        # libraries as its own CI; ubuntu-latest ships google-chrome for the
+        # browser test.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libtpms-dev libcapstone-dev libwolfssl-dev libvdeplug-dev libdw-dev libelf-dev
+          sudo apt-get install -y gcc-arm-none-eabi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install Emscripten
+        working-directory: ..
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          ./emsdk/emsdk install 6.0.5
+          ./emsdk/emsdk activate 6.0.5
+          echo "$PWD/emsdk" >> "$GITHUB_PATH"
+          echo "$PWD/emsdk/upstream/emscripten" >> "$GITHUB_PATH"
+      - name: Rust target for the WASM secure elements
+        run: rustup target add wasm32-unknown-emscripten
+      - name: Fetch wolfSSL (external tree, never vendored)
+        # Also where the m33mu wolfSSL firmware tests look for it
+        # (WOLFSSL_ROOT=../../../../wolfssl from tests/firmware/<test>).
+        working-directory: ..
+        run: git clone --depth 1 --branch master https://github.com/wolfSSL/wolfssl.git
+      - name: Build m33mu test firmware
+        run: |
+          cmake -S m33mu -B m33mu/build
+          cmake --build m33mu/build --target firmware-build
+      - name: Install npm packages
+        run: npm ci
+      - name: Configure
+        run: >
+          cmake -S . -B build
+          -DM33MU_WOLFSSL_SRC=$GITHUB_WORKSPACE/../wolfssl
+          -DM33MU_WASM_RUST_SE=ON
+          -DM33MU_FIRMWARE_ROOT=$GITHUB_WORKSPACE/m33mu/tests/firmware
+      - name: Check the browser test is configured
+        # CMake registers web_browser_chromium_test only when it finds a
+        # Chromium; do not let CI pass without it.
+        run: grep -q '^M33MU_CHROMIUM:FILEPATH=/' build/CMakeCache.txt
+      - name: Build
+        run: cmake --build build
+      - name: Test (unit, worker, demos, Chromium)
+        run: cd build && ctest --output-on-failure
