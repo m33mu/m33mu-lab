@@ -35,11 +35,13 @@ jobs:
       - name: Rust target for the WASM secure elements
         run: rustup target add wasm32-unknown-emscripten
       - name: Fetch wolfSSL (external tree, never vendored)
-        # Also where the m33mu wolfSSL firmware tests look for it
-        # (WOLFSSL_ROOT=../../../../wolfssl from tests/firmware/<test>).
         working-directory: ..
         run: git clone --depth 1 --branch master https://github.com/wolfSSL/wolfssl.git
       - name: Build m33mu test firmware
+        # The wolfSSL firmware tests default to ../../../../wolfssl, which
+        # from the submodule is inside this checkout: point them at the clone.
+        env:
+          WOLFSSL_ROOT: ${{ github.workspace }}/../wolfssl
         run: |
           cmake -S m33mu -B m33mu/build
           cmake --build m33mu/build --target firmware-build
