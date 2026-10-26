@@ -201,11 +201,52 @@ test('op-amp comparator recovers from saturation quickly (no windup)', () => {
   assert.ok(c.nodeVoltage('out') < 0.5, `output 15 us after the input fell ${c.nodeVoltage('out')}`);
 });
 
+test('op-amp output current is limited into a short to ground', () => {
+  const short = (iLimit: number) => {
+    const c = new Circuit({ schemaVersion: 1, devices: [
+      { kind: 'vsource', id: 'vcc', p: 'vcc', n: '0', volts: 5 },
+      { kind: 'vsource', id: 'vin', p: 'in', n: '0', volts: 2 },
+      { kind: 'resistor', id: 'short', a: 'out', b: '0', ohms: 0.1 },
+      { kind: 'opamp', id: 'u1', plus: 'in', minus: 'out', out: 'out', vcc: 'vcc', vee: '0',
+        model: { ...MODELS.opampGeneric, iLimit } }
+    ] });
+    c.operatingPoint();
+    return c.deviceCurrent('u1');
+  };
+  const limited = short(0.025);
+  // 25 mA plus the 0.1 % residue of the ~0.24 A the 20 Ω output would drive.
+  assert.ok(limited > 0.024 && limited < 0.0255, `limited ${limited}`);
+  // Unlimited, only rOut (20 Ω) stands between the 4.8 V rail and the short.
+  assert.ok(short(0) > 0.2, `unlimited ${short(0)}`);
+});
+
+test('op-amp input offset appears at the output times the noise gain', () => {
+  const out = (vos: number) => {
+    const c = new Circuit({ schemaVersion: 1, devices: [
+      { kind: 'vsource', id: 'vcc', p: 'vcc', n: '0', volts: 5 },
+      { kind: 'vsource', id: 'vee', p: 'vee', n: '0', volts: -5 },
+      { kind: 'resistor', id: 'rf', a: 'out', b: 'fb', ohms: 100e3 },
+      { kind: 'resistor', id: 'rg', a: 'fb', b: '0', ohms: 1e3 },
+      { kind: 'opamp', id: 'u1', plus: '0', minus: 'fb', out: 'out', vcc: 'vcc', vee: 'vee',
+        model: { ...MODELS.opampGeneric, vos } }
+    ] });
+    c.operatingPoint();
+    return c.nodeVoltage('out');
+  };
+  // Grounded-input gain-of-101 stage: 1 mV offset -> about 101 mV out.
+  assert.ok(Math.abs(out(1e-3) - 0.101) < 0.002, `out ${out(1e-3)}`);
+  assert.ok(Math.abs(out(0)) < 1e-6, `out ${out(0)}`);
+});
+
 test('op-amp rejects invalid model parameters', () => {
   assert.throws(() => new Circuit({ schemaVersion: 1, devices: [
     { kind: 'opamp', id: 'bad', plus: 'p', minus: 'n', out: 'o', vcc: 'vcc', vee: 'vee',
       model: { gain: 0, rOut: 0, rIn: -1, headroom: -0.1 } }
   ] }), /op-amp model needs/);
+  assert.throws(() => new Circuit({ schemaVersion: 1, devices: [
+    { kind: 'opamp', id: 'bad', plus: 'p', minus: 'n', out: 'o', vcc: 'vcc', vee: 'vee',
+      model: { ...MODELS.opampGeneric, iLimit: -1 } }
+  ] }), /iLimit must be >= 0/);
 });
 
 test('LED forward drop and current through 330 ohm from 3.3 V', () => {

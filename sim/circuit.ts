@@ -56,6 +56,8 @@ type Ctx = {
   gmin: number;
   /** Time (s) the solution is for: the end of the step. */
   t: number;
+  /** DC initial guess only: op-amps without their rail limiter. */
+  linearOpamps?: boolean;
 };
 
 /** A vsource waveform in seconds, for interpolation and step clamping. */
@@ -104,13 +106,23 @@ type Compiled = {
 //  diode/led: [vdIter]
 //  bjt:       [vbeIter, vbcIter]
 //  mos:       [vgsIter, vdsIter]
-//  opamp:     [yPrev] open-loop output relative to mid-rail (dominant pole)
+//  opamp:     [yPrev, voIter] open-loop output relative to mid-rail (dominant
+//             pole); output voltage of the last Newton stamp (current limit)
 //  pad:       [vCinPrev, iCinPrev, driveCode, pullCode, digital]
 const STATE_SLOTS: Record<DeviceSpec['kind'], number> = {
   ground: 0, resistor: 0, capacitor: 2, inductor: 1, vsource: 0, isource: 0,
-  diode: 1, led: 1, switch: 1, npn: 2, pnp: 2, nmos: 2, pmos: 2, opamp: 1, regulator: 0, pad: 5
+  diode: 1, led: 1, switch: 1, npn: 2, pnp: 2, nmos: 2, pmos: 2, opamp: 2, regulator: 0, pad: 5
 };
 
+/** Output current limit: iLimit * tanh(i / iLimit) plus a 0.1 % linear
+ * residue, so a shorted or saturated output keeps a usable Newton slope. */
+const OPAMP_LIMIT_RESIDUE = 1e-3;
+/** Largest op-amp output-voltage change per Newton iteration when current limited (V). */
+const OPAMP_VO_STEP = 0.5;
+function opampLimitCurrent(i: number, iLimit: number): { i: number; slope: number } {
+  const t = Math.tanh(i / iLimit);
+  return { i: iLimit * t + OPAMP_LIMIT_RESIDUE * i, slope: 1 - t * t + OPAMP_LIMIT_RESIDUE };
+}
 const opampDynamic = (m: { gbw?: number; slewRate?: number }) => !!(m.gbw || m.slewRate);
 
 const DRIVE_CODE: Record<PadDrive, number> = { z: 0, low: 1, high: 2 };
@@ -177,6 +189,8 @@ export class Circuit {
   private sys: DenseSystem;
   private xIter: Float64Array;
   private xTrial: Float64Array;
+  /** Scratch copy of the iterate with a current-limited op-amp output step-limited. */
+  private xLimit: Float64Array;
   private stateTrial: Float64Array;
   // Accepted-point history for LTE: rows of reactive values, newest first.
   private reactive: { index: number; kind: 'v' | 'i'; a: number; b: number }[];
@@ -250,6 +264,7 @@ export class Circuit {
     this.x = new Float64Array(this.size);
     this.xIter = new Float64Array(this.size);
     this.xTrial = new Float64Array(this.size);
+    this.xLimit = new Float64Array(this.size);
     this.state = new Float64Array(stateSize);
     this.stateTrial = new Float64Array(stateSize);
     this.reactive = [];
@@ -323,7 +338,8 @@ export class Circuit {
     case 'opamp': {
       const ol = opampDynamic(s.model) ? { y: this.state[d.state], dy: 0 } : this.opampOpenLoop(d, null, this.x, this.state);
       const target = this.opampTarget(d.n, ol, s.model.headroom, this.x).target;
-      return (target - this.v(d.n[2])) / s.model.rOut;
+      const i = (target - this.v(d.n[2])) / s.model.rOut;
+      return s.model.iLimit ? opampLimitCurrent(i, s.model.iLimit).i : i;
     }
     default: return 0;
     }
@@ -493,7 +509,8 @@ export class Circuit {
    * y; the slew limit is a smooth tanh clamp on the step. */
   private opampOpenLoop(d: Compiled, ctx: Ctx | null, x: Float64Array, st: Float64Array) {
     const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
-    const vd = this.v(d.n[0], x) - this.v(d.n[1], x);
+    // The offset is a source: it ramps with DC source stepping.
+    const vd = this.v(d.n[0], x) - this.v(d.n[1], x) + (s.model.vos ?? 0) * (ctx?.srcScale ?? 1);
     const gain = s.model.gain;
     if (!ctx || ctx.dc || !opampDynamic(s.model)) return { y: gain * vd, dy: gain };
     const yPrev = this.state[d.state];
@@ -508,6 +525,17 @@ export class Circuit {
     }
     st[d.state] = y;
     return { y, dy };
+  }
+
+  /** Whether a current-limited op-amp's output current at iterate x is past
+   * half its limit (state is not modified). */
+  private opampLimiting(d: Compiled, ctx: Ctx, x: Float64Array, st: Float64Array): boolean {
+    const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
+    const y = st[d.state];
+    const ol = this.opampOpenLoop(d, ctx, x, st);
+    st[d.state] = y;
+    const target = this.opampTarget(d.n, ol, s.model.headroom, x).target;
+    return Math.abs(target - this.v(d.n[2], x)) / s.model.rOut > 0.5 * s.model.iLimit!;
   }
 
   /** Smoothly limit open-loop output to the supply rails. The derivative is
@@ -710,11 +738,37 @@ export class Circuit {
         break;
       }
       case 'opamp': {
-        const op = this.opampTarget(n, this.opampOpenLoop(d, ctx, x, st), s.model.headroom, x);
-        const source = (op.target - this.v(n[2], x)) / s.model.rOut;
-        const dSource = op.derivative.map((v, j) =>
+        const limited = !!s.model.iLimit && !ctx.linearOpamps;
+        let xd = x;
+        if (limited && n[2] >= 0 && this.opampLimiting(d, ctx, x, st)) {
+          // At its current limit the output is a stiff source into its load:
+          // limit the output-voltage step per Newton iteration like a junction,
+          // and evaluate the whole device there (IN- may be the output node).
+          const raw = x[n[2]];
+          const vo = Math.max(st[d.state + 1] - OPAMP_VO_STEP, Math.min(st[d.state + 1] + OPAMP_VO_STEP, raw));
+          if (Math.abs(vo - raw) > 1e-9) this.converged = false;
+          if (vo !== raw) {
+            this.xLimit.set(x);
+            this.xLimit[n[2]] = vo;
+            xd = this.xLimit;
+          }
+        }
+        if (n[2] >= 0) st[d.state + 1] = xd[n[2]];
+        const ol = this.opampOpenLoop(d, ctx, xd, st);
+        const op = ctx.linearOpamps
+          ? { target: (this.v(n[3], xd) + this.v(n[4], xd)) / 2 + ol.y, derivative: [ol.dy, -ol.dy, 0, 0.5, 0.5] }
+          : this.opampTarget(n, ol, s.model.headroom, xd);
+        const vop = n.map((i) => this.v(i, xd));
+        let source = (op.target - vop[2]) / s.model.rOut;
+        let dSource = op.derivative.map((v, j) =>
           (v - (j === 2 ? 1 : 0)) / s.model.rOut);
-        const input = (this.v(n[0], x) - this.v(n[1], x)) / s.model.rIn;
+        // Short-circuit protection: a smooth limit on the output current.
+        if (limited) {
+          const lim = opampLimitCurrent(source, s.model.iLimit!);
+          source = lim.i;
+          dSource = dSource.map((v) => v * lim.slope);
+        }
+        const input = (this.v(n[0], xd) - this.v(n[1], xd)) / s.model.rIn;
         const dInput = [1 / s.model.rIn, -1 / s.model.rIn, 0, 0, 0];
         // Output current is drawn from VCC when sourcing and returned to VEE
         // when sinking. Smooth the zero-current split for Newton continuity.
@@ -727,7 +781,7 @@ export class Circuit {
           [input, -input, -source, high, low],
           [dInput, dInput.map((v) => -v), dSource.map((v) => -v),
             dSource.map((v) => v * highSlope), dSource.map((v) => v * lowSlope)],
-          n.map((i) => this.v(i, x)));
+          vop);
         break;
       }
       default: break;
@@ -771,6 +825,15 @@ export class Circuit {
       return this.newton({ dc: true, h: 0, method: 'be', srcScale, gmin, t: this.t }, st) >= 0;
     };
     let ok = tryDc(GMIN, 1, this.x);
+    if (!ok && this.devices.some((d) => d.spec.kind === 'opamp')) {
+      // A loop that starts saturated (an input offset times a high gain)
+      // bounces between the rails: start from the linear op-amp solution.
+      this.xIter.fill(0);
+      st.set(this.state);
+      if (this.newton({ dc: true, h: 0, method: 'be', srcScale: 1, gmin: GMIN, t: this.t, linearOpamps: true }, st) >= 0) {
+        ok = tryDc(GMIN, 1, this.xIter.slice());
+      }
+    }
     if (!ok) {
       ok = true;
       let prev: Float64Array | null = null;
@@ -823,7 +886,7 @@ export class Circuit {
    * output recovers in finite time (anti-windup). */
   private opampSettled(d: Compiled): number {
     const s = d.spec as Extract<DeviceSpec, { kind: 'opamp' }>;
-    const y = s.model.gain * (this.v(d.n[0]) - this.v(d.n[1]));
+    const y = s.model.gain * (this.v(d.n[0]) - this.v(d.n[1]) + (s.model.vos ?? 0));
     return this.opampWindupClamp(d, y, this.x);
   }
 

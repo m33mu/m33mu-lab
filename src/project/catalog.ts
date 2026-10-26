@@ -178,14 +178,16 @@ export const CATALOG: Record<PartKind, PartDef> = {
     devices: (id, _p, net) => [{ kind: 'nmos', id, d: net('d'), g: net('g'), s: net('s'), model: MODELS.nmosGeneric }]
   },
   opamp: {
-    kind: 'opamp', title: 'Op-amp (GBW pole, slew rate, rail-limited)',
+    kind: 'opamp', title: 'Op-amp (GBW pole, slew rate, offset, current limit, rail-limited)',
     params: [
       { key: 'gain', label: 'Open-loop gain', unit: '', min: 1, max: 1e7 },
       { key: 'rOut', label: 'Output resistance', unit: 'Ω', min: 0.001, max: 1e6 },
       { key: 'rIn', label: 'Differential input resistance', unit: 'Ω', min: 1, max: 1e15 },
       { key: 'headroom', label: 'Rail headroom', unit: 'V', min: 0, max: 10 },
       { key: 'gbw', label: 'Gain-bandwidth product (0 = ideal)', unit: 'Hz', min: 0, max: 1e10, absent: 0 },
-      { key: 'slewRate', label: 'Slew rate (0 = unlimited)', unit: 'V/s', min: 0, max: 1e12, absent: 0 }
+      { key: 'slewRate', label: 'Slew rate (0 = unlimited)', unit: 'V/s', min: 0, max: 1e12, absent: 0 },
+      { key: 'vos', label: 'Input offset voltage', unit: 'V', min: -1, max: 1, absent: 0 },
+      { key: 'iLimit', label: 'Output current limit (0 = unlimited)', unit: 'A', min: 0, max: 10, absent: 0 }
     ],
     defaults: { ...MODELS.opampGeneric },
     terminals: () => [
@@ -198,7 +200,8 @@ export const CATALOG: Record<PartKind, PartDef> = {
     devices: (id, p, net) => [{ kind: 'opamp', id, plus: net('plus'), minus: net('minus'),
       out: net('out'), vcc: net('vcc'), vee: net('vee'),
       model: { gain: Number(p.gain), rOut: Number(p.rOut), rIn: Number(p.rIn),
-        headroom: Number(p.headroom), gbw: Number(p.gbw ?? 0), slewRate: Number(p.slewRate ?? 0) } }]
+        headroom: Number(p.headroom), gbw: Number(p.gbw ?? 0), slewRate: Number(p.slewRate ?? 0),
+        vos: Number(p.vos ?? 0), iLimit: Number(p.iLimit ?? 0) } }]
   },
   regulator: {
     kind: 'regulator', title: 'LDO regulator (behavioural)',
