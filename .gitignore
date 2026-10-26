@@ -3,3 +3,4 @@ node_modules/
 public/worker/
 build/
 *_OTP.bin
+__pycache__/
