@@ -8,7 +8,7 @@
 // connected. Line levels come from the analog circuit, so a missing pull-up
 // or a line held low shows up as the fault a real bus would give.
 
-import { STM32_AF } from './stm32-af.ts';
+import { STM32_AF, STM32_TIM_AF } from './stm32-af.ts';
 
 export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
   | SecureElementKind;
@@ -115,43 +115,11 @@ export function busAf(cpu: string | undefined): Record<string, Record<number, st
 /** Every pad that carries a bus signal on some STM32 board. */
 export const BUS_AF_PADS: string[] = [...new Set(Object.values(STM32_AF).flatMap((t) => Object.keys(t)))];
 
-/** TIM2..TIM5 channel AFs of the STM32H563 (DS14258 Table 15), as the
- * emulator routes them (cpu/stm32h563/stm32h563_mmio.c g_tim_pins). */
-export const H563_TIM_AF: Record<string, Record<number, string>> = {
-  PA0: { 1: 'TIM2_CH1', 2: 'TIM5_CH1' },
-  PA1: { 1: 'TIM2_CH2', 2: 'TIM5_CH2' },
-  PA2: { 1: 'TIM2_CH3', 2: 'TIM5_CH3' },
-  PA3: { 1: 'TIM2_CH4', 2: 'TIM5_CH4' },
-  PA5: { 1: 'TIM2_CH1' },
-  PA6: { 2: 'TIM3_CH1' },
-  PA7: { 2: 'TIM3_CH2' },
-  PA15: { 1: 'TIM2_CH1' },
-  PB0: { 2: 'TIM3_CH3' },
-  PB1: { 2: 'TIM3_CH4' },
-  PB3: { 1: 'TIM2_CH2' },
-  PB4: { 2: 'TIM3_CH1' },
-  PB5: { 2: 'TIM3_CH2' },
-  PB6: { 2: 'TIM4_CH1' },
-  PB7: { 2: 'TIM4_CH2' },
-  PB8: { 2: 'TIM4_CH3' },
-  PB9: { 2: 'TIM4_CH4' },
-  PB10: { 1: 'TIM2_CH3' },
-  PB11: { 1: 'TIM2_CH4' },
-  PC2: { 2: 'TIM4_CH4' },
-  PC4: { 1: 'TIM2_CH4' },
-  PC6: { 2: 'TIM3_CH1' },
-  PC7: { 2: 'TIM3_CH2' },
-  PC8: { 2: 'TIM3_CH3' },
-  PC9: { 2: 'TIM3_CH4' },
-  PD12: { 2: 'TIM4_CH1' },
-  PD13: { 2: 'TIM4_CH2' },
-  PD14: { 2: 'TIM4_CH3' },
-  PD15: { 2: 'TIM4_CH4' },
-  PH10: { 2: 'TIM5_CH1' },
-  PH11: { 2: 'TIM5_CH2' },
-  PH12: { 2: 'TIM5_CH3' },
-  PI0: { 2: 'TIM5_CH4' }
-};
+/** TIM2..TIM5 channel AFs of a CPU's pads, which the emulator drives onto the
+ * pad itself (its g_tim_pins tables come from the same ST pin data). */
+export function timerAf(cpu: string | undefined): Record<string, Record<number, string>> {
+  return STM32_TIM_AF[cpu ?? 'stm32h563'] ?? {};
+}
 
 const GPIO_MODE_AF = 2;
 const POWER_MIN_VOLTS = 1.6;

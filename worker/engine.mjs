@@ -604,7 +604,7 @@ export function attachM33muWorker(scope, createModule) {
           drainGpioOutput(requestId);
         }
         const circuit = new Circuit(payload.netlist, solver);
-        bench = new Bench(circuit, port, probes, options);
+        bench = new Bench(circuit, port, probes, { ...options, cpu: sessionCpu ?? undefined });
         if (benchFault) { const f = benchFault; bench = null; throw f; }
         // Secure elements on the bench run as the emulator's own models.
         const secureElements = [];

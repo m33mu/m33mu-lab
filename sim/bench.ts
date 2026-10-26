@@ -15,7 +15,7 @@
 // the virtual nanosecond the MCU reported for it.
 
 import { Circuit, type Crossing, type Snapshot } from './circuit.ts';
-import { BusLayer, BUS_AF_PADS, H563_TIM_AF, type LineView, type LogicNetlist } from './buses.ts';
+import { BusLayer, BUS_AF_PADS, timerAf, type LineView, type LogicNetlist } from './buses.ts';
 import type { PadDrive, PadPull } from './netlist.ts';
 
 export type McuPadEvent = {
@@ -66,6 +66,8 @@ export type BenchOptions = {
   /** 'dc': start from the DC operating point; 'zero': every node and
    * capacitor at 0 V, as at power-on. */
   initial: 'dc' | 'zero';
+  /** m33mu CPU of the MCU port, for its pad alternate functions. */
+  cpu?: string;
 };
 
 export const DEFAULT_BENCH: BenchOptions = {
@@ -433,7 +435,7 @@ export class Bench {
       // writes of ordinary pin setup.
       const busPad = this.bus && this.bus.af[e.socPad];
       // Timer channel outputs drive the pad from the emulator itself.
-      const timerPad = H563_TIM_AF[e.socPad]?.[e.af ?? 0] !== undefined;
+      const timerPad = timerAf(this.opts.cpu)[e.socPad]?.[e.af ?? 0] !== undefined;
       if (e.mode === 2 && !timerPad && !(busPad && (busPad[e.af ?? 0] || !e.af))) {
         this.events.push({ kind: 'unsupported', socPad: e.socPad, timeNs: e.timeNs, message: AF_MESSAGE });
       }

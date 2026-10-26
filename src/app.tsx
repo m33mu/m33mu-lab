@@ -3,7 +3,7 @@ import { BenchCanvas, type Selection, type Tool } from './canvas/BenchCanvas.tsx
 import { busOptions, wireBus } from './project/buswire.ts';
 import { Inspector, type McuPadInfo, type Observation } from './Inspector.tsx';
 import { DiagnosticsPanel } from './DiagnosticsPanel.tsx';
-import { busAf, isSecureElement, SECURE_ELEMENTS } from '../sim/buses.ts';
+import { busAf, isSecureElement, SECURE_ELEMENTS, timerAf } from '../sim/buses.ts';
 import { Debugger, type ElfSymbol } from './instruments/Debugger.tsx';
 import { appendDiagnostic, type DiagnosticEntry, type DiagnosticSeverity, type DiagnosticSource } from './diagnostics.ts';
 import { ScopeInstrument, type ScopeSink } from './instruments/ScopeInstrument.tsx';
@@ -777,7 +777,7 @@ export function App() {
             })()}
             {(layout?.leds?.length ?? 0) > 0 && <li className="on">On-board LEDs lit from {layout!.leds!.map((l) => l.pad).join('/')}</li>}
             {(layout?.buttons?.length ?? 0) > 0 && <li className="on">On-board {layout!.buttons!.map((b) => `${b.id} (${b.pad})`).join(', ')}: press and hold on the drawing</li>}
-            {cpu.startsWith('stm32h5') && <li className="on">TIM2–TIM5 output compare and PWM on their AF pins</li>}
+            {Object.keys(timerAf(cpu)).length > 0 && <li className="on">TIM2–TIM5 output compare and PWM on their AF pins</li>}
             <li className="on">UART terminals{Object.keys(busAf(cpu)).length > 0 ? '; logic-level I²C/SPI/UART devices and secure elements on the header' : ' (I²C/SPI devices: STM32 boards only)'}</li>
             <li className={features?.wolfcrypt ? 'on' : undefined}>On-chip crypto engines (HASH/AES/PKA/RNG, CASPER/HASHCRYPT, CryptoCell){features?.wolfcrypt ? '' : ': not in this WASM build'}</li>
             <li className={features?.rustSecureElements || features?.ta100 ? 'on' : undefined}>Secure elements: {[
