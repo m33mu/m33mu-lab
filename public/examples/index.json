@@ -51,6 +51,13 @@
       "description": "The H563 bus demo firmware built for the STM32U585: a 24C02 EEPROM and a TMP102 on I2C1, a W25Q flash JEDEC ID on SPI1. Results print on USART3."
     },
     {
+      "id": "n657-bus",
+      "name": "N657 I²C/SPI bus demo",
+      "project": "n657-bus.m33mu.json",
+      "firmware": "n657-bus.elf",
+      "description": "The bus demo on the NUCLEO-N657X0-Q Arduino headers: a 24C02 EEPROM and a TMP102 on I2C1 (D15/D14), a W25Q flash JEDEC ID on SPI5 (D13-D10). Results print on USART1."
+    },
+    {
       "id": "h563-secure-elements",
       "name": "H563 secure elements (ATECC608A, SE050, STSAFE-A120)",
       "project": "h563-secure-elements.m33mu.json",

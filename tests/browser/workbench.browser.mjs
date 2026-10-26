@@ -431,6 +431,18 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  await check('N657 bus example: I2C1 and SPI5 on the Arduino headers of the UM3417 board map', async () => {
+    await page.getByTestId('examples').selectOption('n657-bus');
+    await page.waitForFunction(() => /bus demo/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await page.getByTestId('real-time').uncheck();
+    await page.getByTestId('run').click();
+    await page.getByTestId('tab-USART1').click();
+    const vcp = page.getByTestId('terminal-USART1').locator('pre');
+    await vcp.getByText(/EEPROM W:OK R:OK=..A5 TEMP:OK=1900 JEDEC=EF4018/).first().waitFor({ timeout: 60000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('real-time').check();
+  });
+
   if (process.env.M33MU_WASM_RUST_SE === 'ON') {
     await check('secure elements example: m33mu models answer on SPI1/I2C1/I2C2, removing one fails the suite', async () => {
       await page.getByTestId('examples').selectOption('h563-secure-elements');

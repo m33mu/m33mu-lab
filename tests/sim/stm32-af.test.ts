@@ -72,3 +72,12 @@ test('the PWM demo pins carry their timer channels on the U585 and L552', () => 
   }
   assert.deepEqual(timerAf('nrf5340'), {});
 });
+
+test('NUCLEO-N657X0-Q Arduino pins carry SPI5 and I2C1 (UM3417 Table 11)', () => {
+  const t = busAf('stm32n657');
+  assert.equal(t.PE15[5], 'SPI5_SCK');
+  assert.equal(t.PG1[5], 'SPI5_MISO');
+  assert.equal(t.PG2[5], 'SPI5_MOSI');
+  assert.equal(t.PH9[4], 'I2C1_SCL');
+  assert.equal(t.PC1[4], 'I2C1_SDA');
+});

@@ -88,7 +88,7 @@ export const BOARDS = {
   stm32h5f4: { name: 'STM32H5F4 (Nucleo-style proxy)', layoutRevision: PROVISIONAL, vcp: null },
   stm32u585: { name: 'NUCLEO-U575ZI-Q with STM32U585', layoutRevision: 'MB1549 (Zephyr nucleo_u575zi_q Zio map)', vcp: null },
   stm32l552: { name: 'NUCLEO-L552ZE-Q', layoutRevision: 'MB1361 (Zephyr Arduino map)', vcp: null },
-  stm32n657: { name: 'NUCLEO-N657X0-Q', layoutRevision: 'MB1940 (UM3417 Arduino and morpho map)', vcp: null },
+  stm32n657: { name: 'NUCLEO-N657X0-Q', layoutRevision: 'MB1940 (UM3417 Arduino and morpho map)', vcp: 'USART1' },  // UM3417 7.9
   mcxw71c: { name: 'FRDM-MCXW71', layoutRevision: 'FRDM-MCXW71 (Zephyr Arduino map)', vcp: null },
   mcxn947: { name: 'FRDM-MCXN947', layoutRevision: 'FRDM-MCXN947 (Zephyr Arduino map)', vcp: null },
   nrf5340: { name: 'nRF5340 DK', layoutRevision: 'nRF5340 DK (Zephyr Arduino map)', vcp: null },

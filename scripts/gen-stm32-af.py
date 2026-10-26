@@ -17,6 +17,7 @@ PARTS = {
     "stm32h533": "h5/stm32h533retx-pinctrl.dtsi",       # NUCLEO-H533RE
     "stm32u585": "u5/stm32u585zitxq-pinctrl.dtsi",      # NUCLEO-U575ZI-Q footprint
     "stm32l552": "l5/stm32l552z(c-e)txq-pinctrl.dtsi",  # NUCLEO-L552ZE-Q
+    "stm32n657": "n6/stm32n657x0hxq-pinctrl.dtsi",      # NUCLEO-N657X0-Q
 }
 
 NODE = re.compile(
@@ -51,13 +52,19 @@ def main() -> None:
     print()
     emit("STM32_AF", "SPI/I2C/U(S)ART", root, SIGNAL)
     print()
-    emit("STM32_TIM_AF", "TIM2-TIM5 channel (the timers m33mu drives onto pads)", root, TIMER)
+    emit("STM32_TIM_AF", "TIM2-TIM5 channel (the timers m33mu drives onto pads)", root, TIMER, TIMER_CPUS)
 
 
-def emit(const: str, what: str, root: Path, signal) -> None:
+# CPUs whose m33mu model drives TIM2-TIM5 outputs onto pads (no N657 timers).
+TIMER_CPUS = {"stm32h563", "stm32h533", "stm32u585", "stm32l552"}
+
+
+def emit(const: str, what: str, root: Path, signal, cpus=None) -> None:
     print(f"/** {what} alternate functions: cpu -> pad -> AF -> signal. */")
     print(f"export const {const}: Record<string, Record<string, Record<number, string>>> = {{")
     for cpu, rel in PARTS.items():
+        if cpus is not None and cpu not in cpus:
+            continue
         t = table(root / rel, signal)
         print(f"  // {Path(rel).name.removesuffix('-pinctrl.dtsi').upper()}")
         print(f"  {cpu}: {{")

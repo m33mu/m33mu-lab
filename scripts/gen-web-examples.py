@@ -31,7 +31,7 @@ def wire(n, a, b, color="#d7263d"):
     return {"id": f"w{n}", "from": a, "to": b, "color": color}
 
 
-LAYOUTS = {"stm32h563": LAYOUT, "stm32u585": "MB1549 (Zephyr nucleo_u575zi_q Zio map)", "rp2350": "Pico 2 datasheet Fig. 2", "nrf5340": "nRF5340 DK (Zephyr Arduino map)"}
+LAYOUTS = {"stm32h563": LAYOUT, "stm32n657": "MB1940 (UM3417 Arduino and morpho map)", "stm32u585": "MB1549 (Zephyr nucleo_u575zi_q Zio map)", "rp2350": "Pico 2 datasheet Fig. 2", "nrf5340": "nRF5340 DK (Zephyr Arduino map)"}
 
 
 def project(pid, name, parts, wires, channels, window_ns, firmware=None, sample_ns=1000, lookahead_ns=50000, pan=(40, 20), zoom=0.5,
@@ -234,6 +234,40 @@ EXAMPLES.append(("u585-bus", project(
     [{"kind": "voltage", "at": board("CN7-2")}, {"kind": "voltage", "at": board("CN7-4")}],
     1_000_000, firmware="u585-bus.elf", sample_ns=1_000, lookahead_ns=50_000, cpu="stm32u585"),
     "The H563 bus demo firmware built for the STM32U585: a 24C02 EEPROM and a TMP102 on I2C1, a W25Q flash JEDEC ID on SPI1. Results print on USART3."))
+
+
+# NUCLEO-N657X0-Q (m33mu tests/firmware/test-stm32n657-web-bus): the same
+# transfers on the Arduino headers of UM3417 Table 11: I2C1 on D15/D14
+# (CN14-10/9, PH9/PC1), SPI5 on D13/D12/D11 (CN14-6/5/4) with CS on D10
+# (CN14-3, PA3); power from CN5-4 (3V3) and CN5-6 (GND).
+n6_parts = [
+    part("eeprom1", "i2c-eeprom", 900, 260, addressPins="0"),
+    part("temp1", "i2c-temp", 900, 420, addressPins="0", celsius=25),
+    part("flash1", "spi-flash", 900, 620),
+    part("r1", "resistor", 760, 100, 90, ohms=4700),
+    part("r2", "resistor", 800, 100, 90, ohms=4700),
+]
+bus_wires = []
+n = 0
+for mod in ("eeprom1", "temp1", "flash1"):
+    add(("CN5-4", mod, "VCC"), RED)
+    add(("CN5-6", mod, "GND"), BLK)
+for mod in ("eeprom1", "temp1"):
+    add(("CN14-10", mod, "SCL"), YEL)
+    add(("CN14-9", mod, "SDA"), GRN)
+add(None, pt("r1", "a"), board("CN5-4"), RED)
+add(None, pt("r1", "b"), board("CN14-10"), YEL)
+add(None, pt("r2", "a"), board("CN5-4"), RED)
+add(None, pt("r2", "b"), board("CN14-9"), GRN)
+add(("CN14-3", "flash1", "CS"), WHT)
+add(("CN14-6", "flash1", "SCK"), ORG)
+add(("CN14-4", "flash1", "MOSI"), BLU)
+add(("CN14-5", "flash1", "MISO"), PUR)
+EXAMPLES.append(("n657-bus", project(
+    "example-n657-bus", "N657 I²C/SPI bus demo", n6_parts, bus_wires,
+    [{"kind": "voltage", "at": board("CN14-10")}, {"kind": "voltage", "at": board("CN14-9")}],
+    1_000_000, firmware="n657-bus.elf", sample_ns=1_000, lookahead_ns=50_000, cpu="stm32n657"),
+    "The bus demo on the NUCLEO-N657X0-Q Arduino headers: a 24C02 EEPROM and a TMP102 on I2C1 (D15/D14), a W25Q flash JEDEC ID on SPI5 (D13-D10). Results print on USART1."))
 
 
 # Secure elements: m33mu's ATECC608A (SPI1, CS PD14), SE050 (I2C1) and
