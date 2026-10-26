@@ -31,7 +31,7 @@ def wire(n, a, b, color="#d7263d"):
     return {"id": f"w{n}", "from": a, "to": b, "color": color}
 
 
-LAYOUTS = {"stm32h563": LAYOUT, "rp2350": "Pico 2 datasheet Fig. 2", "nrf5340": "nRF5340 DK (Zephyr Arduino map)"}
+LAYOUTS = {"stm32h563": LAYOUT, "stm32u585": "MB1549 (Zephyr nucleo_u575zi_q Zio map)", "rp2350": "Pico 2 datasheet Fig. 2", "nrf5340": "nRF5340 DK (Zephyr Arduino map)"}
 
 
 def project(pid, name, parts, wires, channels, window_ns, firmware=None, sample_ns=1000, lookahead_ns=50000, pan=(40, 20), zoom=0.5,
@@ -200,6 +200,40 @@ EXAMPLES.append(("h563-bus", project(
     [{"kind": "voltage", "at": board("CN7-2")}, {"kind": "voltage", "at": board("CN7-4")}],
     1_000_000, firmware="h563-bus.elf", sample_ns=1_000, lookahead_ns=50_000),
     "Firmware talks to a 24C02 EEPROM and a TMP102 on I2C1, reads a W25Q flash JEDEC ID on SPI1 and sends 'ping' to a USB-UART adapter on USART2; results print on USART3. Remove a pull-up or an SDA wire to see BUSY or NACK."))
+
+
+# The same bus firmware built for the STM32U585 (m33mu
+# tests/firmware/test-stm32u585-web-bus) on the NUCLEO-U575ZI-Q footprint:
+# Arduino I2C1 on CN7-2/4 (PB8/PB9), SPI1 on CN7-10/12/14 (PA5/PA6/PA7) and
+# CS on CN7-16 (PD14), from the board's Zio map and ST's AF data.
+u5_parts = [
+    part("eeprom1", "i2c-eeprom", 900, 260, addressPins="0"),
+    part("temp1", "i2c-temp", 900, 420, addressPins="0", celsius=25),
+    part("flash1", "spi-flash", 900, 620),
+    part("r1", "resistor", 760, 100, 90, ohms=4700),
+    part("r2", "resistor", 800, 100, 90, ohms=4700),
+]
+bus_wires = []
+n = 0
+for mod in ("eeprom1", "temp1", "flash1"):
+    add(("CN8-7", mod, "VCC"), RED)
+    add(("CN8-11", mod, "GND"), BLK)
+for mod in ("eeprom1", "temp1"):
+    add(("CN7-2", mod, "SCL"), YEL)
+    add(("CN7-4", mod, "SDA"), GRN)
+add(None, pt("r1", "a"), board("CN8-7"), RED)
+add(None, pt("r1", "b"), board("CN7-2"), YEL)
+add(None, pt("r2", "a"), board("CN8-7"), RED)
+add(None, pt("r2", "b"), board("CN7-4"), GRN)
+add(("CN7-16", "flash1", "CS"), WHT)
+add(("CN7-10", "flash1", "SCK"), ORG)
+add(("CN7-14", "flash1", "MOSI"), BLU)
+add(("CN7-12", "flash1", "MISO"), PUR)
+EXAMPLES.append(("u585-bus", project(
+    "example-u585-bus", "U585 I²C/SPI bus demo", u5_parts, bus_wires,
+    [{"kind": "voltage", "at": board("CN7-2")}, {"kind": "voltage", "at": board("CN7-4")}],
+    1_000_000, firmware="u585-bus.elf", sample_ns=1_000, lookahead_ns=50_000, cpu="stm32u585"),
+    "The H563 bus demo firmware built for the STM32U585: a 24C02 EEPROM and a TMP102 on I2C1, a W25Q flash JEDEC ID on SPI1. Results print on USART3."))
 
 
 # Secure elements: m33mu's ATECC608A (SPI1, CS PD14), SE050 (I2C1) and

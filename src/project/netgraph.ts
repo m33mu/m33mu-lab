@@ -281,7 +281,7 @@ export function compileCircuit(project: Project, layouts: Map<string, BoardLayou
     diagnostics.push({ severity: 'error', message: 'Add a ground reference: supplies and MCU pads are referenced to ground' });
   }
   // Ground symbols are nets named after their terminal; unify the name.
-  const logic: LogicNetlist = { devices: [], pins: {} };
+  const logic: LogicNetlist = { cpu: project.simulator.cpu, devices: [], pins: {} };
   for (const pad of pads) logic.pins[pad] = pad;
   for (const part of project.parts) {
     const def = CATALOG[part.kind];

@@ -3,10 +3,12 @@
 // Transfers are byte/transaction level: the emulator's I2C/SPI models call
 // into this layer synchronously and UART bytes are routed per worker slice.
 // Wiring decides who is reached: a peripheral uses the header pins whose GPIO
-// alternate function selects it (STM32H563 DS14258 Rev 6, Tables 9-10), and
+// alternate function selects it (ST pin data, sim/stm32-af.ts), and
 // a device answers only with power, ground and every bus line it needs
 // connected. Line levels come from the analog circuit, so a missing pull-up
 // or a line held low shows up as the fault a real bus would give.
+
+import { STM32_AF } from './stm32-af.ts';
 
 export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
   | SecureElementKind;
@@ -41,7 +43,7 @@ export function secureElementSpecs(logic: LogicNetlist): { id: string; kind: Sec
     net ? Object.entries(logic.pins).filter(([, n]) => n === net).map(([pad]) => pad) : [];
   const busOf = (net: string | undefined, signal: string) => {
     for (const pad of padsOn(net)) {
-      for (const name of Object.values(H563_AF[pad] ?? {})) {
+      for (const name of Object.values(busAf(logic.cpu)[pad] ?? {})) {
         const m = new RegExp(`^(SPI|I2C)(\\d+)_${signal}$`).exec(name);
         if (m) return `${m[1]}${m[2]}`;
       }
@@ -77,6 +79,8 @@ export type LogicDeviceSpec = {
 };
 
 export type LogicNetlist = {
+  /** m33mu CPU whose pad alternate functions route the buses (default stm32h563). */
+  cpu?: string;
   devices: LogicDeviceSpec[];
   /** Wired MCU pads: SoC pad -> net. */
   pins: Record<string, string>;
@@ -101,25 +105,15 @@ export type BusRecord = {
   ok: boolean;
 };
 
-// Alternate functions of the header pads (DS14258 Rev 6 AF0-AF15 tables).
-export const H563_AF: Record<string, Record<number, string>> = {
-  PA5: { 5: 'SPI1_SCK' },
-  PA6: { 5: 'SPI1_MISO' },
-  PA7: { 5: 'SPI1_MOSI' },
-  PB5: { 5: 'SPI1_MOSI' },
-  PG9: { 5: 'SPI1_MISO' },
-  PD7: { 5: 'SPI1_MOSI', 7: 'USART2_CK' },
-  PB6: { 4: 'I2C1_SCL', 7: 'USART1_TX', 8: 'LPUART1_TX' },
-  PB7: { 4: 'I2C1_SDA', 7: 'USART1_RX', 8: 'LPUART1_RX' },
-  PB8: { 4: 'I2C1_SCL' },
-  PB9: { 4: 'I2C1_SDA' },
-  PB10: { 4: 'I2C2_SCL' },
-  PB11: { 4: 'I2C2_SDA' },
-  PD5: { 7: 'USART2_TX' },
-  PD6: { 7: 'USART2_RX' },
-  PF0: { 4: 'I2C2_SDA' },
-  PF1: { 4: 'I2C2_SCL' }
-};
+/** SPI/I2C/U(S)ART alternate functions of a CPU's pads (pad -> AF -> signal),
+ * from ST's pin data (sim/stm32-af.ts). Targets without a table have no
+ * logic-level bus routing. */
+export function busAf(cpu: string | undefined): Record<string, Record<number, string>> {
+  return STM32_AF[cpu ?? 'stm32h563'] ?? {};
+}
+
+/** Every pad that carries a bus signal on some STM32 board. */
+export const BUS_AF_PADS: string[] = [...new Set(Object.values(STM32_AF).flatMap((t) => Object.keys(t)))];
 
 /** TIM2..TIM5 channel AFs of the STM32H563 (DS14258 Table 15), as the
  * emulator routes them (cpu/stm32h563/stm32h563_mmio.c g_tim_pins). */
@@ -293,12 +287,15 @@ export class BusLayer {
   private spiBytes = new Map<number, { out: number[]; in: number[]; selected: string[]; nets: string[] }>();
   private padNet = new Map<string, string>();
   private busyState = new Map<number, boolean>();
+  /** Bus alternate functions of the netlist's CPU. */
+  readonly af: Record<string, Record<number, string>>;
 
   /** `attached` maps secure-element part ids to the emulator's verdict:
    * null when it was attached, else why not. */
   constructor(netlist: LogicNetlist, lines: LineView, attached: Record<string, string | null> = {}) {
     this.netlist = netlist;
     this.lines = lines;
+    this.af = busAf(netlist.cpu);
     for (const [pad, net] of Object.entries(netlist.pins)) this.padNet.set(pad, net);
     this.devices = netlist.devices.map((spec) => {
       const d: Device = { spec };
@@ -329,7 +326,7 @@ export class BusLayer {
 
   /** Header pad currently carrying a peripheral signal, and its net. */
   private signalNet(signal: string): { pad: string; net: string | null } | null {
-    for (const [pad, afs] of Object.entries(H563_AF)) {
+    for (const [pad, afs] of Object.entries(this.af)) {
       const cfg = this.lines.padConfig(pad);
       if (!cfg || cfg.mode !== GPIO_MODE_AF || afs[cfg.af] !== signal) continue;
       return { pad, net: this.padNet.get(pad) ?? null };
@@ -532,7 +529,7 @@ export class BusLayer {
         this.adapterRx.get(d.spec.id)!.push(...data);
       }
     }
-    for (const [pad, afs] of Object.entries(H563_AF)) {
+    for (const [pad, afs] of Object.entries(this.af)) {
       const cfg = this.lines.padConfig(pad);
       if (!cfg || cfg.mode !== GPIO_MODE_AF || this.padNet.get(pad) !== tx.net) continue;
       const signal = afs[cfg.af];
@@ -550,7 +547,7 @@ export class BusLayer {
     const net = d?.spec.nets.TX;
     if (!net) return [];
     const out: { label: string; data: Uint8Array }[] = [];
-    for (const [pad, afs] of Object.entries(H563_AF)) {
+    for (const [pad, afs] of Object.entries(this.af)) {
       const cfg = this.lines.padConfig(pad);
       if (!cfg || cfg.mode !== GPIO_MODE_AF || this.padNet.get(pad) !== net) continue;
       const signal = afs[cfg.af];

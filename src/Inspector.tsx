@@ -1,6 +1,7 @@
 // Selection inspector: parameters, solved voltages/currents, pad state, probes.
 
 import { useEffect, useState } from 'react';
+import { busAf } from '../sim/buses.ts';
 import { CATALOG, formatSi, parseSi, sigcFromParam, sigcToParam } from './project/catalog.ts';
 import { decodeSigc } from './instruments/sigc.ts';
 import { type Project, type ProbeTarget, type TerminalRef, refKey } from './project/model.ts';
@@ -74,7 +75,7 @@ function BusConnect({ partId, kind, props }: { partId: string; kind: 'spi' | 'i2
         Wire {kind === 'spi' ? 'SCK, MOSI, MISO, CS' : 'SCL, SDA'}, VCC and GND
       </button>
       {kind === 'i2c' && <p className="muted">I²C needs pull-ups: add 4.7 kΩ from SCL and SDA to 3V3 unless the board has them.</p>}
-      {cpu !== 'stm32h563' && <p className="muted">The wiring is the board's, but bus devices answer firmware only on the NUCLEO-H563ZI in this build.</p>}
+      {Object.keys(busAf(cpu)).length === 0 && <p className="muted">The wiring is the board's, but bus devices answer firmware only on the STM32 boards (H563, H533, U585, L552) in this build.</p>}
     </fieldset>
   );
 }

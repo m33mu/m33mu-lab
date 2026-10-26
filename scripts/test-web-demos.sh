@@ -35,4 +35,4 @@ fi
 firmware_root=${M33MU_FIRMWARE_ROOT:-"$m33mu_root/tests/firmware"}
 "$task_node" "$repo_root/scripts/test-web-cpus.mjs" "$task_build_dir/worker.mjs" "$firmware_root"
 "$task_node" "$repo_root/scripts/test-web-crypto.mjs" "$task_build_dir/worker.mjs" "$firmware_root"
-"$task_node" "$repo_root/scripts/test-web-secure-elements.mjs" "$task_build_dir/worker.mjs" "$firmware_root/test-se-suite/app.elf"
+"$task_node" "$repo_root/scripts/test-web-secure-elements.mjs" "$task_build_dir/worker.mjs" "$firmware_root/test-stm32h563-web-se/app.elf"

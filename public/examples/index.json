@@ -44,6 +44,13 @@
       "description": "Firmware talks to a 24C02 EEPROM and a TMP102 on I2C1, reads a W25Q flash JEDEC ID on SPI1 and sends 'ping' to a USB-UART adapter on USART2; results print on USART3. Remove a pull-up or an SDA wire to see BUSY or NACK."
     },
     {
+      "id": "u585-bus",
+      "name": "U585 I²C/SPI bus demo",
+      "project": "u585-bus.m33mu.json",
+      "firmware": "u585-bus.elf",
+      "description": "The H563 bus demo firmware built for the STM32U585: a 24C02 EEPROM and a TMP102 on I2C1, a W25Q flash JEDEC ID on SPI1. Results print on USART3."
+    },
+    {
       "id": "h563-secure-elements",
       "name": "H563 secure elements (ATECC608A, SE050, STSAFE-A120)",
       "project": "h563-secure-elements.m33mu.json",

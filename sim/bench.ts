@@ -15,7 +15,7 @@
 // the virtual nanosecond the MCU reported for it.
 
 import { Circuit, type Crossing, type Snapshot } from './circuit.ts';
-import { BusLayer, H563_AF, H563_TIM_AF, type LineView, type LogicNetlist } from './buses.ts';
+import { BusLayer, BUS_AF_PADS, H563_TIM_AF, type LineView, type LogicNetlist } from './buses.ts';
 import type { PadDrive, PadPull } from './netlist.ts';
 
 export type McuPadEvent = {
@@ -156,9 +156,9 @@ export class Bench {
     circuit.t = t0 * 1e-9;
     if (this.opts.initial === 'zero') circuit.zeroState(); else circuit.operatingPoint();
     if (mcu) {
-      // Bus routing reads the AF of the H563 header pads; other targets
-      // simply do not have some of them.
-      for (const socPad of Object.keys(H563_AF)) {
+      // Bus routing reads the AF of the bus-capable pads; a target simply
+      // does not have some of them.
+      for (const socPad of BUS_AF_PADS) {
         const st = mcu.padStateIfAny ? mcu.padStateIfAny(socPad) : mcu.padState(socPad);
         if (st) this.padConfigs.set(socPad, { mode: st.mode, af: st.af ?? 0 });
       }
@@ -431,7 +431,7 @@ export class Bench {
       // AF pins carrying a bus signal are handled by the logic-level bus layer.
       // AF0 on a bus-capable pad is the transient between the MODER and AFR
       // writes of ordinary pin setup.
-      const busPad = this.bus && H563_AF[e.socPad];
+      const busPad = this.bus && this.bus.af[e.socPad];
       // Timer channel outputs drive the pad from the emulator itself.
       const timerPad = H563_TIM_AF[e.socPad]?.[e.af ?? 0] !== undefined;
       if (e.mode === 2 && !timerPad && !(busPad && (busPad[e.af ?? 0] || !e.af))) {
