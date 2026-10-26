@@ -1,6 +1,6 @@
-# m33mu-lab
+# m33mu embedded lab
 
-A browser embedded-systems lab built on the [m33mu](https://github.com/danielinux/m33mu) ARMv8-M emulator. Real firmware runs in m33mu compiled to WebAssembly and drives an analog circuit on the same virtual clock. You wire parts, buses and instruments to a to-scale board drawing, load an ELF and run.
+(Repository `m33mu-lab`.) A browser embedded-systems lab built on the [m33mu](https://github.com/danielinux/m33mu) ARMv8-M emulator. Real firmware runs in m33mu compiled to WebAssembly and drives an analog circuit on the same virtual clock. You wire parts, buses and instruments to a to-scale board drawing, load an ELF and run.
 
 - Boards: all 15 m33mu CPU profiles run on their board artwork. The NUCLEO-H563ZI has its full Zio/morpho map from UM3115 (212 electrically wired contacts, the rest visual-only with the reason shown) and its on-board LEDs.
 - Parts: breadboard, resistor, capacitor, LED, diode, push button, NPN, N-MOSFET, DC supply, ground, and logic-level I2C/SPI/UART devices.

@@ -688,7 +688,19 @@ export function App() {
   return (
     <main className="app">
       <header className="topbar">
-        <div className="brand"><span className="mark">m</span><div><strong>m33mu</strong><small>WORKBENCH</small></div></div>
+        <div className="brand">
+          {/* A QFP package: the lab's mark. */}
+          <svg className="mark" viewBox="0 0 32 32" aria-hidden="true">
+            <g stroke="#d0844b" strokeWidth="1.6" strokeLinecap="round">
+              {[9, 13, 17, 21].flatMap((v) => [<line key={`t${v}`} x1={v + 1} y1="2" x2={v + 1} y2="6" />, <line key={`b${v}`} x1={v + 1} y1="26" x2={v + 1} y2="30" />,
+                <line key={`l${v}`} x1="2" y1={v + 1} x2="6" y2={v + 1} />, <line key={`r${v}`} x1="26" y1={v + 1} x2="30" y2={v + 1} />])}
+            </g>
+            <rect x="6" y="6" width="20" height="20" rx="2" fill="#15281f" stroke="#e3b94c" strokeWidth="1.6" />
+            <circle cx="10.5" cy="10.5" r="1.4" fill="#e3b94c" />
+            <path d="M11 21v-7l5 4 5-4v7" fill="none" stroke="#e9efe6" strokeWidth="1.8" strokeLinejoin="round" />
+          </svg>
+          <div><strong>m33mu</strong><small>embedded lab</small></div>
+        </div>
         <select className="board-name" value={cpu} aria-label="Board" data-testid="board"
           title={layout ? `${layout.boardName}${layout.boardRevision ? ` · ${layout.boardRevision}` : ''}` : 'Loading board…'}
           onChange={(e) => { if (isCpu(e.target.value)) void chooseBoard(e.target.value); }}>
