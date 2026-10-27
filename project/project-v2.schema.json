@@ -138,7 +138,8 @@
        "se-tropic01",
        "se-se050",
        "se-stsafe",
-       "sigc-source"
+       "sigc-source",
+       "func-gen"
       ]
      },
      "x": {

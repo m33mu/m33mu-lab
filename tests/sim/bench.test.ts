@@ -142,16 +142,28 @@ test('analog-only bench runs without an MCU', () => {
   assert.ok(Math.abs(bench.circuit.nodeVoltage('b') - 5) < 1e-6);
 });
 
-test('the ADC sees each pad voltage at the window start, sent only on change', () => {
+test('the ADC gets each analog pad trajectory, corners kept, restarted on rollback', () => {
   const mcu = new FakeMcu();
-  const sent: { socPad: string; mv: number; tNs: number }[] = [];
-  (mcu as McuPort).setAnalog = (socPad, mv) => sent.push({ socPad, mv, tNs: mcu.nowNs() });
+  const sent: { socPad: string; tNs: number; mv: number }[] = [];
+  (mcu as McuPort).pushAnalog = (socPad, tNs, mv) => sent.push({ socPad, tNs, mv });
+  // PA6, the RC node, in analog mode.
+  const digital = mcu.padState.bind(mcu);
+  mcu.padState = (p: string) => (p === 'PA6' ? { ...digital(p), mode: 3 } : digital(p));
   const bench = new Bench(new Circuit(rcNetlist()), mcu, [], { lookaheadNs: 1000 });
   for (let i = 0; i < 2000 && !mcu.done; i++) bench.runUntil(1e6, 16);
-  const pa6 = sent.filter((s) => s.socPad === 'PA6');
-  // PA5 steps to 3.3 V at cycle 100: PA6 starts at 0 mV and then charges.
-  assert.equal(pa6[0].mv, 0);
-  assert.ok(pa6.some((s) => s.mv > 1000), JSON.stringify(pa6.slice(-3)));
-  for (let i = 1; i < pa6.length; i++) assert.notEqual(pa6[i].mv, pa6[i - 1].mv);
-  for (const s of sent) assert.ok(Number.isInteger(s.mv) && s.mv >= 0 && s.mv <= 5500);
+  const all = sent.splice(0);
+  sent.push(...all.filter((s) => s.socPad === 'PA6'));
+  assert.ok(sent.length > 10, `${sent.length} points`);
+  assert.ok(sent.every((s) => Number.isInteger(s.mv) && s.mv >= 0 && s.mv <= 5500));
+  // PA5 is analog only until the firmware makes it an output at cycle 100.
+  assert.ok(all.filter((s) => s.socPad === 'PA5').every((s) => s.tNs <= 100 * NS + 1));
+  // PA5 steps high at cycle 100: the flat 0 mV stretch ends with a point
+  // just before the charge starts rather than a ramp from time 0.
+  const rise = sent.findIndex((s) => s.mv > 0);
+  assert.ok(rise > 0 && sent[rise - 1].mv === 0 && sent[rise].tNs - sent[rise - 1].tNs < 2000,
+    JSON.stringify(sent.slice(0, rise + 1)));
+  assert.ok(sent.some((s) => s.mv >= Math.floor(defaultPad('PA6').vRise * 1000) - 5));
+  // Each rollback restarts the trajectory at the synchronized time.
+  assert.ok(bench.rollbacks > 0);
+  assert.ok(sent.some((s, i) => i > 0 && s.tNs <= sent[i - 1].tNs));
 });

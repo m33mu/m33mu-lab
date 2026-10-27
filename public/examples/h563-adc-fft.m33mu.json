@@ -1,0 +1,321 @@
+{
+ "schemaVersion": 2,
+ "projectId": "example-h563-adc-fft",
+ "name": "H563 ADC + FFT (function generator through an op-amp level shifter)",
+ "simulator": {
+  "cpu": "stm32h563",
+  "firmwareFormat": "elf",
+  "firmwareSha256": "a40bea9f210907841fc32791b33a131be8bb25440bcafaea5ee154915fc5a3df",
+  "firmwareName": "h563-adc-fft.elf"
+ },
+ "boards": [
+  {
+   "id": "board1",
+   "cpu": "stm32h563",
+   "layoutRevision": "MB1404 H563ZI-C01",
+   "x": 0,
+   "y": 0
+  }
+ ],
+ "parts": [
+  {
+   "id": "fg1",
+   "kind": "func-gen",
+   "x": 800,
+   "y": 700,
+   "rotation": 0,
+   "params": {
+    "waveform": "sine",
+    "frequency": 1000,
+    "amplitude": 1,
+    "offset": 0,
+    "duty": 50
+   }
+  },
+  {
+   "id": "rin",
+   "kind": "resistor",
+   "x": 950,
+   "y": 600,
+   "rotation": 0,
+   "params": {
+    "ohms": 10000
+   }
+  },
+  {
+   "id": "rf",
+   "kind": "resistor",
+   "x": 1100,
+   "y": 450,
+   "rotation": 0,
+   "params": {
+    "ohms": 10000
+   }
+  },
+  {
+   "id": "rtop",
+   "kind": "resistor",
+   "x": 950,
+   "y": 300,
+   "rotation": 0,
+   "params": {
+    "ohms": 30000
+   }
+  },
+  {
+   "id": "rbot",
+   "kind": "resistor",
+   "x": 950,
+   "y": 800,
+   "rotation": 0,
+   "params": {
+    "ohms": 10000
+   }
+  },
+  {
+   "id": "u1",
+   "kind": "opamp",
+   "x": 1100,
+   "y": 550,
+   "rotation": 0,
+   "params": {
+    "gain": 100000.0,
+    "rOut": 20,
+    "rIn": 1000000000.0,
+    "headroom": 0.2,
+    "gbw": 1000000.0,
+    "slewRate": 500000.0,
+    "vos": 0,
+    "iLimit": 0.025
+   }
+  },
+  {
+   "id": "gnd1",
+   "kind": "ground",
+   "x": 900,
+   "y": 950,
+   "rotation": 0,
+   "params": {}
+  }
+ ],
+ "wires": [
+  {
+   "id": "w1",
+   "from": {
+    "kind": "part",
+    "part": "fg1",
+    "terminal": "p"
+   },
+   "to": {
+    "kind": "part",
+    "part": "rin",
+    "terminal": "a"
+   },
+   "color": "#f49d37"
+  },
+  {
+   "id": "w2",
+   "from": {
+    "kind": "part",
+    "part": "fg1",
+    "terminal": "n"
+   },
+   "to": {
+    "kind": "part",
+    "part": "gnd1",
+    "terminal": "g"
+   },
+   "color": "#333333"
+  },
+  {
+   "id": "w3",
+   "from": {
+    "kind": "part",
+    "part": "rin",
+    "terminal": "b"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "minus"
+   },
+   "color": "#2e86ab"
+  },
+  {
+   "id": "w4",
+   "from": {
+    "kind": "part",
+    "part": "rf",
+    "terminal": "a"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "minus"
+   },
+   "color": "#c73e1d"
+  },
+  {
+   "id": "w5",
+   "from": {
+    "kind": "part",
+    "part": "rf",
+    "terminal": "b"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "out"
+   },
+   "color": "#6a4c93"
+  },
+  {
+   "id": "w6",
+   "from": {
+    "kind": "board",
+    "board": "board1",
+    "contact": "CN8-7"
+   },
+   "to": {
+    "kind": "part",
+    "part": "rtop",
+    "terminal": "a"
+   },
+   "color": "#f49d37"
+  },
+  {
+   "id": "w7",
+   "from": {
+    "kind": "part",
+    "part": "rtop",
+    "terminal": "b"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "plus"
+   },
+   "color": "#1b998b"
+  },
+  {
+   "id": "w8",
+   "from": {
+    "kind": "part",
+    "part": "rbot",
+    "terminal": "a"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "plus"
+   },
+   "color": "#2e86ab"
+  },
+  {
+   "id": "w9",
+   "from": {
+    "kind": "part",
+    "part": "rbot",
+    "terminal": "b"
+   },
+   "to": {
+    "kind": "part",
+    "part": "gnd1",
+    "terminal": "g"
+   },
+   "color": "#333333"
+  },
+  {
+   "id": "w10",
+   "from": {
+    "kind": "board",
+    "board": "board1",
+    "contact": "CN8-7"
+   },
+   "to": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "vcc"
+   },
+   "color": "#6a4c93"
+  },
+  {
+   "id": "w11",
+   "from": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "vee"
+   },
+   "to": {
+    "kind": "part",
+    "part": "gnd1",
+    "terminal": "g"
+   },
+   "color": "#333333"
+  },
+  {
+   "id": "w12",
+   "from": {
+    "kind": "board",
+    "board": "board1",
+    "contact": "CN8-11"
+   },
+   "to": {
+    "kind": "part",
+    "part": "gnd1",
+    "terminal": "g"
+   },
+   "color": "#333333"
+  },
+  {
+   "id": "w13",
+   "from": {
+    "kind": "part",
+    "part": "u1",
+    "terminal": "out"
+   },
+   "to": {
+    "kind": "board",
+    "board": "board1",
+    "contact": "CN9-1"
+   },
+   "color": "#2e86ab"
+  }
+ ],
+ "instruments": {
+  "scopes": [
+   {
+    "id": "scope1",
+    "name": "Scope 1",
+    "channels": [
+     {
+      "kind": "voltage",
+      "at": {
+       "kind": "part",
+       "part": "fg1",
+       "terminal": "p"
+      }
+     },
+     {
+      "kind": "voltage",
+      "at": {
+       "kind": "board",
+       "board": "board1",
+       "contact": "CN9-1"
+      }
+     }
+    ],
+    "windowNs": 3000000
+   }
+  ]
+ },
+ "solver": {
+  "lookaheadNs": 50000,
+  "sampleNs": 1000
+ },
+ "ui": {
+  "zoom": 0.5,
+  "panX": 40,
+  "panY": 20
+ }
+}

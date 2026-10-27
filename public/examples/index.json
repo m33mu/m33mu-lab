@@ -98,6 +98,13 @@
       "project": "opamp-gain.m33mu.json",
       "firmware": null,
       "description": "Analog only: 1 V input, 5 V single supply and 10 kΩ/10 kΩ feedback produce about 2 V at the loaded output. The macro model has finite rail swing and output resistance."
+    },
+    {
+      "id": "h563-adc-fft",
+      "name": "H563 ADC + FFT (signal generator, op-amp level shifter, A0)",
+      "project": "h563-adc-fft.m33mu.json",
+      "firmware": "h563-adc-fft.elf",
+      "description": "A ±1 V sine from the function generator is inverted and centred on 1.65 V by an op-amp (gain −1, IN+ biased to 0.825 V by 30 kΩ/10 kΩ from 3V3) and sampled on A0 at 8 kHz. The firmware prints the DC level and the strongest FFT peaks on USART3. Change the waveform or frequency and watch the spectrum follow."
     }
   ]
 }

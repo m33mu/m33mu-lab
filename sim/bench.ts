@@ -49,9 +49,10 @@ export interface McuPort {
   /** Queue an input level; times at or before now apply at the next boundary. */
   scheduleInput(socPad: string, level: 0 | 1, timeNs: number): void;
   cancelInputs(fromNs: number): void;
-  /** The voltage an ADC samples on a pad, held until the next call. The MCU
+  /** Append a point of a pad's voltage trajectory for ADC sampling (linear in
+   * between). A point drops queued points at or after its time. The MCU
    * ignores it unless the pad is in analog mode on an ADC channel. */
-  setAnalog?(socPad: string, mv: number): void;
+  pushAnalog?(socPad: string, timeNs: number, mv: number): void;
 }
 
 export type Probe =
@@ -134,8 +135,8 @@ export class Bench {
    * last takeDuty(), for on-board LED brightness under PWM. */
   private duty = new Map<string, { level: number; lastNs: number; highNs: number; fromNs: number; driven: boolean }>();
   bus: BusLayer | null = null;
-  /** Last whole-mV level given to setAnalog per pad. */
-  private analogMv = new Map<string, number>();
+  /** Per analog pad: last point pushed and the latest solver step since. */
+  private analog = new Map<string, { mv: number; stepNs: number; stepMv: number }>();
 
   constructor(circuit: Circuit, mcu: McuPort | null, probes: Probe[] = [],
     options: Partial<BenchOptions> = {}) {
@@ -170,7 +171,13 @@ export class Bench {
         if (st) this.padConfigs.set(socPad, { mode: st.mode, af: st.af ?? 0 });
       }
     }
-    circuit.onCommit = (c) => this.record(c);
+    if (mcu) {
+      for (const socPad of circuit.padSocPads()) {
+        const st = mcu.padStateIfAny ? mcu.padStateIfAny(socPad) : mcu.padState(socPad);
+        if (st) this.padConfigs.set(socPad, { mode: st.mode, af: st.af ?? 0 });
+      }
+    }
+    circuit.onCommit = (c) => { this.record(c); this.pushAnalog(c.t * 1e9); };
     this.nextSampleNs = t0;
     this.record(circuit);
     this.sync = circuit.snapshot();
@@ -340,7 +347,6 @@ export class Bench {
         this.flush(tm);
         this.sync = c.snapshot();
         this.syncNs = tm;
-        this.pushAnalog();
         const horizon = Math.min(targetNs, tm + this.opts.lookaheadNs);
         this.deliver(c.advanceTo(horizon * 1e-9, this.opts.maxCrossingsPerWindow), tm);
         ts = c.t * 1e9;
@@ -376,17 +382,25 @@ export class Bench {
     return report;
   }
 
-  /** Hand the ADC the pad voltages at the window start: a zero-order hold
-   * over one window, at most lookaheadNs. */
-  private pushAnalog(): void {
+  /** Hand the ADC the solved voltage of every analog-mode pad at each
+   * committed solver step. A step within 1 mV of the last point is held back;
+   * when the level moves on, that held step goes first so the corner stays
+   * sharp. `force` restarts the trajectory (after a rollback). */
+  private pushAnalog(tNs: number, force = false): void {
     const mcu = this.mcu;
-    if (!mcu?.setAnalog) return;
+    if (!mcu?.pushAnalog || this.stopped) return;
     for (const socPad of this.circuit.padSocPads()) {
-      const v = this.circuit.padNodeVoltage(socPad);
-      const mv = Math.min(5500, Math.max(0, Math.round(v * 1000)));
-      if (this.analogMv.get(socPad) === mv) continue;
-      this.analogMv.set(socPad, mv);
-      mcu.setAnalog(socPad, mv);
+      if (this.padConfigs.get(socPad)?.mode !== 3) continue;
+      const mv = Math.min(5500, Math.max(0, Math.round(this.circuit.padNodeVoltage(socPad) * 1000)));
+      const last = this.analog.get(socPad);
+      if (!force && last && Math.abs(mv - last.mv) < 1) {
+        last.stepNs = tNs;
+        last.stepMv = mv;
+        continue;
+      }
+      if (!force && last && last.stepNs > 0) mcu.pushAnalog(socPad, last.stepNs, last.stepMv);
+      mcu.pushAnalog(socPad, tNs, mv);
+      this.analog.set(socPad, { mv, stepNs: 0, stepMv: mv });
     }
   }
 
@@ -432,6 +446,7 @@ export class Bench {
     const c = this.circuit;
     c.restore(this.sync);
     this.truncateLog(this.syncNs);
+    this.pushAnalog(this.syncNs, true);
     this.rollbacks++;
     // Replayed crossings up to tNs were already delivered.
     const replayed = c.advanceTo(tNs * 1e-9);

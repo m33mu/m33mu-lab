@@ -4,6 +4,7 @@
 import type { DeviceSpec } from '../../sim/netlist.ts';
 import { MODELS } from '../../sim/netlist.ts';
 import type { LogicDeviceKind } from '../../sim/buses.ts';
+import { funcGenPwl, WAVEFORMS, type Waveform } from '../../sim/funcgen.ts';
 import { decodeSigc, SIGC_MAX_BYTES, type SigcCapture } from '../instruments/sigc.ts';
 
 export const PITCH = 25.4;
@@ -13,7 +14,7 @@ export type PartKind =
   | 'npn' | 'nmos' | 'opamp' | 'regulator' | 'supply' | 'ground'
   | 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
   | 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe'
-  | 'sigc-source';
+  | 'sigc-source' | 'func-gen';
 
 export type ParamSpec = {
   key: string;
@@ -292,6 +293,26 @@ export const CATALOG: Record<PartKind, PartDef> = {
       const repeat = String(p.repeat) === '1' && timesNs.length > 1;
       return [{ kind: 'vsource', id, p: net('p'), n: net('n'), volts: volts[0],
         pwl: { timesNs, volts, ...(repeat ? { repeat: true } : {}) } }];
+    }
+  },
+  // Periodic source between + and −, built from the waveform settings.
+  'func-gen': {
+    kind: 'func-gen', title: 'Function generator (sine, square, triangle, sawtooth)',
+    params: [
+      { key: 'waveform', label: 'Waveform', unit: '', min: 0, max: 0,
+        choices: WAVEFORMS.map((w) => ({ value: w, label: w })) },
+      { key: 'frequency', label: 'Frequency', unit: 'Hz', min: 0.01, max: 10e6 },
+      { key: 'amplitude', label: 'Amplitude (peak)', unit: 'V', min: 0, max: 50 },
+      { key: 'offset', label: 'DC offset', unit: 'V', min: -50, max: 50 },
+      { key: 'duty', label: 'Duty cycle (square)', unit: '%', min: 1, max: 99 }
+    ],
+    defaults: { waveform: 'sine', frequency: 1000, amplitude: 1, offset: 0, duty: 50 },
+    terminals: () => [{ id: 'p', x: 0, y: 0, label: '+' }, { id: 'n', x: PITCH, y: 0, label: '−' }],
+    devices: (id, p, net) => {
+      const waveform = (WAVEFORMS as string[]).includes(String(p.waveform)) ? p.waveform as Waveform : 'sine';
+      const pwl = funcGenPwl({ waveform, frequency: Number(p.frequency), amplitude: Number(p.amplitude),
+        offset: Number(p.offset), duty: Number(p.duty) / 100 });
+      return [{ kind: 'vsource', id, p: net('p'), n: net('n'), volts: pwl.volts[0], pwl }];
     }
   },
   supply: {

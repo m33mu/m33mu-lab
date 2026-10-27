@@ -150,6 +150,25 @@ export function PartGlyph({ part, brightness, pressed }: { part: Part; brightnes
         <Leads part={part} />
       </g>
     );
+  case 'func-gen': {
+    // Glyph of the selected waveform, two periods across the body.
+    const wave: Record<string, string> = {
+      sine: 'M -4 -31 q 4.5 -14 9 0 t 9 0 t 9 0 t 9 0',
+      square: 'M -4 -24 l 0 -14 l 9 0 l 0 14 l 9 0 l 0 -14 l 9 0 l 0 14 l 9 0',
+      triangle: 'M -4 -24 l 9 -14 l 9 14 l 9 -14 l 9 14',
+      sawtooth: 'M -4 -24 l 18 -14 l 0 14 l 18 -14 l 0 14'
+    };
+    return (
+      <g>
+        <rect x={-12} y={-54} width={P + 24} height={46} rx={5} className="supply-body" />
+        <path d={wave[String(part.params.waveform)] ?? wave.sine} fill="none" stroke="#e0b341" strokeWidth={2} />
+        <text x={P / 2} y={-60} className="part-label">{part.id} {formatSi(Number(part.params.frequency), 'Hz')}</text>
+        <text x={0} y={16} className="part-label">+</text>
+        <text x={P} y={16} className="part-label">−</text>
+        <Leads part={part} />
+      </g>
+    );
+  }
   case 'regulator':
     return (
       <g>

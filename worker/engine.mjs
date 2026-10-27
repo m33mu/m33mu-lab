@@ -106,6 +106,8 @@ export function attachM33muWorker(scope, createModule) {
           ['number', 'string', 'number', 'number', 'number']),
         analogInput: wrap('mm_web_abi_analog_input', 'number',
           ['number', 'string', 'number', 'number']),
+        analogPoint: wrap('mm_web_abi_analog_point', 'number',
+          ['number', 'string', 'number', 'number', 'number']),
         gpioOutputNext: wrap('mm_web_abi_gpio_output_next', 'number', ['number']),
         gpioOutputPad: wrap('mm_web_abi_gpio_output_pad', 'string', []),
         gpioOutputLevel: wrap('mm_web_abi_gpio_output_level', 'number', []),

@@ -511,6 +511,26 @@ try {
     await page.getByTestId('real-time').check();
   });
 
+  await check('ADC + FFT example: generator through an op-amp to A0, spectrum follows the waveform', async () => {
+    await page.getByTestId('examples').selectOption('h563-adc-fft');
+    await page.waitForFunction(() => /ADC \+ FFT/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));
+    await page.getByTestId('real-time').uncheck();
+    await page.getByTestId('run').click();
+    await page.getByTestId('tab-USART3').click();
+    const vcp = page.getByTestId('terminal-USART3').locator('pre');
+    await vcp.getByText(/dc 165\d mV, peaks 1000\.0 Hz (99\d|100\d) mV/).first().waitFor({ timeout: 90000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await shot('13-adc-fft');
+    // A triangle wave: 8/pi^2 = 811 mV fundamental and a 3 kHz harmonic.
+    // (A 1 kHz square would alias its 5th and 7th harmonics onto 3 and 1 kHz.)
+    await page.locator('g[data-part="fg1"] rect').first().click({ force: true });
+    await page.getByLabel('Waveform').selectOption('triangle');
+    await page.getByTestId('run').click();
+    await vcp.getByText(/peaks 1000\.0 Hz 8[01]\d mV, 3000\.0 Hz/).first().waitFor({ timeout: 90000 });
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByTestId('real-time').check();
+  });
+
   await check('Pico 2 example: GPIO wiring on the RP2350, on-board LED blinks, button turns GP16 off', async () => {
     await page.getByTestId('examples').selectOption('pico2-gpio');
     await page.waitForFunction(() => /Pico 2 GPIO/.test(document.querySelector('[data-testid=status-message]')?.textContent ?? ''));

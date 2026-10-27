@@ -37,7 +37,7 @@ const PALETTE: { group: string; parts: [PartKind, string][] }[] = [
   { group: 'Basics', parts: [['breadboard', 'Breadboard'], ['resistor', 'Resistor'], ['capacitor', 'Capacitor'],
     ['led', 'LED'], ['switch', 'Push button'], ['ground', 'Ground']] },
   { group: 'Semiconductors', parts: [['diode', 'Diode 1N4148'], ['npn', 'NPN 2N3904'], ['nmos', 'N-MOSFET'], ['opamp', 'Op-amp']] },
-  { group: 'Power & signals', parts: [['supply', 'DC supply'], ['regulator', 'LDO regulator'], ['sigc-source', 'Signal source (SIGC)']] },
+  { group: 'Power & signals', parts: [['supply', 'DC supply'], ['regulator', 'LDO regulator'], ['sigc-source', 'Signal source (SIGC)'], ['func-gen', 'Function generator']] },
   { group: 'Bus modules', parts: [['i2c-eeprom', 'I²C EEPROM 24C02'], ['i2c-temp', 'I²C temp TMP102'], ['spi-flash', 'SPI flash W25Q'],
     ['usb-uart', 'USB-UART adapter'], ['sniffer', 'Bus sniffer']] },
   { group: 'Secure elements', parts: [['se-atecc608', 'ATECC608A (SPI)'], ['se-ta100', 'TA100 (SPI)'], ['se-tropic01', 'TROPIC01 (SPI)'],

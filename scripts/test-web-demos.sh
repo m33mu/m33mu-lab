@@ -38,6 +38,7 @@ fi
 "${MAKE:-make}" -C "$m33mu_root/tests/firmware/test-stm32h563-web-adc" CC="${M33MU_ARM_NONE_EABI_GCC:-arm-none-eabi-gcc}" app.elf >/dev/null
 "$task_node" "$repo_root/scripts/test-web-adc.mjs" "$task_build_dir/worker.mjs" \
   "$m33mu_root/tests/firmware/test-stm32h563-web-adc/app.elf"
+"$task_node" "$repo_root/scripts/test-web-fft.mjs" "$task_build_dir/worker.mjs"
 firmware_root=${M33MU_FIRMWARE_ROOT:-"$m33mu_root/tests/firmware"}
 "$task_node" "$repo_root/scripts/test-web-cpus.mjs" "$task_build_dir/worker.mjs" "$firmware_root"
 "$task_node" "$repo_root/scripts/test-web-crypto.mjs" "$task_build_dir/worker.mjs" "$firmware_root"

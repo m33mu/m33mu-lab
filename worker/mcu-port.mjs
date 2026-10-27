@@ -1,6 +1,7 @@
 // McuPort (see web/sim/bench.ts) over the m33mu Emscripten ABI.
 
 const STOP_ON_PAD_CHANGE = 1;
+const EVENT_QUEUE_FULL = 11; // enum mm_web_error
 
 function split64(value) {
   const big = BigInt(Math.max(0, Math.floor(value)));
@@ -66,10 +67,13 @@ export function createMcuPort(api, session, onError) {
       const status = api.gpio(session, socPad, hi, lo, level ? 1 : 0);
       if (status !== 0) onError(status);
     },
-    setAnalog(socPad, mv) {
-      // A pad this target does not name has no ADC channel either.
+    pushAnalog(socPad, timeNs, mv) {
+      // A pad this target does not name has no ADC channel either; a full
+      // queue drops the point (the ADC holds the last one it has).
       if (noAnalog.has(socPad)) return;
-      if (api.analogInput(session, socPad, 1, mv) !== 0) noAnalog.add(socPad);
+      const [hi, lo] = split64(Math.round(timeNs));
+      const status = api.analogPoint(session, socPad, hi, lo, mv);
+      if (status !== 0 && status !== EVENT_QUEUE_FULL) noAnalog.add(socPad);
     },
     cancelInputs(fromNs) {
       const [hi, lo] = split64(Math.ceil(fromNs));
