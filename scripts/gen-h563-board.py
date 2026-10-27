@@ -203,7 +203,7 @@ def svg():
                 else:
                     add(f'<circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="9" fill="#c99a3b"/>')
                 add(f'<circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="4.5" fill="#1a1a1a"/>')
-    add('<text x="350" y="1020" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">MB1404</text>')
+    add('<text x="350" y="1045" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">MB1404</text>')
     add('</svg>')
     return "\n".join(s) + "\n"
 
@@ -222,7 +222,7 @@ def layout():
         "warning": "Only contacts marked electricalEnabled can be wired; the others are visual locators.",
         "electricalEnabledByDefault": False,
         "generator": "scripts/gen-h563-board.py",
-        "leds": [{"id": name, "pad": pad, "color": color, "x": 298 + i * 40, "y": 1005, "w": 16, "h": 10,
+        "leds": [{"id": name, "pad": pad, "color": color, "x": 290 + i * 40, "y": 1000, "w": 16, "h": 10,
                   "activeHigh": True} for i, (name, pad, color) in enumerate(LEDS)],
         # B1 (blue) drives PC13 high when pressed (UM3115 Rev 3 section 11.3).
         "buttons": [{"id": "B1", "pad": "PC13", "x": 165, "y": 1060, "w": 70, "h": 70, "activeHigh": True}],

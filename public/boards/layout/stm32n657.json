@@ -26,8 +26,8 @@
       "id": "LD6",
       "pad": "PG0",
       "color": "#2fb34a",
-      "x": 298,
-      "y": 1005,
+      "x": 290,
+      "y": 1000,
       "w": 16,
       "h": 10,
       "activeHigh": false
@@ -36,8 +36,8 @@
       "id": "LD7",
       "pad": "PG8",
       "color": "#2e86de",
-      "x": 338,
-      "y": 1005,
+      "x": 330,
+      "y": 1000,
       "w": 16,
       "h": 10,
       "activeHigh": false
@@ -46,8 +46,8 @@
       "id": "LD5",
       "pad": "PG10",
       "color": "#d62d2d",
-      "x": 378,
-      "y": 1005,
+      "x": 370,
+      "y": 1000,
       "w": 16,
       "h": 10,
       "activeHigh": false

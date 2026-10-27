@@ -15,7 +15,7 @@
 <text x="338" y="994" font-family="sans-serif" font-size="10" text-anchor="middle" fill="#2b5cab">LD7</text>
 <rect x="370" y="1000" width="16" height="10" fill="#3a3d42"/>
 <text x="378" y="994" font-family="sans-serif" font-size="10" text-anchor="middle" fill="#2b5cab">LD5</text>
-<text x="350" y="1020" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">MB1940</text>
+<text x="350" y="1045" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">MB1940</text>
 
 <circle cx="31.6" cy="120" r="9" fill="#c99a3b"/><circle cx="31.6" cy="120" r="4.5" fill="#1a1a1a"/>
 <circle cx="57" cy="120" r="9" fill="#c99a3b"/><circle cx="57" cy="120" r="4.5" fill="#1a1a1a"/>

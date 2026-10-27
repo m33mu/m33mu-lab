@@ -144,7 +144,7 @@ def build_nucleo144(cpu, cfg):
         "electricalMapStatus": f"verified from Zephyr {cfg['zephyr']} ({what}); other contacts visual-only",
         "warning": "Only contacts marked electricalEnabled can be wired; the others are visual locators.",
         "electricalEnabledByDefault": False, "generator": "scripts/gen-st-boards.py",
-        "leds": [{"id": i, "pad": p, "color": c, "x": 298 + k * 40, "y": 1005, "w": 16, "h": 10, "activeHigh": hi}
+        "leds": [{"id": i, "pad": p, "color": c, "x": 290 + k * 40, "y": 1000, "w": 16, "h": 10, "activeHigh": hi}
                  for k, (i, p, c, hi) in enumerate(cfg["leds"])],
         "buttons": [{"id": cfg["button"][0], "pad": cfg["button"][1], "x": 165, "y": 1060, "w": 70, "h": 70, "activeHigh": True}],
         "connectors": connectors,
@@ -183,7 +183,7 @@ def nucleo144_svg(cfg, connectors):
             s.append(f'<text x="{x0 + cw / 2:g}" y="{y0 - 8:g}" font-family="sans-serif" font-size="16" text-anchor="middle" fill="#2b5cab">{conn["id"]}</text>')
             for c in cs:
                 s.append(f'<circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="9" fill="#c99a3b"/><circle cx="{c["x"]:g}" cy="{c["y"]:g}" r="4.5" fill="#1a1a1a"/>')
-    s.append(f'<text x="350" y="1020" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">{cfg["rev"].split()[0]}</text>')
+    s.append(f'<text x="350" y="1045" font-family="sans-serif" font-size="18" text-anchor="middle" fill="#2b5cab">{cfg["rev"].split()[0]}</text>')
     s.append('</svg>')
     return "\n".join(s) + "\n"
 
@@ -357,7 +357,7 @@ def build_n657():
         "electricalMapStatus": f"verified from {UM3417} Tables 11-13 (Arduino Uno V3 and ST morpho); CN2/CN16 not soldered by default",
         "warning": "Only contacts marked electricalEnabled can be wired; the others are visual locators.",
         "electricalEnabledByDefault": False, "generator": "scripts/gen-st-boards.py",
-        "leds": [{"id": i, "pad": p, "color": c, "x": 298 + k * 40, "y": 1005, "w": 16, "h": 10, "activeHigh": hi}
+        "leds": [{"id": i, "pad": p, "color": c, "x": 290 + k * 40, "y": 1000, "w": 16, "h": 10, "activeHigh": hi}
                  for k, (i, p, c, hi) in enumerate(cfg["leds"])],
         "buttons": [{"id": "B1", "pad": "PC13", "x": 165, "y": 1060, "w": 70, "h": 70, "activeHigh": True}],
         "connectors": connectors,
