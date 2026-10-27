@@ -49,6 +49,9 @@ export interface McuPort {
   /** Queue an input level; times at or before now apply at the next boundary. */
   scheduleInput(socPad: string, level: 0 | 1, timeNs: number): void;
   cancelInputs(fromNs: number): void;
+  /** The voltage an ADC samples on a pad, held until the next call. The MCU
+   * ignores it unless the pad is in analog mode on an ADC channel. */
+  setAnalog?(socPad: string, mv: number): void;
 }
 
 export type Probe =
@@ -131,6 +134,8 @@ export class Bench {
    * last takeDuty(), for on-board LED brightness under PWM. */
   private duty = new Map<string, { level: number; lastNs: number; highNs: number; fromNs: number; driven: boolean }>();
   bus: BusLayer | null = null;
+  /** Last whole-mV level given to setAnalog per pad. */
+  private analogMv = new Map<string, number>();
 
   constructor(circuit: Circuit, mcu: McuPort | null, probes: Probe[] = [],
     options: Partial<BenchOptions> = {}) {
@@ -335,6 +340,7 @@ export class Bench {
         this.flush(tm);
         this.sync = c.snapshot();
         this.syncNs = tm;
+        this.pushAnalog();
         const horizon = Math.min(targetNs, tm + this.opts.lookaheadNs);
         this.deliver(c.advanceTo(horizon * 1e-9, this.opts.maxCrossingsPerWindow), tm);
         ts = c.t * 1e9;
@@ -368,6 +374,20 @@ export class Bench {
     report.solverSteps = c.stepCount - steps0;
     report.rollbacks = this.rollbacks;
     return report;
+  }
+
+  /** Hand the ADC the pad voltages at the window start: a zero-order hold
+   * over one window, at most lookaheadNs. */
+  private pushAnalog(): void {
+    const mcu = this.mcu;
+    if (!mcu?.setAnalog) return;
+    for (const socPad of this.circuit.padSocPads()) {
+      const v = this.circuit.padNodeVoltage(socPad);
+      const mv = Math.min(5500, Math.max(0, Math.round(v * 1000)));
+      if (this.analogMv.get(socPad) === mv) continue;
+      this.analogMv.set(socPad, mv);
+      mcu.setAnalog(socPad, mv);
+    }
   }
 
   /** Attach the logic-level bus layer for this circuit. */

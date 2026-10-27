@@ -25,4 +25,4 @@ Default values (`defaultPad()`), all **documented approximations**, not datashee
 | `cIn` | 5 pF | STM32H5 typical CIO |
 | `vRise` / `vFall` | 1.775 V / 1.525 V | inside the guaranteed VIL (0.3 VDD) / VIH (0.7 VDD) window; same values as the historical Perun coupling probe |
 
-Not modelled: output slew rate and speed settings (OSPEEDR), driver current limits, injection current, protection diodes, analog-switch resistance, ADC sampling load, and every peripheral alternate function. The bench reports these as unsupported rather than approximating them.
+Not modelled: output slew rate and speed settings (OSPEEDR), driver current limits, injection current, protection diodes, analog-switch resistance, ADC sampling load (the ADC reads the solved node voltage without loading it), and every peripheral alternate function. The bench reports these as unsupported rather than approximating them.

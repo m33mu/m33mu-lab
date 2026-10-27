@@ -13,7 +13,7 @@ const ERROR_NAMES = [
 ];
 
 // Must match MM_WEB_ABI_VERSION in m33mu/include/m33mu/web.h.
-const M33MU_WEB_ABI_VERSION = 3;
+const M33MU_WEB_ABI_VERSION = 4;
 const MAX_MEMORY_READ = 4096;
 const FEATURE_WOLFCRYPT = 1;
 const FEATURE_TA100 = 2;
@@ -104,6 +104,8 @@ export function attachM33muWorker(scope, createModule) {
         reset: wrap('mm_web_abi_reset', 'number', ['number']),
         gpio: wrap('mm_web_abi_gpio_input', 'number',
           ['number', 'string', 'number', 'number', 'number']),
+        analogInput: wrap('mm_web_abi_analog_input', 'number',
+          ['number', 'string', 'number', 'number']),
         gpioOutputNext: wrap('mm_web_abi_gpio_output_next', 'number', ['number']),
         gpioOutputPad: wrap('mm_web_abi_gpio_output_pad', 'string', []),
         gpioOutputLevel: wrap('mm_web_abi_gpio_output_level', 'number', []),

@@ -141,3 +141,17 @@ test('analog-only bench runs without an MCU', () => {
   // DC operating point start: capacitor already charged to 5 V.
   assert.ok(Math.abs(bench.circuit.nodeVoltage('b') - 5) < 1e-6);
 });
+
+test('the ADC sees each pad voltage at the window start, sent only on change', () => {
+  const mcu = new FakeMcu();
+  const sent: { socPad: string; mv: number; tNs: number }[] = [];
+  (mcu as McuPort).setAnalog = (socPad, mv) => sent.push({ socPad, mv, tNs: mcu.nowNs() });
+  const bench = new Bench(new Circuit(rcNetlist()), mcu, [], { lookaheadNs: 1000 });
+  for (let i = 0; i < 2000 && !mcu.done; i++) bench.runUntil(1e6, 16);
+  const pa6 = sent.filter((s) => s.socPad === 'PA6');
+  // PA5 steps to 3.3 V at cycle 100: PA6 starts at 0 mV and then charges.
+  assert.equal(pa6[0].mv, 0);
+  assert.ok(pa6.some((s) => s.mv > 1000), JSON.stringify(pa6.slice(-3)));
+  for (let i = 1; i < pa6.length; i++) assert.notEqual(pa6[i].mv, pa6[i - 1].mv);
+  for (const s of sent) assert.ok(Number.isInteger(s.mv) && s.mv >= 0 && s.mv <= 5500);
+});

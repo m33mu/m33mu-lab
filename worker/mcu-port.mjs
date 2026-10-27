@@ -10,6 +10,7 @@ function split64(value) {
 export function createMcuPort(api, session, onError) {
   const nowNs = () => Number((BigInt(api.virtualTimeHigh(session) >>> 0) << 32n) |
     BigInt(api.virtualTimeLow(session) >>> 0));
+  const noAnalog = new Set();
   return {
     nowNs,
     runUntil(deadlineNs, instructionBudget, workBudget) {
@@ -64,6 +65,11 @@ export function createMcuPort(api, session, onError) {
       const [hi, lo] = split64(at);
       const status = api.gpio(session, socPad, hi, lo, level ? 1 : 0);
       if (status !== 0) onError(status);
+    },
+    setAnalog(socPad, mv) {
+      // A pad this target does not name has no ADC channel either.
+      if (noAnalog.has(socPad)) return;
+      if (api.analogInput(session, socPad, 1, mv) !== 0) noAnalog.add(socPad);
     },
     cancelInputs(fromNs) {
       const [hi, lo] = split64(Math.ceil(fromNs));
