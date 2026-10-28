@@ -139,7 +139,11 @@
        "se-se050",
        "se-stsafe",
        "sigc-source",
-       "func-gen"
+       "func-gen",
+       "potentiometer",
+       "rotary-encoder",
+       "pcm5102a",
+       "tm1637"
       ]
      },
      "x": {

@@ -9,8 +9,9 @@
 // or a line held low shows up as the fault a real bus would give.
 
 import { STM32_AF, STM32_TIM_AF } from './stm32-af.ts';
+import { Tm1637, type Tm1637State } from './tm1637.ts';
 
-export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
+export type LogicDeviceKind = 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer' | 'tm1637'
   | SecureElementKind;
 
 /** Secure elements simulated by m33mu itself (src/m33mu/*.c and the Rust
@@ -103,6 +104,7 @@ export type BusRecord = {
   nets: string[];
   summary: string;
   ok: boolean;
+  tm1637?: Tm1637State & { id: string };
 };
 
 /** SPI/I2C/U(S)ART alternate functions of a CPU's pads (pad -> AF -> signal),
@@ -237,6 +239,8 @@ type Device = {
   i2c?: I2cTarget;
   spi?: SpiTarget;
   selected?: boolean;
+  tm?: Tm1637;
+  tmPads?: { clk: string; dio: string };
   /** Answered by the emulator's secure-element model, if attached there. */
   external?: { attached: boolean; note: string };
 };
@@ -255,15 +259,18 @@ export class BusLayer {
   private spiBytes = new Map<number, { out: number[]; in: number[]; selected: string[]; nets: string[] }>();
   private padNet = new Map<string, string>();
   private busyState = new Map<number, boolean>();
+  private gpioInput?: (pad: string, level: 0 | 1, timeNs: number) => void;
   /** Bus alternate functions of the netlist's CPU. */
   readonly af: Record<string, Record<number, string>>;
 
   /** `attached` maps secure-element part ids to the emulator's verdict:
    * null when it was attached, else why not. */
-  constructor(netlist: LogicNetlist, lines: LineView, attached: Record<string, string | null> = {}) {
+  constructor(netlist: LogicNetlist, lines: LineView, attached: Record<string, string | null> = {},
+    gpioInput?: (pad: string, level: 0 | 1, timeNs: number) => void) {
     this.netlist = netlist;
     this.lines = lines;
     this.af = busAf(netlist.cpu);
+    this.gpioInput = gpioInput;
     for (const [pad, net] of Object.entries(netlist.pins)) this.padNet.set(pad, net);
     this.devices = netlist.devices.map((spec) => {
       const d: Device = { spec };
@@ -272,6 +279,12 @@ export class BusLayer {
       if (spec.kind === 'i2c-temp') d.i2c = new Tmp102(0x48 | (addrPins & 3), Number(spec.params.celsius ?? 25));
       if (spec.kind === 'spi-flash') d.spi = new SpiFlash();
       if (spec.kind === 'usb-uart') this.adapterRx.set(spec.id, []);
+      if (spec.kind === 'tm1637') {
+        const pad = (net: string | undefined) => Object.entries(netlist.pins).find(([, n]) => n === net)?.[0];
+        const clk = pad(spec.nets.CLK), dio = pad(spec.nets.DIO);
+        d.tm = new Tm1637();
+        if (clk && dio && clk !== dio) d.tmPads = { clk, dio };
+      }
       if (isSecureElement(spec.kind)) {
         const se = SECURE_ELEMENTS[spec.kind];
         const why = spec.id in attached ? attached[spec.id] : 'not attached to the emulator';
@@ -290,6 +303,25 @@ export class BusLayer {
 
   takeLog(): BusRecord[] {
     return this.log.splice(0, this.log.length);
+  }
+
+  /** GPIO edges for a bit-banged TM1637; ACK is an external low on DIO. */
+  onGpioEvents(events: { socPad: string; level: 0 | 1 | 2; timeNs: number }[]): void {
+    for (const event of events) {
+      for (const d of this.devices) {
+        if (!d.tm || !d.tmPads || !this.powered(d)) continue;
+        const line = event.socPad === d.tmPads.clk ? 'CLK' : event.socPad === d.tmPads.dio ? 'DIO' : null;
+        if (!line) continue;
+        const result = d.tm.edge(line, event.level === 0 ? 0 : 1);
+        if (result.ack !== null) this.gpioInput?.(d.tmPads.dio, result.ack ? 0 : 1, this.lines.nowNs());
+        if (result.stopped && result.changed) {
+          const state = d.tm.state();
+          this.record({ bus: 'TM1637', nets: [d.spec.nets.CLK, d.spec.nets.DIO], ok: true,
+            summary: `${d.spec.id}: ${state.segments.map(hex).join(' ')} ${state.on ? `brightness ${state.brightness}` : 'off'}`,
+            tm1637: { id: d.spec.id, ...state } });
+        }
+      }
+    }
   }
 
   /** Header pad currently carrying a peripheral signal, and its net. */

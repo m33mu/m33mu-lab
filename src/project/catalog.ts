@@ -14,7 +14,7 @@ export type PartKind =
   | 'npn' | 'nmos' | 'opamp' | 'regulator' | 'supply' | 'ground'
   | 'i2c-eeprom' | 'i2c-temp' | 'spi-flash' | 'usb-uart' | 'sniffer'
   | 'se-atecc608' | 'se-ta100' | 'se-tropic01' | 'se-se050' | 'se-stsafe'
-  | 'sigc-source' | 'func-gen';
+  | 'sigc-source' | 'func-gen' | 'potentiometer' | 'rotary-encoder' | 'pcm5102a' | 'tm1637';
 
 export type ParamSpec = {
   key: string;
@@ -165,6 +165,62 @@ export const CATALOG: Record<PartKind, PartDef> = {
     kind: 'switch', title: 'Push button (normally open)', params: [], defaults: {},
     terminals: () => twoLead(2),
     devices: (id, _p, net) => [{ kind: 'switch', id, a: net('a'), b: net('b'), closed: false, ron: 0.05, roff: 1e10 }]
+  },
+  potentiometer: {
+    kind: 'potentiometer', title: 'Potentiometer (three terminals)',
+    params: [
+      { key: 'ohms', label: 'End-to-end resistance', unit: 'Ω', min: 1, max: 1e9 },
+      { key: 'position', label: 'Wiper position (A=0, B=1)', unit: '', min: 0, max: 1 },
+      { key: 'taper', label: 'Taper', unit: '', min: 0, max: 0,
+        choices: [{ value: 'linear', label: 'Linear' }, { value: 'audio', label: 'Audio/log' }] }
+    ],
+    defaults: { ohms: 100000, position: 0.5, taper: 'linear' },
+    terminals: () => [
+      { id: 'a', x: 0, y: 0, label: 'A' },
+      { id: 'wiper', x: 2 * PITCH, y: -PITCH, label: 'Wiper' },
+      { id: 'b', x: 4 * PITCH, y: 0, label: 'B' }
+    ],
+    // A small residual resistance avoids a zero-ohm branch at either end stop.
+    devices: (id, p, net) => {
+      const x = Number(p.position);
+      const ratio = p.taper === 'audio' ? (Math.pow(100, x) - 1) / 99 : x;
+      return [
+        { kind: 'resistor', id: `${id}.a`, a: net('a'), b: net('wiper'), ohms: Math.max(0.001, Number(p.ohms) * ratio) },
+        { kind: 'resistor', id: `${id}.b`, a: net('wiper'), b: net('b'), ohms: Math.max(0.001, Number(p.ohms) * (1 - ratio)) }
+      ];
+    }
+  },
+  'rotary-encoder': {
+    kind: 'rotary-encoder', title: 'Incremental encoder with push switch (A/B common to ground)',
+    params: [{ key: 'phase', label: 'Quadrature phase (0-3)', unit: '', min: 0, max: 3 }],
+    defaults: { phase: 0 },
+    terminals: () => header(['A', 'B', 'SW', 'COM']),
+    devices: (id, p, net) => {
+      const phase = Math.trunc(Number(p.phase));
+      // 00 -> 01 -> 11 -> 10 is one clockwise quadrature cycle.
+      const gray = [0, 1, 3, 2][phase];
+      return [
+        { kind: 'switch', id: `${id}.a`, a: net('A'), b: net('COM'), closed: !!(gray & 2), ron: 0.05, roff: 1e10 },
+        { kind: 'switch', id: `${id}.b`, a: net('B'), b: net('COM'), closed: !!(gray & 1), ron: 0.05, roff: 1e10 },
+        { kind: 'switch', id: `${id}.sw`, a: net('SW'), b: net('COM'), closed: false, ron: 0.05, roff: 1e10 }
+      ];
+    }
+  },
+  'pcm5102a': {
+    kind: 'pcm5102a', title: 'PCM5102A 3-wire I²S DAC breakout (wiring only)',
+    params: [], defaults: {},
+    terminals: () => header(['VCC', 'GND', 'BCK', 'LCK', 'DIN', 'XSMT', 'SCK', 'LOUT', 'ROUT']),
+    // SAI/I²S and the DAC conversion are not implemented by the lab.
+    devices: (id, _p, net) => [
+      { kind: 'resistor', id: `${id}.iq`, a: net('VCC'), b: net('GND'), ohms: 1000 },
+      { kind: 'resistor', id: `${id}.leftLeak`, a: net('LOUT'), b: net('GND'), ohms: 1e9 },
+      { kind: 'resistor', id: `${id}.rightLeak`, a: net('ROUT'), b: net('GND'), ohms: 1e9 }
+    ]
+  },
+  tm1637: {
+    kind: 'tm1637', title: 'TM1637 four-digit display (GPIO serial model)', logic: 'tm1637',
+    params: [], defaults: {}, terminals: () => header(['VCC', 'GND', 'CLK', 'DIO']),
+    devices: (id, _p, net) => moduleLoad(id, net)
   },
   npn: {
     kind: 'npn', title: 'NPN transistor (2N3904-like)', params: [], defaults: {},
@@ -318,7 +374,7 @@ export const CATALOG: Record<PartKind, PartDef> = {
   supply: {
     kind: 'supply', title: 'DC supply',
     params: [{ key: 'volts', label: 'Voltage', unit: 'V', min: -50, max: 50,
-      choices: [{ value: '1', label: '1 V' }, { value: '3.3', label: '3.3 V' }, { value: '5', label: '5 V' }] }],
+      choices: [{ value: '1', label: '1 V' }, { value: '1.8', label: '1.8 V' }, { value: '3.3', label: '3.3 V' }, { value: '5', label: '5 V' }] }],
     defaults: { volts: '3.3' },
     terminals: () => [{ id: 'p', x: 0, y: 0, label: '+' }, { id: 'n', x: PITCH, y: 0, label: '−' }],
     devices: (id, p, net) => [{ kind: 'vsource', id, p: net('p'), n: net('n'), volts: Number(p.volts) }]

@@ -363,7 +363,10 @@ export class Bench {
       }
       const relevant = events.filter((e) => c.hasPad(e.socPad));
       if (relevant.length > 0) this.applyPadEvents(relevant, tm);
-      if (events.length > 0) this.bus?.onPadChange();
+      if (events.length > 0) {
+        this.bus?.onGpioEvents(events);
+        this.bus?.onPadChange();
+      }
       if (r.stopped || r.breakpointPc != null) {
         // Hold the circuit at the MCU's time: for good when it stopped, until
         // the next run for a breakpoint.
@@ -416,7 +419,7 @@ export class Bench {
       padConfig: (pad) => this.padConfigs.get(pad) ?? null,
       nowNs: () => this.timeNs
     };
-    this.bus = new BusLayer(logic, lines, attached);
+    this.bus = new BusLayer(logic, lines, attached, (pad, level, timeNs) => this.mcu?.scheduleInput(pad, level, timeNs));
     return this.bus;
   }
 

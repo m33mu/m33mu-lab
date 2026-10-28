@@ -5,6 +5,7 @@ import { CATALOG, PITCH, type PartKind } from '../project/catalog.ts';
 import { type Project, type TerminalRef, newId, nextPartId, refKey } from '../project/model.ts';
 import { type BoardLayout, type PlacedTerminal, hitTerminal } from '../project/netgraph.ts';
 import { PartGlyph } from './parts.tsx';
+import type { Tm1637State } from '../../sim/tm1637.ts';
 
 export type Selection =
   | { kind: 'part'; id: string }
@@ -23,6 +24,7 @@ type Props = {
   tool: Tool;
   running: boolean;
   brightness: Record<string, number>;
+  tmDisplays: Record<string, Tm1637State>;
   /** On-board LED id -> 0..1. */
   boardLeds: Record<string, number>;
   pressed: Set<string>;
@@ -150,9 +152,10 @@ export function BenchCanvas(props: Props) {
     if (tool.kind !== 'select' || e.button !== 0) return;
     e.stopPropagation();
     const part = project.parts.find((x) => x.id === id)!;
-    if (props.running && part.kind === 'switch') {
-      props.onPress(id, true);
-      const up = () => { props.onPress(id, false); window.removeEventListener('pointerup', up); };
+    if (props.running && (part.kind === 'switch' || part.kind === 'rotary-encoder')) {
+      const switchId = part.kind === 'rotary-encoder' ? `${id}.sw` : id;
+      props.onPress(switchId, true);
+      const up = () => { props.onPress(switchId, false); window.removeEventListener('pointerup', up); };
       window.addEventListener('pointerup', up);
       props.onSelect({ kind: 'part', id });
       return;
@@ -241,7 +244,7 @@ export function BenchCanvas(props: Props) {
             <g key={part.id} data-part={part.id}
               transform={`translate(${part.x + dx} ${part.y + dy}) rotate(${part.rotation})`}
               className={sel ? 'part selected' : 'part'} onPointerDown={(e) => partDown(e, part.id)}>
-              <PartGlyph part={part} brightness={props.brightness[part.id]} pressed={props.pressed.has(part.id)} />
+              <PartGlyph part={part} brightness={props.brightness[part.id]} pressed={props.pressed.has(part.id) || props.pressed.has(`${part.id}.sw`)} tmDisplay={props.tmDisplays[part.id]} />
             </g>
           );
         })}

@@ -29,6 +29,7 @@ type Props = {
   observation: Observation | null;
   mcuPads: Record<string, McuPadInfo>;
   benchActive: boolean;
+  encoderActive: boolean;
   onParam(partId: string, key: string, value: number | string): void;
   onParams(partId: string, values: Record<string, number | string>): void;
   onRotate(): void;
@@ -36,6 +37,7 @@ type Props = {
   onProbe(channel: 0 | 1, target: ProbeTarget | null): void;
   buses: BusOption[];
   onWireBus(partId: string, busId: string, csKey: string | null): void;
+  onEncoderTurn(partId: string, direction: -1 | 1): void;
 };
 
 /** Pick a board bus and a chip select, then wire every line in one step. */
@@ -204,6 +206,11 @@ export function Inspector(props: Props) {
   return (
     <div className="inspector">
       <h3>{def.title} <span className="muted">{part.id}</span></h3>
+      {part.kind === 'rotary-encoder' && <div className="row">
+        <button type="button" onClick={() => props.onEncoderTurn(part.id, -1)} disabled={!props.encoderActive}>Turn left</button>
+        <button type="button" onClick={() => props.onEncoderTurn(part.id, 1)} disabled={!props.encoderActive}>Turn right</button>
+        <span className="muted">Click the knob drawing to press its switch.</span>
+      </div>}
       {part.kind === 'sigc-source' && <SigcSourceParams part={part} onParam={props.onParam} onParams={props.onParams} />}
       {def.params.filter((spec) => !spec.text).map((spec) => (
         <label key={spec.key} className="param">{spec.label}

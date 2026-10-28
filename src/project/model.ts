@@ -133,7 +133,7 @@ export function nextPartId(project: Project, kind: PartKind): string {
     npn: 'q', nmos: 'm', opamp: 'u', regulator: 'ldo', 'i2c-eeprom': 'eeprom', 'i2c-temp': 'temp', 'spi-flash': 'flash',
     'usb-uart': 'uart', sniffer: 'sniff', supply: 'v', ground: 'gnd',
     'se-atecc608': 'se', 'se-ta100': 'se', 'se-tropic01': 'se', 'se-se050': 'se', 'se-stsafe': 'se',
-    'sigc-source': 'sig', 'func-gen': 'fg' }[kind];
+    'sigc-source': 'sig', 'func-gen': 'fg', potentiometer: 'pot', 'rotary-encoder': 'enc', pcm5102a: 'dac', tm1637: 'disp' }[kind];
   const used = new Set(project.parts.map((p) => p.id));
   for (let i = 1; ; i++) if (!used.has(`${prefix}${i}`)) return `${prefix}${i}`;
 }

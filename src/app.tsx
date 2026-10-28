@@ -10,6 +10,7 @@ import { ScopeInstrument, type ScopeSink } from './instruments/ScopeInstrument.t
 import { appendTerminal, Terminal, type UartInfo } from './instruments/Terminal.tsx';
 import { Sniffer } from './instruments/Sniffer.tsx';
 import type { BusRecord } from '../sim/buses.ts';
+import type { Tm1637State } from '../sim/tm1637.ts';
 import { CATALOG, formatSi, type PartKind, type Rotation } from './project/catalog.ts';
 import { commit, createHistory, redo, replace, undo } from './project/history.ts';
 import {
@@ -35,10 +36,10 @@ type BenchStats = {
 const hex = (v: number) => `0x${(v >>> 0).toString(16).padStart(8, '0')}`;
 const PALETTE: { group: string; parts: [PartKind, string][] }[] = [
   { group: 'Basics', parts: [['breadboard', 'Breadboard'], ['resistor', 'Resistor'], ['capacitor', 'Capacitor'],
-    ['led', 'LED'], ['switch', 'Push button'], ['ground', 'Ground']] },
+    ['led', 'LED'], ['switch', 'Push button'], ['potentiometer', 'Potentiometer'], ['rotary-encoder', 'Rotary encoder'], ['ground', 'Ground']] },
   { group: 'Semiconductors', parts: [['diode', 'Diode 1N4148'], ['npn', 'NPN 2N3904'], ['nmos', 'N-MOSFET'], ['opamp', 'Op-amp']] },
   { group: 'Power & signals', parts: [['supply', 'DC supply'], ['regulator', 'LDO regulator'], ['sigc-source', 'Signal source (SIGC)'], ['func-gen', 'Function generator']] },
-  { group: 'Bus modules', parts: [['i2c-eeprom', 'I²C EEPROM 24C02'], ['i2c-temp', 'I²C temp TMP102'], ['spi-flash', 'SPI flash W25Q'],
+  { group: 'Bus modules', parts: [['pcm5102a', 'PCM5102A DAC'], ['tm1637', 'TM1637 display'], ['i2c-eeprom', 'I²C EEPROM 24C02'], ['i2c-temp', 'I²C temp TMP102'], ['spi-flash', 'SPI flash W25Q'],
     ['usb-uart', 'USB-UART adapter'], ['sniffer', 'Bus sniffer']] },
   { group: 'Secure elements', parts: [['se-atecc608', 'ATECC608A (SPI)'], ['se-ta100', 'TA100 (SPI)'], ['se-tropic01', 'TROPIC01 (SPI)'],
     ['se-se050', 'SE050 (I²C)'], ['se-stsafe', 'STSAFE-A120 (I²C)']] }
@@ -139,6 +140,7 @@ export function App() {
   const openUarts = project.instruments.terminals ?? (BOARDS[cpu].vcp ? [BOARDS[cpu].vcp] : []);
   const [uartText, setUartText] = useState<Record<number, string>>({});
   const [busLog, setBusLog] = useState<BusRecord[]>([]);
+  const [tmDisplays, setTmDisplays] = useState<Record<string, Tm1637State>>({});
   const [adapterText, setAdapterText] = useState<Record<string, string>>({});
   const [uartLost, setUartLost] = useState<Set<number>>(new Set());
   const [dockTab, setDockTab] = useState<string>('scope1');
@@ -177,6 +179,12 @@ export function App() {
   const onEvent = useCallback((e: WorkerEvent) => {
     const p = e.payload;
     if (e.event === 'busLog') {
+      const displays = (p.records as BusRecord[]).filter((r) => r.tm1637).map((r) => r.tm1637!);
+      if (displays.length) setTmDisplays((old) => {
+        const next = { ...old };
+        for (const { id, ...state } of displays) next[id] = state;
+        return next;
+      });
       setBusLog((old) => {
         const next = [...old, ...(p.records as BusRecord[])];
         return next.length > 5000 ? next.slice(next.length - 5000) : next;
@@ -486,6 +494,7 @@ export function App() {
     const { probes, columns } = probesFor(project);
     scopeColumns.current = columns;
     setBusLog([]);
+    setTmDisplays({});
     const created = await worker().request('createBench', { netlist: compiled.netlist, probes, logic: compiled.logic,
       options: { lookaheadNs: project.solver.lookaheadNs, sampleNs: project.solver.sampleNs, initial } });
     const secureElements = (created.secureElements ?? []) as { id: string; spec: string | null; error: string | null }[];
@@ -562,6 +571,27 @@ export function App() {
   function press(id: string, down: boolean) {
     setPressed((old) => { const n = new Set(old); if (down) n.add(id); else n.delete(id); return n; });
     if (benchActive && !benchStale) void worker().request('setSwitch', { device: id, closed: down }).catch(fail);
+  }
+
+  const encoderBusy = useRef(new Set<string>());
+  async function turnEncoder(id: string, direction: -1 | 1) {
+    const part = project.parts.find((p) => p.id === id && p.kind === 'rotary-encoder');
+    if (!part || !benchActive || benchStale || runState !== 'running' || encoderBusy.current.has(id)) return;
+    encoderBusy.current.add(id);
+    try {
+      let phase = Number(part.params.phase);
+      const gray = [0, 1, 3, 2];
+      for (let i = 0; i < 4; i++) {
+        // Closed contacts invert the pulled-up GPIO levels; this direction
+        // matches bass-nam's control_ui transition table (right increments).
+        phase = (phase - direction + 4) % 4;
+        const bits = gray[phase];
+        await worker().request('setSwitch', { device: `${id}.a`, closed: !!(bits & 2) });
+        await worker().request('setSwitch', { device: `${id}.b`, closed: !!(bits & 1) });
+        await new Promise((resolve) => setTimeout(resolve, 12));
+      }
+    } catch (err) { fail(err); }
+    finally { encoderBusy.current.delete(id); }
   }
 
   // ------------------------------------------------------------ project files
@@ -795,7 +825,7 @@ export function App() {
           <BenchCanvas project={project} layout={layout}
             artworkUrl={layout ? assetUrl(`boards/${layout.artwork.replace('../', '')}`) : ''}
             terminals={terminals} selection={selection} tool={tool} running={benchActive && runState === 'running'}
-            brightness={brightness} boardLeds={boardLeds} pressed={pressed} errorKeys={errorKeys}
+            brightness={brightness} boardLeds={boardLeds} pressed={pressed} errorKeys={errorKeys} tmDisplays={tmDisplays}
             onSelect={setSelection} onCommit={edit} onView={view} onPress={press} onBoardButton={boardButton} onHover={setHoverText} />
           <div className="canvas-status">
             <span className="zoom">
@@ -812,8 +842,9 @@ export function App() {
         <aside className="side">
           <Inspector project={project} selection={selection} compiled={compiled} terminals={terminalMap}
             observation={observation} mcuPads={mcuPads} benchActive={benchActive}
+            encoderActive={benchActive && !benchStale && runState === 'running'}
             onParam={setParam} onParams={setParams} onRotate={rotateSelection} onDelete={deleteSelection} onProbe={setProbe}
-            buses={buses} onWireBus={wireBusFor} />
+            buses={buses} onWireBus={wireBusFor} onEncoderTurn={(id, dir) => void turnEncoder(id, dir)} />
           <div className="cpu">
             <h3>CPU {machine && <span className="muted">{formatSi(machine.cpuHz, 'Hz')}</span>}</h3>
             <div className="regs">

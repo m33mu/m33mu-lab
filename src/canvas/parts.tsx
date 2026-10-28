@@ -2,6 +2,7 @@
 
 import { PITCH, BB_COLUMNS, CATALOG, formatSi } from '../project/catalog.ts';
 import type { Part } from '../project/model.ts';
+import type { Tm1637State } from '../../sim/tm1637.ts';
 
 const P = PITCH;
 
@@ -15,7 +16,7 @@ function Leads({ part }: { part: Part }) {
   );
 }
 
-export function PartGlyph({ part, brightness, pressed }: { part: Part; brightness?: number; pressed?: boolean }) {
+export function PartGlyph({ part, brightness, pressed, tmDisplay }: { part: Part; brightness?: number; pressed?: boolean; tmDisplay?: Tm1637State }) {
   switch (part.kind) {
   case 'breadboard': {
     const w = (BB_COLUMNS + 1) * P;
@@ -81,6 +82,58 @@ export function PartGlyph({ part, brightness, pressed }: { part: Part; brightnes
         <Leads part={part} />
       </g>
     );
+  case 'potentiometer':
+    return (
+      <g>
+        <line x1={0} y1={0} x2={4 * P} y2={0} className="wire-lead" />
+        <rect x={P * 0.8} y={-8} width={P * 2.4} height={16} rx={5} className="resistor-body" />
+        <line x1={2 * P} y1={-P} x2={2 * P} y2={-8} className="wire-lead" />
+        <text x={2 * P} y={-P * 1.25} className="part-label">{part.id} {formatSi(Number(part.params.ohms), 'Ω')} {Math.round(Number(part.params.position) * 100)}%</text>
+        <Leads part={part} />
+      </g>
+    );
+  case 'rotary-encoder':
+    return (
+      <g>
+        <rect x={-P / 2} y={-2.5 * P} width={4 * P} height={2 * P} rx={6} fill="#3a4655" stroke="#111" />
+        <circle cx={1.5 * P} cy={-1.5 * P} r={0.7 * P} fill="#aeb8c2" stroke="#222" />
+        <text x={1.5 * P} y={-0.75 * P} className="part-label light">{part.id} ENC</text>
+        {CATALOG[part.kind].terminals(part.params).map((t) => <text key={t.id} x={t.x} y={0.75 * P} className="pin-label">{t.label}</text>)}
+        <Leads part={part} />
+      </g>
+    );
+  case 'pcm5102a': {
+    const terms = CATALOG[part.kind].terminals(part.params);
+    const w = terms.length * P;
+    return (
+      <g>
+        <rect x={-P / 2} y={-2.5 * P} width={w} height={2 * P} rx={5} fill="#32546d" stroke="#111" />
+        <text x={w / 2 - P / 2} y={-P} className="part-label light">PCM5102A</text>
+        {terms.map((t) => <text key={t.id} x={t.x} y={0.75 * P} className="pin-label">{t.label}</text>)}
+        <Leads part={part} />
+      </g>
+    );
+  }
+  case 'tm1637': {
+    const terms = CATALOG.tm1637.terminals(part.params);
+    const segs = tmDisplay?.segments ?? [0, 0, 0, 0];
+    const opacity = tmDisplay?.on ? 0.3 + 0.7 * (tmDisplay.brightness / 7) : 0;
+    const strokes = [
+      [3, 2, 16, 2], [18, 3, 18, 16], [18, 17, 18, 30],
+      [3, 31, 16, 31], [1, 17, 1, 30], [1, 3, 1, 16], [3, 16, 16, 16]
+    ];
+    return (
+      <g>
+        <rect x={-P / 2} y={-3 * P} width={4 * P} height={2.5 * P} rx={5} fill="#29232c" stroke="#111" />
+        {segs.map((value, i) => <g key={i} transform={`translate(${i * P - 8} ${-2.65 * P})`}>
+          {strokes.map(([x1, y1, x2, y2], bit) => <line key={bit} x1={x1} y1={y1} x2={x2} y2={y2}
+            stroke="#f43132" strokeWidth={3} strokeLinecap="round" opacity={(value & (1 << bit)) ? opacity : 0.08} />)}
+        </g>)}
+        {terms.map((t) => <text key={t.id} x={t.x} y={0.75 * P} className="pin-label">{t.label}</text>)}
+        <Leads part={part} />
+      </g>
+    );
+  }
   case 'npn': case 'nmos':
     return (
       <g>
