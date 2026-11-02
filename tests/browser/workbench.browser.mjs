@@ -1,6 +1,6 @@
 // Browser interaction tests for the built workbench (web/dist) in Chromium.
 // Usage: node web/tests/browser/workbench.browser.mjs [screenshot-dir]
-// Env: M33MU_CHROMIUM (default /usr/bin/chromium).
+// Env: M33MU_CHROMIUM (default /usr/bin/chromium), M33MU_TEST_BASE_PATH (default /).
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -12,12 +12,16 @@ import { chromium } from 'playwright-core';
 const webRoot = fileURLToPath(new URL('../..', import.meta.url));
 const dist = join(webRoot, 'dist');
 const shots = process.argv[2] ?? null;
+const basePath = process.env.M33MU_TEST_BASE_PATH ?? '/';
+if (!basePath.startsWith('/') || !basePath.endsWith('/')) throw new Error('M33MU_TEST_BASE_PATH must start and end with /');
 if (shots) mkdirSync(shots, { recursive: true });
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.svg': 'image/svg+xml', '.wasm': 'application/wasm', '.elf': 'application/octet-stream' };
 
 const server = createServer((req, res) => {
-  const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^\/+/, '');
+  const requestPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  if (!requestPath.startsWith(basePath)) { res.writeHead(404); res.end(); return; }
+  const path = normalize(requestPath.slice(basePath.length)).replace(/^\/+/, '');
   let file = join(dist, path || 'index.html');
   try { if (statSync(file).isDirectory()) file = join(file, 'index.html'); } catch { /* 404 below */ }
   try {
@@ -62,7 +66,7 @@ const shot = async (name) => { if (shots) await page.screenshot({ path: join(sho
 
 try {
   await check('loads offline with board artwork', async () => {
-    await page.goto(origin + '/');
+    await page.goto(origin + basePath);
     await page.waitForSelector('circle[data-contact="CN7-10"]');
     const enabled = await page.locator('circle.contact.enabled').count();
     assert.equal(enabled, 212, 'reviewed electrical contacts only');

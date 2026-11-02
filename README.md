@@ -52,6 +52,8 @@ cmake --build build --target webserver
 
 The server starts Vite at **http://127.0.0.1:5173/**. The build also writes a standalone app to `dist/`. For the browser crypto models, configure with `-DM33MU_WOLFSSL_SRC=/path/to/wolfssl`; add `-DM33MU_WASM_RUST_SE=ON` for the Rust secure elements. You can use `scripts/build-web-app.sh --install && npm run dev` instead of the CMake webserver target. `M33MU_ROOT` lets the scripts use another m33mu checkout.
 
+On `master`, the [Pages workflow](.github/workflows/pages.yml) builds the app with crypto and secure elements, tests it at the `/m33mu-lab/` path, and publishes `dist/` to GitHub Pages. It can also be started manually from GitHub Actions.
+
 ## Verify a build
 
 ```sh

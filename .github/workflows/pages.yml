@@ -1,0 +1,77 @@
+name: publish Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout with m33mu
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Emscripten
+        working-directory: ..
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          ./emsdk/emsdk install 6.0.5
+          ./emsdk/emsdk activate 6.0.5
+          echo "$PWD/emsdk" >> "$GITHUB_PATH"
+          echo "$PWD/emsdk/upstream/emscripten" >> "$GITHUB_PATH"
+
+      - name: Install Rust WASM target
+        run: rustup target add wasm32-unknown-emscripten
+
+      - name: Fetch wolfSSL
+        working-directory: ..
+        run: git clone --depth 1 --branch master https://github.com/wolfSSL/wolfssl.git
+
+      - name: Build Lab and WASM worker
+        env:
+          M33MU_WOLFSSL_SRC: ${{ github.workspace }}/../wolfssl
+          M33MU_WASM_RUST_SE: 'ON'
+        run: scripts/build-web-app.sh --install
+
+      - name: Test built Lab in Chromium
+        env:
+          M33MU_TEST_BASE_PATH: /m33mu-lab/
+        run: |
+          test -s dist/worker/m33mu_web_api.wasm
+          M33MU_CHROMIUM="$(command -v chromium || command -v chromium-browser || command -v google-chrome)" \
+            node tests/browser/workbench.browser.mjs
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
