@@ -32,6 +32,11 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Install firmware compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+
       - name: Install Emscripten
         working-directory: ..
         run: |
@@ -53,6 +58,11 @@ jobs:
           M33MU_WOLFSSL_SRC: ${{ github.workspace }}/../wolfssl
           M33MU_WASM_RUST_SE: 'ON'
         run: scripts/build-web-app.sh --install
+
+      - name: Build browser test firmware
+        run: |
+          make -C m33mu/tests/firmware/test-stm32h563-uart-echo app.elf
+          make -C m33mu/tests/firmware/test-nrf5340 app.elf
 
       - name: Test built Lab in Chromium
         env:
